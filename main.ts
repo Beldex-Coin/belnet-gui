@@ -44,36 +44,23 @@ async function createWindow() {
     }
   }
   const openDevTools = false;
-  const defaultHeight = 850; // 850
-  const defaultWidth = openDevTools ? 1000 : 450; // 450
 
   const isDev = process.env.NODE_ENV === 'development';
   const indexToUse = validScreenIndexToUse || 0;
-  const sz = allDisplays[indexToUse].size;
   const bounds = allDisplays[indexToUse].bounds;
 
-  const displayWidth = Math.max(sz.width, sz.height);
-  const displayHeight = Math.min(sz.width, sz.height);
 
-  const scaleFactorDiy = Math.min(displayWidth / 1920, displayHeight / 1080);
-  console.warn(scaleFactorDiy);
-
-  const width = defaultWidth * scaleFactorDiy;
-  const height = defaultHeight * scaleFactorDiy;
-
+  const width = openDevTools ? 1000 : 421;
+  const height = 800;
   mainWindow = new BrowserWindow({
     width,
     height,
-    minHeight: height,
-    minWidth: 450,
-    resizable: true,
-
+    resizable: false,
     icon: './build/belnet_icon.png',
     webPreferences: {
       nodeIntegration: true,
       devTools: true,
       webSecurity: true,
-      zoomFactor: scaleFactorDiy
     },
     backgroundColor: '#fff',
     autoHideMenuBar: true,
