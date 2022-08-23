@@ -26,7 +26,6 @@ const GeneralInfosContainer = styled.div`
   display: flex;
   flex-direction: column;
   max-width: 80%;
-  margin: auto !important;
 `;
 
 export const GeneralInfos = (): JSX.Element => {
@@ -37,14 +36,19 @@ export const GeneralInfos = (): JSX.Element => {
   const formattedUptime = formatUptime(uptime);
   return (
     <GeneralInfosContainer>
-      <LabelSubtleWithValue label="Uptime" value={formattedUptime} />
+      <LabelSubtleWithValue 
+      center={false}
+      label="Uptime" 
+      value={formattedUptime} />
       <LabelSubtleWithValue
         label="Version"
+        center={false}
         value={version}
         showCopyToClipBoard={true}
       />
       <LabelSubtleWithValue
         label="Belnet address"
+        center={false}
         value={belnetAddress}
         showCopyToClipBoard={true}
       />

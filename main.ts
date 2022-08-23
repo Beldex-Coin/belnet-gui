@@ -5,7 +5,6 @@ import { doStopBelnetProcess } from './belnetProcessManager';
 import { closeRpcConnection } from './belnetRpcCall';
 import { createTrayIcon } from './trayIcon';
 import { markShouldQuit, shouldQuit } from './windowState';
-
 import ElectronStore from 'electron-store';
 
 let store: ElectronStore | undefined;
@@ -43,19 +42,19 @@ async function createWindow() {
       validScreenIndexToUse = screenIndexFromStore;
     }
   }
-  const openDevTools = false;
+  const openDevTools = true;
 
   const isDev = process.env.NODE_ENV === 'development';
   const indexToUse = validScreenIndexToUse || 0;
   const bounds = allDisplays[indexToUse].bounds;
 
 
-  const width = openDevTools ? 1000 : 421;
+  const width = openDevTools ? 1200 : 421;
   const height = 800;
   mainWindow = new BrowserWindow({
-    width,
+    width: 421,
     height,
-    resizable: false,
+    resizable: true,
     icon: './build/belnet_icon.png',
     webPreferences: {
       nodeIntegration: true,

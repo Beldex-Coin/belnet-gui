@@ -10,31 +10,18 @@ export const PowerButtonIcon = (props: { isHovered: boolean }): JSX.Element => {
   const theme = useTheme();
   const themeType = useSelector(selectedTheme);
 
-  let buttonColor = isHovered ? theme.textColor : theme.textColorSubtle;
-  let dropShadow = '';
-
-  if (globalStatus === 'connecting' || globalStatus === 'connected') {
-    buttonColor = isHovered ? theme.textColorSubtle : theme.textColor;
-    if (globalStatus === 'connected' && !isHovered) {
-      dropShadow =
-        themeType === 'light'
-          ? 'drop-shadow(rgba(0, 0, 0, 0.16) 0px 0px 1px)'
-          : 'drop-shadow(0px 0px 6px #FFFFFF)';
-    }
-  }
 
   return (
-    <StyledPowerIcon buttonColor={buttonColor} dropShadow={dropShadow}>
+    <StyledPowerIcon >
       {svgPower}
     </StyledPowerIcon>
   );
 };
 
-const StyledPowerIcon = styled.div<{ buttonColor: string; dropShadow: string }>`
+const StyledPowerIcon = styled.div<{}>`
   width: 50%;
   height: 50%;
   position: relative;
-  color: ${(props) => props.buttonColor};
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -44,8 +31,6 @@ const StyledPowerIcon = styled.div<{ buttonColor: string; dropShadow: string }>`
   svg {
     height: 100%;
     width: 100%;
-
-    filter: ${(props) => props.dropShadow};
   }
 `;
 
