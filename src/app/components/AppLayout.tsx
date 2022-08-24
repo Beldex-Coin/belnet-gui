@@ -12,6 +12,12 @@ const Container = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  background: ${(props) => props.theme.backgroundOpacity};
+`;
+
+const WrappedBgContainer = styled.div`
+  background-color: ${(props) => props.theme.overlayBackground};
+  border: 'solid 10px red';
 `;
 
 export const AppLayout = (): JSX.Element => {
@@ -26,8 +32,9 @@ export const AppLayout = (): JSX.Element => {
         flexGrow={1}
       >
         <ConnectedStatus />
-        <PowerButton />
         <GeneralInfos />
+        <WrappedBgContainer />
+        <PowerButton />
 
         <GuiTabs />
       </Stack>

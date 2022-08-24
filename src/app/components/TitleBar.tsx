@@ -1,6 +1,9 @@
 import React from 'react';
+import  {LightThemeButton}  from './ThemeChangeButton/LightThemeButton';
+import  {DarkThemeButton}  from './ThemeChangeButton/DarkThemeButton';
+import  {LightThemeCloseBtn}  from './ThemeChangeButton/LightThemeCloseBtn';
+import  {DarkThemeCloseBtn}  from './ThemeChangeButton/DarkThemeCloseBtn';
 import { RiCloseFill } from 'react-icons/ri';
-import { HiMoon } from 'react-icons/hi';
 import styled from 'styled-components';
 
 import { selectedTheme, setTheme } from '../../features/uiStatusSlice';
@@ -8,9 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { minimizeToTray } from '../../ipc/ipcRenderer';
 
 const Container = styled.div`
-  background: ${(props) => props.theme.backgroundColor};
   z-index: 99;
-
   position: sticky;
   top: 0;
   overflow-y: auto;
@@ -19,7 +20,7 @@ const Container = styled.div`
   -webkit-app-region: drag;
   -webkit-user-select: none;
   flex-shrink: 0;
-  padding: 0.5rem 1rem;
+  padding: 10px;
 `;
 
 const StyledIconButton = styled.button`
@@ -49,11 +50,11 @@ export const TitleBar = (): JSX.Element => {
         }}
         style={{ marginRight: 'auto' }}
       >
-        <HiMoon />
+       {themeSelected === 'light' ?  <DarkThemeButton /> : <LightThemeButton/>}
       </StyledIconButton>
 
       <StyledIconButton title="Minimize to tray" onClick={minimizeToTray}>
-        <RiCloseFill />
+      {themeSelected === 'light' ?  <LightThemeCloseBtn /> : <DarkThemeCloseBtn/>}
       </StyledIconButton>
     </Container>
   );
