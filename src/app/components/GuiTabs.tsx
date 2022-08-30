@@ -16,7 +16,7 @@ export const GuiTabs = (): JSX.Element => {
   const dispatch = useDispatch();
 
   const theme = useTheme();
-  const fgSelected = theme.textColor;
+  const fgSelected = theme.labelKeyColor;
 
   const selectedStyle = {
     color: fgSelected,
@@ -42,9 +42,9 @@ export const GuiTabs = (): JSX.Element => {
       variant="unstyled"
     >
       <TabList justifyContent="space-evenly">
-        <Tab _selected={selectedStyle}>MAIN</Tab>
-        <Tab _selected={selectedStyle}>CHART</Tab>
-        <Tab _selected={selectedStyle}>LOGS</Tab>
+        <Tab _selected={selectedStyle}>Main</Tab>
+        <Tab _selected={selectedStyle}>Chart</Tab>
+        <Tab _selected={selectedStyle}>Logs</Tab>
       </TabList>
       <TabPanels flexGrow={1} padding={1} height="0px">
         <TabPanel flexGrow={1} padding={2}>

@@ -6,6 +6,8 @@ import { GeneralInfos } from './GeneralInfos';
 import { GuiTabs } from './GuiTabs';
 import { PowerButton } from './PowerButton/PowerButton';
 import { TitleBar } from './TitleBar';
+import {UploadInfo} from './UploadInfo';
+import {DownloadInfo} from './DownloadInfo';
 
 const Container = styled.div`
   height: 100%;
@@ -15,26 +17,23 @@ const Container = styled.div`
   background: ${(props) => props.theme.backgroundOpacity};
 `;
 
-const WrappedBgContainer = styled.div`
-  background-color: ${(props) => props.theme.overlayBackground};
-  border: 'solid 10px red';
-`;
-
 export const AppLayout = (): JSX.Element => {
   return (
     <Container>
       <TitleBar />
       <Stack
-        padding="0px 10px 0 10px"
-        textAlign="center"
+        padding="0px 25px 0 25px"
         width="100%"
         height="0px"
         flexGrow={1}
       >
         <ConnectedStatus />
         <GeneralInfos />
-        <WrappedBgContainer />
+       <div>
+       <DownloadInfo />
         <PowerButton />
+        <UploadInfo />
+       </div>
 
         <GuiTabs />
       </Stack>

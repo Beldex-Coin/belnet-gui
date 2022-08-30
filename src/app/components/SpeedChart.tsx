@@ -64,9 +64,9 @@ export const SpeedChart = (): JSX.Element => {
           theme={{
             axis: {
               style: {
-                axis: { stroke: theme.textColor },
-                axisLabel: { stroke: theme.textColor },
-                tickLabels: { fill: theme.textColor },
+                axis: { stroke: theme.labelKeyColor },
+                axisLabel: { stroke: theme.labelKeyColor },
+                tickLabels: { fill: theme.labelKeyColor },
                 grid: { stroke: 'none' }
               }
             }

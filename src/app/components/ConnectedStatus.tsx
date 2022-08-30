@@ -25,7 +25,7 @@ const ConnectedStatusContainerWithLogo = styled(ConnectedStatusContainer)`
 `;
 
 const ConnectedStatusTitle = styled.span<{ textShadow: string }>`
-  font-family: Archivo;
+  font-family: 'Poppins', sans-serif;
   font-style: normal;
   font-weight: bold;
   font-size: 1.4rem;
@@ -45,7 +45,7 @@ const ConnectedStatusLED = styled.span<{ ledColor: string }>`
 const StyledLogoAndTitle = styled.svg`
   height: 100%;
   margin-bottom: 0;
-  fill: ${(props) => props.theme.textColor};
+  fill: ${(props) => props.theme.labelKeyColor};
 `;
 
 export const ConnectedStatus = (): JSX.Element => {
@@ -87,7 +87,7 @@ export const ConnectedStatus = (): JSX.Element => {
   }
   return (
     <div>
-      <img width="300px" src={BelnetLogo} alt="Belnet Logo" />
+      <img width="235" height="40" src={BelnetLogo} alt="Belnet Logo" />
     </div> 
   );
 };

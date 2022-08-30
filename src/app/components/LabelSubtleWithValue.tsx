@@ -9,19 +9,44 @@ import {
   selectDownloadRate,
   selectUploadRate
 } from '../../features/statusSlice';
+import { selectedTheme, } from '../../features/uiStatusSlice';
+
+import  {DarkThemeCopyButton}  from './ThemeChangeButton/DarkThemeCopyButton';
+import  {LightThemeCopyButton}  from './ThemeChangeButton/LightThemeCopyButton';
 import { downloadColorChart, uploadColorChart } from './SpeedChart';
 
-const StyledLabelSubtle = styled.div`
-  color: ${(props) => props.theme.textColorSubtle};
+const GeneralInfoLabelKey = styled.div`
+  color: ${(props) => props.theme.labelKeyColor};
   padding-inline-end: 5px;
   user-select: none;
   white-space: nowrap;
+  font-family: 'Poppins', sans-serif;
+`;
+
+const GeneralInfoLabelValue = styled(GeneralInfoLabelKey)<{
+  theme: DefaultTheme;
+}>`
+  color: ${(props) => props.theme.labelValueColor};
+  white-space: nowrap;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  user-select: none;
+`;
+
+const StyledLabelSubtle = styled.div`
+  color: ${(props) => props.theme.labelValueColor};
+  padding-inline-end: 5px;
+  user-select: none;
+  white-space: nowrap;
+  font-family: 'Poppins', sans-serif;
 `;
 
 const StyledValue = styled(StyledLabelSubtle)<{
   theme: DefaultTheme;
 }>`
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -31,7 +56,7 @@ const StyledValue = styled(StyledLabelSubtle)<{
 const InlineIconButton = styled.button<{ size: string; theme: DefaultTheme }>`
   width: ${(props) => props.size};
   height: ${(props) => props.size};
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
   background: none;
 
   flex-shrink: 0;
@@ -42,7 +67,7 @@ const InlineIconButton = styled.button<{ size: string; theme: DefaultTheme }>`
   border-radius: 7px;
 
   :hover {
-    color: ${(props) => props.theme.textColorSubtle};
+    color: ${(props) => props.theme.labelValueColor};
   }
 
   svg {
@@ -54,7 +79,7 @@ const InlineIconButton = styled.button<{ size: string; theme: DefaultTheme }>`
 const InlineIcon = styled.div<{ size: string; theme: DefaultTheme }>`
   width: ${(props) => props.size};
   height: ${(props) => props.size};
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
   background: none;
   flex-shrink: 0;
   border: none;
@@ -67,6 +92,7 @@ const InlineIcon = styled.div<{ size: string; theme: DefaultTheme }>`
 
 const CopyToClipboardIcon = (props: { valueToCopy: string }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const themeSelected = useSelector(selectedTheme);
   const [_getclipboard, copyToClipboard] = useCopyToClipboard();
   return (
     <InlineIconButton
@@ -76,7 +102,7 @@ const CopyToClipboardIcon = (props: { valueToCopy: string }) => {
       }}
       title="Copy to clipboard"
     >
-      <MdOutlineContentCopy />
+      {themeSelected === 'light' ?  <LightThemeCopyButton /> : <DarkThemeCopyButton/>}
     </InlineIconButton>
   );
 };
@@ -91,8 +117,8 @@ export const LabelSubtleWithValue = (props: {
 
   return (
     <Flex justifyContent={center ? 'center' : 'start'}>
-      <StyledLabelSubtle>{label}: </StyledLabelSubtle>
-      <StyledValue>{value}</StyledValue>
+      <GeneralInfoLabelKey>{label}: </GeneralInfoLabelKey>
+      <GeneralInfoLabelValue>{value}</GeneralInfoLabelValue>
       {value?.length && showCopyToClipBoard ? (
         <CopyToClipboardIcon valueToCopy={value} />
       ) : null}

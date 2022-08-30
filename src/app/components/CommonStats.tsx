@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const StyledHeading = styled.h3`
   font-weight: 500;
   font-size: 1.25rem;
-  font-family: 'Archivo';
+  font-family: 'Poppins', sans-serif;
 
   align-self: start;
   padding-bottom: 5px;

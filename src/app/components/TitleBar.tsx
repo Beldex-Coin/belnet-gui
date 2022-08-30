@@ -20,12 +20,12 @@ const Container = styled.div`
   -webkit-app-region: drag;
   -webkit-user-select: none;
   flex-shrink: 0;
-  padding: 10px;
+  padding: 15px;
 `;
 
 const StyledIconButton = styled.button`
   font-size: 2rem;
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
   border: none;
   cursor: pointer;
   background: none;
@@ -34,7 +34,7 @@ const StyledIconButton = styled.button`
 
   transition: 0.25s;
   :hover {
-    color: ${(props) => props.theme.textColorSubtle};
+    color: ${(props) => props.theme.labelValueColor};
   }
 `;
 

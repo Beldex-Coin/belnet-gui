@@ -18,11 +18,11 @@ const ButtonRow = styled.div`
 
 const Timestamp = styled.span`
   font-size: 10px;
-  color: ${(props) => props.theme.textColorSubtle};
+  color: ${(props) => props.theme.labelValueColor};
 `;
 
 const Content = styled(Timestamp)`
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
 `;
 
 export const AppLogs = (): JSX.Element => {

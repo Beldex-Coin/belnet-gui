@@ -6,9 +6,9 @@ export const darkTheme = {
   backgroundImage: `url(${WorldMapDarkTheme})`,
   backgroundColor: '#181821',
   backgroundOpacity: 'rgb(24 24 33 / 75%)',
-  textColor: '#ffffff',
+  labelKeyColor: '#747484',
   overlayBackground: 'linear-gradient(#20202B, #1C1C26)',
-  textColorSubtle: '#bdbdbd',
+  labelValueColor: '#9797A9',
   inputBackground: '#262626',
   inputTextColor: '#bdbdbd'
 };
@@ -17,9 +17,9 @@ export const lightTheme: DefaultTheme = {
   backgroundImage: `url(${WorldMapLightTheme})`,
   backgroundColor: '#EBEBEB',
   backgroundOpacity: 'rgb(235 235 235 / 75%)',
-  textColor: '#000000',
+  labelKeyColor: '#707080',
   overlayBackground: '#F4F4F4',
-  textColorSubtle: '#6c6c6c',
+  labelValueColor: '#555568',
   inputBackground: '#f4f4f4',
   inputTextColor: '#6c6c6c'
 };
