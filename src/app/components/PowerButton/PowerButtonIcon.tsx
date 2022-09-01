@@ -13,19 +13,18 @@ export const PowerButtonIcon = (): JSX.Element => {
   const theme = useTheme();
   const themeType = useSelector(selectedTheme);
   const [power_on, setPowerOn] = useState(false);
-
+  // 
   return (
-    <StyledPowerIcon onClick={() => setPowerOn(!power_on)}>
-      {themeType === 'light' && <div>
-      {power_on ? <img height="214" width="214" src={LightThemePowerOn} alt=""/> : <img height="214" width="214" src={LightThemePowerOff} alt=""/>}
+    <>
+      {themeType === 'light' && <div style={{margin: 'auto'}} onClick={() => setPowerOn(!power_on)}>
+      {power_on ? <img height="216" width="222" src={LightThemePowerOn} alt=""/> : <img height="216" width="222" src={LightThemePowerOff} alt=""/>}
         </div>}
-        {themeType === 'dark' && <div>
-        {power_on ? <img height="214" width="214" src={DarkThemePowerOn} alt=""/> : <img height="214" width="214" src={DarkThemePowerOff} alt=""/>}
+        {themeType === 'dark' && <div style={{margin: 'auto'}} onClick={() => setPowerOn(!power_on)}>
+        {power_on ? <img height="216" width="222" src={DarkThemePowerOn} alt=""/> : <img height="216" width="222" src={DarkThemePowerOff} alt=""/>}
         </div>}
       {/* {power_on ? <img height="214" width="214" src={DarkThemePowerOn} alt=""/> : <img height="214" width="214" src={DarkThemePowerOff} alt=""/>} */}
       
-    </StyledPowerIcon>
+    </>
   );
 };
 
-const StyledPowerIcon = styled.div<{}>``;

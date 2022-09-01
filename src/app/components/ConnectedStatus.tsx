@@ -86,7 +86,7 @@ export const ConnectedStatus = (): JSX.Element => {
     );
   }
   return (
-    <div>
+    <div style={{margin: 'auto'}}>
       <img width="235" height="40" src={BelnetLogo} alt="Belnet Logo" />
     </div> 
   );
