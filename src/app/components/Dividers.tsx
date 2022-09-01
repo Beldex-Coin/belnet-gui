@@ -47,7 +47,7 @@ const BorderPLusIcon = (): JSX.Element => {
 
 const WhiteLine = styled.div`
   height: 1px;
-  background-color: ${(props) => props.theme.textColor};
+  background-color: ${(props) => props.theme.labelKeyColor};
   flex-grow: 1;
   flex-shrink: 100;
   margin: auto;
@@ -56,7 +56,7 @@ const WhiteLine = styled.div`
 const StyledMinusBorderIcon = styled.div`
   height: 1px;
   width: 12px;
-  background-color: ${(props) => props.theme.textColor};
+  background-color: ${(props) => props.theme.labelKeyColor};
   flex-grow: 0;
   flex-shrink: 0;
   margin: 10px;
@@ -64,7 +64,7 @@ const StyledMinusBorderIcon = styled.div`
 
 const StyledContainer = styled.div`
   width: 100%;
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
   height: 75px;
   display: flex;
   align-items: center;

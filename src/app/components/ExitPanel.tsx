@@ -23,9 +23,9 @@ import { ActionMeta, OnChangeValue } from "react-select";
 
 const ExitInput = styled(Input)`
   background-color: ${(props) => props.theme.inputBackground};
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
   outline-color: transparent;
-  font-family: 'IBM Plex Mono';
+  font-family: 'Poppins', sans-serif;
   font-weight: 400;
   border-radius: 3px;
   border: none;
@@ -37,7 +37,7 @@ const ExitInput = styled(Input)`
 `;
 
 const InputLabel = styled.div`
-  font-family: Archivo;
+  font-family: 'Poppins', sans-serif;
   font-style: normal;
   font-weight: 500;
   font-size: 1.1rem;

@@ -23,9 +23,8 @@ const formatUptime = (uptimeInMs: number) => {
 };
 
 const GeneralInfosContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  max-width: 80%;
+  padding: 18px 0 28px 0;
+  margin: 0 !important;
 `;
 
 export const GeneralInfos = (): JSX.Element => {

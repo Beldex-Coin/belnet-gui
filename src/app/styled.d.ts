@@ -6,8 +6,8 @@ declare module 'styled-components' {
     backgroundColor: string;
     backgroundOpacity: string;
     overlayBackground: string;
-    textColor: string;
-    textColorSubtle: string;
+    labelKeyColor: string;
+    labelValueColor: string;
     inputBackground: string;
     inputTextColor: string;
   }

@@ -16,7 +16,7 @@ import {
 import { turnExitOn, turnExitOff } from './PowerButtonActions';
 import { PowerButtonIcon } from './PowerButtonIcon';
 import { PowerButtonContainerBorder } from './PowerButtonSpinner';
-
+/**
 const StyledPowerButtonContainer = styled.div<{ shadow: string; bg: string }>`
   height: 38vw;
   width: 38vw;
@@ -38,7 +38,7 @@ const StyledPowerButton = styled.div`
   max-height: 100px;
   max-width: 100px;
   margin: 20px;
-  border: 2px solid ${(props) => props.theme.textColor}
+  border: 2px solid ${(props) => props.theme.labelKeyColor}
   position: absolute;
   border-radius: 50%;
 
@@ -131,3 +131,12 @@ export const PowerButton = (): JSX.Element => {
     </StyledPowerButtonContainer>
   );
 };
+ */
+
+export const PowerButton = (): JSX.Element => {
+  return (
+    <div>
+      <PowerButtonIcon />
+    </div>
+  )
+}

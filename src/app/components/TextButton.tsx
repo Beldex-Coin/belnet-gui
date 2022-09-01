@@ -2,13 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 
 const StyledButton = styled.button`
-  border: 1px solid ${(props) => props.theme.textColor};
-  color: ${(props) => props.theme.textColor};
+  border: 1px solid ${(props) => props.theme.labelKeyColor};
+  color: ${(props) => props.theme.labelKeyColor};
   background-color: ${(props) => props.theme.backgroundColor};
 
   border-radius: 7px;
   outline: none;
-  font-family: Archivo;
+  font-family: 'Poppins', sans-serif;
   font-size: 1rem;
   text-align: center;
   text-transform: uppercase;
@@ -22,8 +22,8 @@ const StyledButton = styled.button`
   transition: 0.25s;
   border-radius: 7px;
   :hover {
-    color: ${(props) => props.theme.textColorSubtle};
-    border: 1px solid ${(props) => props.theme.textColorSubtle};
+    color: ${(props) => props.theme.labelValueColor};
+    border: 1px solid ${(props) => props.theme.labelValueColor};
   }
 `;
 
