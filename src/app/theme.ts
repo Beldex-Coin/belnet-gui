@@ -1,11 +1,11 @@
 import { DefaultTheme } from 'styled-components';
-import WorldMapDarkTheme from '../../images/world_map_dark_theme.svg';
-import WorldMapLightTheme from '../../images/world_map_white_theme.svg';
+import DesktopMapLight from '../../images/Desktop_map_white.svg';
+import DesktopMapDark from '../../images/Desktop_map_dark.svg';
 
 export const darkTheme = {
-  backgroundImage: `url(${WorldMapDarkTheme})`,
+  backgroundImage: `url(${DesktopMapDark})`,
   backgroundColor: '#181821',
-  backgroundOpacity: 'rgb(24 24 33 / 75%)',
+  backgroundOpacity: 'rgba(24, 24, 33, 0)',
   labelKeyColor: '#747484',
   overlayBackground: 'linear-gradient(#20202B, #1C1C26)',
   labelValueColor: '#9797A9',
@@ -14,9 +14,9 @@ export const darkTheme = {
 };
 
 export const lightTheme: DefaultTheme = {
-  backgroundImage: `url(${WorldMapLightTheme})`,
+  backgroundImage: `url(${DesktopMapLight})`,
   backgroundColor: '#EBEBEB',
-  backgroundOpacity: 'rgb(235 235 235 / 75%)',
+  backgroundOpacity: 'rgba(235, 235, 235, 0)',
   labelKeyColor: '#707080',
   overlayBackground: '#F4F4F4',
   labelValueColor: '#555568',

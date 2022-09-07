@@ -135,8 +135,6 @@ export const PowerButton = (): JSX.Element => {
 
 export const PowerButton = (): JSX.Element => {
   return (
-    <div>
       <PowerButtonIcon />
-    </div>
   )
 }
