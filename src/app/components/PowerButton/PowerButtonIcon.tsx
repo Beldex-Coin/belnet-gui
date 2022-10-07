@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectedTheme } from '../../../features/uiStatusSlice';
+import {
+  selectAuthCodeFromUser,
+  selectExitNodeFromUser
+} from '../../../features/exitStatusSlice';
+import { turnExitOn, turnExitOff } from './PowerButtonActions';
 import { useGlobalConnectingStatus } from '../../hooks/connectingStatus';
 import DarkThemePowerOn from "./power_on.svg";
 import DarkThemePowerOff from "./power_off.svg";
@@ -14,12 +19,31 @@ export const PowerButtonIcon = (): JSX.Element => {
   const themeType = useSelector(selectedTheme);
   const [power_on, setPowerOn] = useState(false);
   // 
+
+  const connectingStatus = useGlobalConnectingStatus();
+  const dispatch = useDispatch();
+
+  const authCodeFromUser = useSelector(selectAuthCodeFromUser);
+  const exitNodeFromUser = useSelector(selectExitNodeFromUser);
+console.log('-authCodeFromUser---', authCodeFromUser);
+console.log('-exitNodeFromUser---', exitNodeFromUser);
+  const setPowerStatus = () => {
+      if (connectingStatus === 'connecting' || connectingStatus === 'error-start-stop') {
+        return;
+      }
+      if (connectingStatus === 'connected') {
+        turnExitOff(dispatch);
+      } else {
+        turnExitOn(dispatch, exitNodeFromUser, authCodeFromUser);
+      }
+      setPowerOn(!power_on);
+  }
   return (
     <>
-      {themeType === 'light' && <div style={{margin: 'auto'}} onClick={() => setPowerOn(!power_on)}>
+      {themeType === 'light' && <div style={{margin: 'auto'}} onClick={() => setPowerStatus()}>
       {power_on ? <img height="216" width="222" src={LightThemePowerOn} alt=""/> : <img height="216" width="222" src={LightThemePowerOff} alt=""/>}
         </div>}
-        {themeType === 'dark' && <div style={{margin: 'auto'}} onClick={() => setPowerOn(!power_on)}>
+        {themeType === 'dark' && <div style={{margin: 'auto'}} onClick={() => setPowerStatus()}>
         {power_on ? <img height="216" width="222" src={DarkThemePowerOn} alt=""/> : <img height="216" width="222" src={DarkThemePowerOff} alt=""/>}
         </div>}
       {/* {power_on ? <img height="214" width="214" src={DarkThemePowerOn} alt=""/> : <img height="214" width="214" src={DarkThemePowerOff} alt=""/>} */}

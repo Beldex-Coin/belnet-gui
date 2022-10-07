@@ -19,13 +19,14 @@ const UploadText = styled.span`
 const SpeedUnit = styled.span`
     font-size: 10px;
     font-weight: 300;
-    color: ${(props) => props.theme.labelKeyColor};
+    padding-left: 5px;
+    color: ${(props) => props.theme.streamLabelColor};
 `;
 
 const SpeedValue = styled.p`
     font-size: 16px;
     font-weight: 600;
-    color: ${(props) => props.theme.labelKeyColor};
+    color: ${(props) => props.theme.streamLabelColor};
 `;
 
 const LabelWrapper = styled.div`
