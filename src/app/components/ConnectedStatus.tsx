@@ -51,7 +51,7 @@ const StyledLogoAndTitle = styled.svg`
 export const ConnectedStatus = (): JSX.Element => {
   const globalStatus = useGlobalConnectingStatus();
   const themeType = useSelector(selectedTheme);
-
+  console.log('--globalStatus---', globalStatus);
   if (isGlobalStatusError(globalStatus)) {
     const errorText =
       status === 'error-start-stop'
@@ -85,9 +85,21 @@ export const ConnectedStatus = (): JSX.Element => {
       </ConnectedStatusContainer>
     );
   }
-  return (
-    <div style={{margin: 'auto'}}>
-      <img width="235" height="40" src={BelnetLogo} alt="Belnet Logo" />
-    </div> 
-  );
+  return <>
+    <ConnectedStatusContainer>
+      <ConnectedStatusTitle textShadow="">CONNECTING</ConnectedStatusTitle>
+      <ConnectedStatusLED ledColor="#EBD619" />
+    </ConnectedStatusContainer>
+    <ConnectedStatusContainer>
+      <ConnectedStatusTitle
+        textShadow={themeType == 'light' ? '' : '0px 0px 3px #FFFFFF'}
+      >
+        CONNECTED
+      </ConnectedStatusTitle>
+      <ConnectedStatusLED ledColor="#37EB19" />
+    </ConnectedStatusContainer>
+  </>;
+  // <div style={{margin: 'auto'}}>
+  //   <img width="235" height="40" src={BelnetLogo} alt="Belnet Logo" />
+  // </div> 
 };

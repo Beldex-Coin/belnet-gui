@@ -10,5 +10,6 @@ declare module 'styled-components' {
     labelValueColor: string;
     inputBackground: string;
     inputTextColor: string;
+    streamLabelColor: string;
   }
 }

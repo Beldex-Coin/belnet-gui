@@ -9,6 +9,7 @@ import { TitleBar } from './TitleBar';
 import {UploadInfo} from './UploadInfo';
 import {DownloadInfo} from './DownloadInfo';
 import AnimationDots from "../../../images/Animation_dots.svg";
+import BelnetLogo from '../../../images/Belnet.svg';
 
 const Container = styled.div`
   height: 100%;
@@ -37,14 +38,16 @@ export const AppLayout = (): JSX.Element => {
         flexGrow={1}
         zIndex="1"
       >
-        <ConnectedStatus />
+         <div style={{margin: 'auto'}}>
+      <img width="235" height="40" src={BelnetLogo} alt="Belnet Logo" />
+    </div> 
         <GeneralInfos />
        <ConnectionInfo>
        <DownloadInfo />
         <PowerButton />
         <UploadInfo />
        </ConnectionInfo>
-
+       <ConnectedStatus />
         <GuiTabs />
       </Stack>
     </Container>

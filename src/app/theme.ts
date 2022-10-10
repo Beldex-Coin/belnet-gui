@@ -10,6 +10,7 @@ export const darkTheme = {
   overlayBackground: 'linear-gradient(#20202B, #1C1C26)',
   labelValueColor: '#9797A9',
   inputBackground: '#262626',
+  streamLabelColor: '#A1A1C1',
   inputTextColor: '#bdbdbd'
 };
 
@@ -21,5 +22,7 @@ export const lightTheme: DefaultTheme = {
   overlayBackground: '#F4F4F4',
   labelValueColor: '#555568',
   inputBackground: '#f4f4f4',
-  inputTextColor: '#6c6c6c'
+  inputTextColor: '#6c6c6c',
+  streamLabelColor: '#56566F',
+
 };
