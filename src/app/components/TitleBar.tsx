@@ -20,7 +20,7 @@ const Container = styled.div`
   -webkit-app-region: drag;
   -webkit-user-select: none;
   flex-shrink: 0;
-  padding: 15px;
+  padding: 15px 15px 5px 15px;
 `;
 
 const StyledIconButton = styled.button`

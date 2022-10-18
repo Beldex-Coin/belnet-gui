@@ -11,5 +11,12 @@ declare module 'styled-components' {
     inputBackground: string;
     inputTextColor: string;
     streamLabelColor: string;
+    tabSelected: string;
+    textButtonBg: string;
+    textButtonBoxSh: string;
+    textButtonClearColor: string;
+    textButtonBorder: string;
+    appLogTimeStampColor: string;
+    appLogContentColor: string;
   }
 }
