@@ -1,30 +1,24 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { useTheme, DefaultTheme } from 'styled-components';
+import { useSelector } from 'react-redux';
+import { selectedTheme } from '../../features/uiStatusSlice';
+import ClearWhite from "../../../images/clear_white.svg";
+import ClearDark from "../../../images/clear_dark.svg";
+import CopyWhite from "../../../images/copy_white.svg";
+import CopyDark from "../../../images/copy_dark.svg";
 
-const StyledButton = styled.button`
-  border: 1px solid ${(props) => props.theme.labelKeyColor};
-  color: ${(props) => props.theme.labelKeyColor};
-  background-color: ${(props) => props.theme.backgroundColor};
 
-  border-radius: 7px;
-  outline: none;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
-  text-align: center;
-  text-transform: uppercase;
-  cursor: pointer;
-  width: fit-content;
-  padding: 4px 27px;
-  margin-inline-start: 10px;
-  margin-inline-end: 10px;
-  user-select: none;
-
-  transition: 0.25s;
-  border-radius: 7px;
-  :hover {
-    color: ${(props) => props.theme.labelValueColor};
-    border: 1px solid ${(props) => props.theme.labelValueColor};
-  }
+const StyledButton = styled.button<{ text: string; theme: DefaultTheme }>`
+    background: ${(props) => props.theme.textButtonBg};
+    color: ${(props) => props.text === "Clear" ? props.theme.textButtonClearColor : props.theme.tabSelected};
+    height: 38px;
+    width: 125px;
+    border-radius: 15px;
+    border: ${(props) => props.theme.textButtonBorder};
+    ont-weight: 500;
+    font-size: 18px;
+    margin: 0 10px;
+    box-shadow: ${(props) => props.theme.textButtonBoxSh};
 `;
 
 export const TextButton = (props: {
@@ -32,9 +26,21 @@ export const TextButton = (props: {
   title: string;
   onClick: () => void;
 }): JSX.Element => {
+  const theme = useTheme();
+  const themeType = useSelector(selectedTheme);
+  let ClearImg = <></>;
+  let CopyImg = <></>;
+  if(themeType === 'light') {
+    ClearImg = <img src={ClearWhite} alt="" />;
+    CopyImg = <img src={CopyWhite} alt="" />;
+  } else {
+    ClearImg = <img src={ClearDark} alt="" />;
+    CopyImg = <img src={CopyDark} alt="" />;
+  }
+  // theme.tabSelected
   return (
-    <StyledButton onClick={props.onClick} title={props.title}>
-      {props.text}
+    <StyledButton onClick={props.onClick} text={props.text} title={props.title}>
+      {props.text === "Clear" ? ClearImg : CopyImg} {props.text}
     </StyledButton>
   );
 };

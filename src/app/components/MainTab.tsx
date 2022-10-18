@@ -2,7 +2,7 @@ import { Flex } from '@chakra-ui/react';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { selectStatus } from '../../features/statusSlice';
-import { MinusDivider, paddingDividers, PlusDivider } from './Dividers';
+import { paddingDividers } from './Dividers';
 import { ExitPanel } from './ExitPanel';
 import { RoutersStats } from './RouterStats';
 import { SpeedStats } from './SpeedStats';
@@ -12,16 +12,13 @@ export const MainTab = (): JSX.Element => {
   const daemonStatus = useSelector(selectStatus);
   return (
     <>
-      <PlusDivider />
 
       <ExitPanel />
-      <MinusDivider />
-
       <Flex
         flexDirection="row"
         justifyContent="space-between"
-        paddingLeft={paddingDividers}
-        paddingRight={paddingDividers}
+        // paddingLeft={paddingDividers}
+        // paddingRight={paddingDividers}
         minWidth="300px"
       >
         <RoutersStats

@@ -24,21 +24,18 @@ const ConnectedStatusContainerWithLogo = styled(ConnectedStatusContainer)`
   height: 20px;
 `;
 
-const ConnectedStatusTitle = styled.span<{ textShadow: string }>`
-  font-family: 'Poppins', sans-serif;
+const ConnectedStatusTitle = styled.span`
   font-style: normal;
-  font-weight: bold;
-  font-size: 1.4rem;
+  font-weight: 600;
+  font-size: 14px;
   text-align: center;
-  user-select: none;
-  text-shadow: ${(props) => props.textShadow};
-`;
+  user-select: none;`;
 
 const ConnectedStatusLED = styled.span<{ ledColor: string }>`
-  width: 1rem;
-  height: 1em;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  margin-left: 1rem;
+  margin-left: 7px;
   background-color: ${(props) => props.ledColor};
 `;
 
@@ -59,7 +56,7 @@ export const ConnectedStatus = (): JSX.Element => {
         : 'UNABLE TO CONNECT';
     return (
       <ConnectedStatusContainer>
-        <ConnectedStatusTitle textShadow="">{errorText}</ConnectedStatusTitle>
+        <ConnectedStatusTitle>{errorText}</ConnectedStatusTitle>
         <ConnectedStatusLED ledColor="#F33232" />
       </ConnectedStatusContainer>
     );
@@ -68,7 +65,7 @@ export const ConnectedStatus = (): JSX.Element => {
   if (globalStatus === 'connecting') {
     return (
       <ConnectedStatusContainer>
-        <ConnectedStatusTitle textShadow="">CONNECTING</ConnectedStatusTitle>
+        <ConnectedStatusTitle>CONNECTING</ConnectedStatusTitle>
         <ConnectedStatusLED ledColor="#EBD619" />
       </ConnectedStatusContainer>
     );
@@ -76,9 +73,7 @@ export const ConnectedStatus = (): JSX.Element => {
   if (globalStatus === 'connected') {
     return (
       <ConnectedStatusContainer>
-        <ConnectedStatusTitle
-          textShadow={themeType == 'light' ? '' : '0px 0px 3px #FFFFFF'}
-        >
+        <ConnectedStatusTitle>
           CONNECTED
         </ConnectedStatusTitle>
         <ConnectedStatusLED ledColor="#37EB19" />
@@ -87,17 +82,15 @@ export const ConnectedStatus = (): JSX.Element => {
   }
   return <>
     <ConnectedStatusContainer>
-      <ConnectedStatusTitle textShadow="">CONNECTING</ConnectedStatusTitle>
+      <ConnectedStatusTitle>CONNECTING</ConnectedStatusTitle>
       <ConnectedStatusLED ledColor="#EBD619" />
     </ConnectedStatusContainer>
-    <ConnectedStatusContainer>
-      <ConnectedStatusTitle
-        textShadow={themeType == 'light' ? '' : '0px 0px 3px #FFFFFF'}
-      >
+    {/* <ConnectedStatusContainer>
+      <ConnectedStatusTitle>
         CONNECTED
       </ConnectedStatusTitle>
       <ConnectedStatusLED ledColor="#37EB19" />
-    </ConnectedStatusContainer>
+    </ConnectedStatusContainer> */}
   </>;
   // <div style={{margin: 'auto'}}>
   //   <img width="235" height="40" src={BelnetLogo} alt="Belnet Logo" />

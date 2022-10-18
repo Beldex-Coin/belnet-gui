@@ -50,7 +50,6 @@ export const SpeedChart = (): JSX.Element => {
 
   return (
     <Flex flexDirection="column" height="100%">
-      <PlusDivider />
       <Flex
         flexDirection="column"
         width="90%"

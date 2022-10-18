@@ -6,23 +6,22 @@ import { useCopyToClipboard } from 'react-use';
 import styled, { useTheme } from 'styled-components';
 import { clearLogs, selectAppLogs } from '../../features/appLogsSlice';
 import { useAppSelector } from '../hooks';
-import { MinusDivider, PlusDivider } from './Dividers';
 import { BelnetIconButton } from './BelnetIconButton';
 import { TextButton } from './TextButton';
 
 const ButtonRow = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 17px;
 `;
 
 const Timestamp = styled.span`
   font-size: 10px;
-  color: ${(props) => props.theme.labelValueColor};
+  color: ${(props) => props.theme.appLogTimeStampColor};
 `;
 
 const Content = styled(Timestamp)`
-  color: ${(props) => props.theme.labelKeyColor};
+  color: ${(props) => props.theme.appLogContentColor};
 `;
 
 export const AppLogs = (): JSX.Element => {
@@ -35,18 +34,16 @@ export const AppLogs = (): JSX.Element => {
   const [_clip, copyToClipboard] = useCopyToClipboard();
 
   return (
-    <Flex flexDirection="column" height="100%">
-      <PlusDivider />
-
+    <Flex flexDirection="column" height="100%" style={{paddingTop: '15px'}}>
       <Code
         size="xs"
         overflowY="auto"
         textAlign="left"
-        maxHeight="70vh"
+        maxHeight="163px"
         display="flex"
         wordBreak="break-all"
-        padding="10px"
-        borderRadius="8px"
+        fontFamily="'Poppins', sans-serif"
+        borderRadius="12px"
         flexDirection="column-reverse"
         flexGrow={1}
         flexShrink={300}
@@ -74,14 +71,12 @@ export const AppLogs = (): JSX.Element => {
           text="Clear"
           title="Clear logs"
         />
-        <BelnetIconButton
+         <TextButton
           onClick={() => copyToClipboard(appLogs.join('\r\n'))}
-          size="30px"
-          icon={<MdOutlineContentCopy />}
+          text="Copy"
           title="Copy to clipboard"
         />
       </ButtonRow>
-      <MinusDivider />
     </Flex>
   );
 };
