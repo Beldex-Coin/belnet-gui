@@ -18,6 +18,7 @@ import { downloadColorChart, uploadColorChart } from './SpeedChart';
 const GeneralInfoLabelKey = styled.div`
   color: ${(props) => props.theme.labelKeyColor};
   padding-inline-end: 5px;
+  font-size: 12px;
   user-select: none;
   white-space: nowrap;
   font-family: 'Poppins', sans-serif;
@@ -38,6 +39,8 @@ const GeneralInfoLabelValue = styled(GeneralInfoLabelKey)<{
 const StyledLabelSubtle = styled.div`
   color: ${(props) => props.theme.labelValueColor};
   padding-inline-end: 5px;
+  font-size: 13px;
+  line-height: 20px;
   user-select: none;
   white-space: nowrap;
   font-family: 'Poppins', sans-serif;

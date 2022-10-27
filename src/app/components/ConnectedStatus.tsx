@@ -1,5 +1,7 @@
 import React from 'react';
 import BelnetLogo from '../../../images/Belnet.svg';
+import LineWhite from '../../../images/line_white.svg';
+import LineDark from '../../../images/line_dark.svg';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { selectedTheme } from '../../features/uiStatusSlice';
@@ -9,14 +11,16 @@ import {
 } from '../hooks/connectingStatus';
 
 const ConnectedStatusContainer = styled.div`
-  height: 40px;
   display: flex;
-  line-height: 25px;
-  margin-top: 0;
-
+  margin: 8px 0 14px;
   justify-content: center;
   align-items: center;
 `;
+
+const TextLineImage = styled.div`
+height: 2px;
+    display: flex;
+    justify-content: center;`;
 
 const ConnectedStatusContainerWithLogo = styled(ConnectedStatusContainer)`
   display: block;
@@ -48,50 +52,67 @@ const StyledLogoAndTitle = styled.svg`
 export const ConnectedStatus = (): JSX.Element => {
   const globalStatus = useGlobalConnectingStatus();
   const themeType = useSelector(selectedTheme);
-  console.log('--globalStatus---', globalStatus);
+  // const lineImage =  themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />;
+
   if (isGlobalStatusError(globalStatus)) {
     const errorText =
       status === 'error-start-stop'
         ? 'FAILED TO START BELNET'
         : 'UNABLE TO CONNECT';
     return (
+      <div>
       <ConnectedStatusContainer>
         <ConnectedStatusTitle>{errorText}</ConnectedStatusTitle>
         <ConnectedStatusLED ledColor="#F33232" />
       </ConnectedStatusContainer>
+       <TextLineImage>
+       {themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />}
+       </TextLineImage>
+       </div>
     );
   }
 
   if (globalStatus === 'connecting') {
     return (
+      <div>
       <ConnectedStatusContainer>
-        <ConnectedStatusTitle>CONNECTING</ConnectedStatusTitle>
+        <ConnectedStatusTitle>Connecting</ConnectedStatusTitle>
         <ConnectedStatusLED ledColor="#EBD619" />
       </ConnectedStatusContainer>
+      <TextLineImage>
+      {themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />}
+      </TextLineImage>
+      </div>
     );
   }
   if (globalStatus === 'connected') {
     return (
+      <div>
       <ConnectedStatusContainer>
-        <ConnectedStatusTitle>
-          CONNECTED
-        </ConnectedStatusTitle>
+        <ConnectedStatusTitle>Connected</ConnectedStatusTitle>
         <ConnectedStatusLED ledColor="#37EB19" />
       </ConnectedStatusContainer>
+      <TextLineImage>
+      {themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />}
+      </TextLineImage>
+      </div>
     );
   }
-  return <>
+  return <div>
     <ConnectedStatusContainer>
-      <ConnectedStatusTitle>CONNECTING</ConnectedStatusTitle>
+      <ConnectedStatusTitle>Connecting</ConnectedStatusTitle>
       <ConnectedStatusLED ledColor="#EBD619" />
     </ConnectedStatusContainer>
+    <TextLineImage>
+    {themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />}
+    </TextLineImage>
     {/* <ConnectedStatusContainer>
       <ConnectedStatusTitle>
         CONNECTED
       </ConnectedStatusTitle>
       <ConnectedStatusLED ledColor="#37EB19" />
     </ConnectedStatusContainer> */}
-  </>;
+  </div>;
   // <div style={{margin: 'auto'}}>
   //   <img width="235" height="40" src={BelnetLogo} alt="Belnet Logo" />
   // </div> 

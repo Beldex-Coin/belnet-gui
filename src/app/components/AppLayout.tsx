@@ -29,7 +29,7 @@ const ConnectionInfo = styled.div`
 export const AppLayout = (): JSX.Element => {
   return (
     <Container>
-    <img src={AnimationDots} style={{position: 'absolute', top: '6%'}} width="auto" height="auto"/>
+    <img src={AnimationDots} style={{position: 'absolute', top: '0%'}} width="auto" height="auto"/>
       <TitleBar />
       <Stack
         padding="0px 25px 0 25px"
