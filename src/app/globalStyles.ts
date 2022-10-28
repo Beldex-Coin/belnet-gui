@@ -53,7 +53,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
     background-color:  ${({ theme }) => theme.backgroundColor};
     background-image: ${({ theme }) => theme.backgroundImage};
     background-repeat: no-repeat;
-    background-position: center 6%;
+    background-position: center 0%;
     background-attachment: fixed;
     color:  ${({ theme }) => theme.labelKeyColor};
     height: 100%;

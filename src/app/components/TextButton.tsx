@@ -12,11 +12,12 @@ const StyledButton = styled.button<{ text: string; theme: DefaultTheme }>`
     background: ${(props) => props.theme.textButtonBg};
     color: ${(props) => props.text === "Clear" ? props.theme.textButtonClearColor : props.theme.tabSelected};
     height: 38px;
+    font-family: 'Poppins', sans-serif;
     width: 125px;
     border-radius: 15px;
     border: ${(props) => props.theme.textButtonBorder};
     ont-weight: 500;
-    font-size: 18px;
+    font-size: 16px;
     margin: 0 10px;
     box-shadow: ${(props) => props.theme.textButtonBoxSh};
 `;

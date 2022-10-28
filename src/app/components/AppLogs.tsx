@@ -17,10 +17,13 @@ const ButtonRow = styled.div`
 
 const Timestamp = styled.span`
   font-size: 10px;
+  display: inline-block;
+  width: 42px;
   color: ${(props) => props.theme.appLogTimeStampColor};
 `;
 
 const Content = styled(Timestamp)`
+  display: inline;
   color: ${(props) => props.theme.appLogContentColor};
 `;
 
@@ -34,9 +37,10 @@ export const AppLogs = (): JSX.Element => {
   const [_clip, copyToClipboard] = useCopyToClipboard();
 
   return (
-    <Flex flexDirection="column" height="100%" style={{paddingTop: '15px'}}>
+    <Flex flexDirection="column" height="100%" style={{paddingTop: '10px'}}>
       <Code
         size="xs"
+        boxShadow={theme.appLogBS}
         overflowY="auto"
         textAlign="left"
         maxHeight="163px"
@@ -55,8 +59,8 @@ export const AppLogs = (): JSX.Element => {
             const timestamp = logLine.substring(0, separator);
             const content = logLine.substring(separator);
             return (
-              <span>
-                <Timestamp>{timestamp}</Timestamp>
+              <span style={{padding: '3px 14px 4px 26px'}}>
+                <Timestamp>{new Date(parseInt(timestamp)).toLocaleTimeString()}</Timestamp>
                 <Content>{content}</Content>
               </span>
             );

@@ -18,5 +18,6 @@ declare module 'styled-components' {
     textButtonBorder: string;
     appLogTimeStampColor: string;
     appLogContentColor: string;
+    appLogBS: string;
   }
 }
