@@ -19,7 +19,12 @@ export const darkTheme = {
   textButtonClearColor: '#f20000',
   textButtonBorder: 'solid 1px #262434',
   appLogTimeStampColor: '#A1A1C1',
-  appLogContentColor: '#FFFFFF'
+  appLogContentColor: '#FFFFFF',
+  activePathColor: '#00A3FF',
+  mainTabInputContainerColor: '#292937',
+  exitNodeIconColor: '#56566F',
+  menuListColor: '#FFFFFF',
+  scrollBar: '#323241'
 
 };
 
@@ -40,6 +45,10 @@ export const lightTheme: DefaultTheme = {
   textButtonClearColor: '#FF3030',
   textButtonBorder: 'solid 1px #d4d4d4',
   appLogTimeStampColor: '#8C8CB1',
-  appLogContentColor: '#222222'
-
+  appLogContentColor: '#222222',
+  activePathColor: '#007BFF',
+  mainTabInputContainerColor: '#FFFFFF',
+  exitNodeIconColor: '#D4D4D4',
+  menuListColor: '#56566F',
+  scrollBar: '#EBEBEB'
 };

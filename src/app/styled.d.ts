@@ -19,5 +19,10 @@ declare module 'styled-components' {
     appLogTimeStampColor: string;
     appLogContentColor: string;
     appLogBS: string;
+    activePathColor: string;
+    mainTabInputContainerColor: string;
+    exitNodeIconColor: string;
+    menuListColor: string;
+    scrollBar: string;
   }
 }

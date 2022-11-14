@@ -26,7 +26,7 @@ export const MainTab = (): JSX.Element => {
           ratio={daemonStatus.ratio}
           numRouters={daemonStatus.numRoutersKnown}
         />
-        <SpeedStats />
+        {/* <SpeedStats /> */}
       </Flex>
     </>
   );

@@ -37,10 +37,6 @@ export const GuiTabs = (): JSX.Element => {
         color: theme.streamLabelColor,
         height: '25px'
       }
-      console.log('--styles--', styles.tab)
-      console.log('--tabProps--', tabProps)
-  
-  
       return (
         <div>
         <Button _selected={selectedStyle} __css={styles.tab} {...tabProps}>
@@ -76,13 +72,13 @@ export const GuiTabs = (): JSX.Element => {
         <Tab _selected={selectedStyle}>Logs</Tab> */}
       </TabList>
       <TabPanels flexGrow={1} padding={1} height="0px">
-        <TabPanel flexGrow={1} padding={2}>
+        <TabPanel flexGrow={1}>
           <MainTab />
         </TabPanel>
-        <TabPanel flexGrow={1} padding={2}>
+        <TabPanel flexGrow={1}>
           <SpeedChart />
         </TabPanel>
-        <TabPanel flexGrow={1} padding={2} height="100%">
+        <TabPanel flexGrow={1} height="100%">
           <AppLogs />
         </TabPanel>
       </TabPanels>

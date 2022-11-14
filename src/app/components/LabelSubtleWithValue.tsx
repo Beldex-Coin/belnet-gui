@@ -163,7 +163,7 @@ const KeyValueWithIconAndPill = (props: {
   pillColor?: string;
 }): JSX.Element => {
   const { label, value, icon, pillColor } = props;
-
+  console.log('-----props---b/s--', props)
   return (
     <Flex
       justifyContent="start"
