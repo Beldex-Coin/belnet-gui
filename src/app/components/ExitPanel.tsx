@@ -140,8 +140,6 @@ export const ExitPanel = (): JSX.Element => {
   const handleChange = (e: any) => {
     if (e) {
       dispatch(onUserExitNodeSet(e.value))
-
-      console.log(e.value);
     }
   };
   const exitNode = [

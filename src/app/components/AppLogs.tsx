@@ -18,7 +18,7 @@ const ButtonRow = styled.div`
 const Timestamp = styled.span`
   font-size: 10px;
   display: inline-block;
-  width: 42px;
+  width: 48px;
   color: ${(props) => props.theme.appLogTimeStampColor};
 `;
 

@@ -61,7 +61,7 @@ export const RoutersStats = ({
         <RouterValue type="count">12</RouterValue>
       </RouterLabel>
       <RouterLabel>
-        <svg height="auto" width="8">
+        <svg height="21" width="8">
           <circle cx="2" cy="12" r="2" stroke-width="1" fill="#A1A1C1" />
         </svg>
       </RouterLabel>
@@ -69,7 +69,7 @@ export const RoutersStats = ({
         <RouterValue type="paths">13</RouterValue>
       </RouterLabel>
       <RouterLabel>
-        <svg height="auto" width="8">
+        <svg height="21" width="8">
           <circle cx="2" cy="12" r="2" stroke-width="1" fill="#A1A1C1" />
         </svg>
       </RouterLabel>

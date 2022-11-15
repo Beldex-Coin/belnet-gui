@@ -25,8 +25,6 @@ export const PowerButtonIcon = (): JSX.Element => {
 
   const authCodeFromUser = useSelector(selectAuthCodeFromUser);
   const exitNodeFromUser = useSelector(selectExitNodeFromUser);
-console.log('-authCodeFromUser---', authCodeFromUser);
-console.log('-exitNodeFromUser---', exitNodeFromUser);
   const setPowerStatus = () => {
       if (connectingStatus === 'connecting' || connectingStatus === 'error-start-stop') {
         return;

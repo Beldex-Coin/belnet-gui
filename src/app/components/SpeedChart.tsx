@@ -1,7 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { useTheme } from 'styled-components';
+import styled, { DefaultTheme, useTheme } from 'styled-components';
 import {
   VictoryChart,
   VictoryGroup,
@@ -9,13 +9,62 @@ import {
   VictoryAxis,
   VictoryLabel
 } from 'victory';
-import { makeRate, selectStatus } from '../../features/statusSlice';
-import { PlusDivider } from './Dividers';
+import { selectedTheme } from '../../features/uiStatusSlice';
 import {
-  DownSpeedWithPillAndIcon,
-  UpSpeedWithPillAndIcon
-} from './LabelSubtleWithValue';
+  makeRate, selectStatus,
+  selectDownloadRate,
+  selectUploadRate
+} from '../../features/statusSlice';
+import DownloadWhiteIcon from '../../../images/download_white.svg';
+import DownloadDarkIcon from '../../../images/download_dark.svg';
+import UploadWhiteIcon from '../../../images/upload_white.svg';
+import UploadDarkIcon from '../../../images/upload_dark.svg';
 
+
+
+const UploadDownloadIcon = styled.img`
+height: 11px;
+width: 9px;
+margin-right: 8px;
+`;
+
+const SpeedLabel = styled.span`
+  line-height: 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0 5px;`;
+const DownSpeedValue = styled.span`
+  font-size: 18px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  border-left: solid 1px #747484;
+  padding: 0 5px;
+  color: ${(props) => props.theme.tabSelected};
+`;
+const DownSpeedUnit = styled.span`
+  font-size: 12px;
+  font-weight: 300;
+  padding-right: 4px;
+  font-family: 'Poppins', sans-serif;
+  color: ${(props) => props.theme.tabSelected};
+`;
+
+const UploadSpeedValue = styled.span`
+  font-size: 18px;
+  font-weight: 600;
+  border-left: solid 1px #747484;
+  padding: 0 5px;
+  font-family: 'Poppins', sans-serif;
+  color: ${(props) => props.theme.activePathColor};
+  `;
+const UploadSpeedUnit = styled.span`
+  font-size: 12px;
+  font-weight: 300;
+  padding-right: 4px;
+  font-family: 'Poppins', sans-serif;
+  color: ${(props) => props.theme.activePathColor};
+  `;
 export type NumberQueue = Array<number>;
 export type SpeedHistoryDataType = {
   upload: NumberQueue;
@@ -26,12 +75,13 @@ export type SpeedHistoryDataType = {
 
 export const MAX_NUMBER_POINT_HISTORY = 60; // 1 minute as there is 2 points per sec currently
 
-export const uploadColorChart = '#37EB19';
-export const downloadColorChart = '#F33232';
-
 export const SpeedChart = (): JSX.Element => {
   const daemonStatus = useSelector(selectStatus);
   const theme = useTheme();
+  const themeType = useSelector(selectedTheme);
+  const upSpeed = useSelector(selectUploadRate);
+  const downSpeed = useSelector(selectDownloadRate);
+
   const uploadCoordinates = daemonStatus.speedHistory.upload.map((y, index) => {
     return {
       x: index,
@@ -52,10 +102,9 @@ export const SpeedChart = (): JSX.Element => {
     <Flex flexDirection="column" height="100%">
       <Flex
         flexDirection="column"
-        width="90%"
         alignItems="center"
-        margin="0 auto"
         maxWidth="500px"
+        width="100%"
       >
         <VictoryChart
           animate={false}
@@ -100,13 +149,13 @@ export const SpeedChart = (): JSX.Element => {
           >
             <VictoryArea
               style={{
-                data: { stroke: downloadColorChart, fill: downloadColorChart }
+                data: { stroke: theme.tabSelected, fill: theme.tabSelected }
               }}
               data={downloadCoordinates}
             />
             <VictoryArea
               style={{
-                data: { stroke: uploadColorChart, fill: uploadColorChart }
+                data: { stroke: theme.activePathColor, fill: theme.activePathColor }
               }}
               data={uploadCoordinates}
             />
@@ -116,11 +165,26 @@ export const SpeedChart = (): JSX.Element => {
           direction="row"
           width="100%"
           alignSelf="center"
-          padding="0 0 15px 0"
-          justifyContent="space-evenly"
+          justifyContent="space-between"
         >
-          <UpSpeedWithPillAndIcon />
-          <DownSpeedWithPillAndIcon />
+          <div>
+            <svg height="16" width="5">
+              <circle cx="2" cy="12" r="2.5" stroke-width="1" fill={theme.tabSelected} />
+            </svg>
+            <SpeedLabel>Download</SpeedLabel>
+            {themeType === 'light' ? <UploadDownloadIcon src={DownloadWhiteIcon} alt="" /> : <UploadDownloadIcon src={DownloadDarkIcon} alt="" />}
+            <DownSpeedValue>{downSpeed.split(' ')[0]}</DownSpeedValue>
+            <DownSpeedUnit>{`${downSpeed.split(' ')[1]}ps`}</DownSpeedUnit>
+          </div>
+          <div>
+            <svg height="16" width="5">
+              <circle cx="2" cy="12" r="2.5" stroke-width="1" fill={theme.activePathColor} />
+            </svg>
+            <SpeedLabel>Upload</SpeedLabel>
+            {themeType === 'light' ? <UploadDownloadIcon src={UploadWhiteIcon} alt="" /> : <UploadDownloadIcon src={UploadDarkIcon} alt="" />}
+            <UploadSpeedValue> {upSpeed.split(' ')[0]}</UploadSpeedValue>
+            <UploadSpeedUnit> {`${upSpeed.split(' ')[1]}ps`}</UploadSpeedUnit>
+          </div>
         </Flex>
       </Flex>
     </Flex>

@@ -162,17 +162,17 @@ export const selectDownloadRate = createSelector(selectStatus, (status) =>
 
 export function makeRate(originalValue: number, forceMBUnit = false): string {
   let unit_idx = 0;
-  const units = ['B', 'KB', 'MB'];
+  const units = ['b', 'Kb', 'Mb'];
 
   if (forceMBUnit) {
-    return `${(originalValue / (1024 * 1024)).toFixed(2)} ${units[2]}/s`;
+    return `${(originalValue / (1024 * 1024)).toFixed(2)} ${units[2]}`;
   }
   let value = originalValue;
   while (value > 1024.0 && unit_idx + 1 < units.length) {
     value /= 1024.0;
     unit_idx += 1;
   }
-  const unitSpeed = ` ${units[unit_idx]}/s`;
+  const unitSpeed = ` ${units[unit_idx]}`;
 
   return value.toFixed(1) + unitSpeed;
 }

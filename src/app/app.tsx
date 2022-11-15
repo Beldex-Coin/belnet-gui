@@ -101,7 +101,6 @@ const useSummaryStatusPolling = () => {
       }
       dispatch(markInitialLoadingFinished());
     } catch (e) {
-      console.log('getSummaryStatus() failed');
       dispatch(markAsStopped());
       dispatch(markInitialLoadingFinished());
 
