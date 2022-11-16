@@ -50,7 +50,7 @@ export const GuiTabs = (): JSX.Element => {
     <Tabs
       height="0px"
       width="100%"
-      padding="12px 5px 0 5px"
+      padding="12px 0 0"
       display="flex"
       flexDir="column"
       flexGrow={1}

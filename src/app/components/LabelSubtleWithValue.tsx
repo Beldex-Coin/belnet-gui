@@ -2,18 +2,12 @@ import { Flex } from '@chakra-ui/react';
 import React from 'react';
 import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 import styled, { DefaultTheme } from 'styled-components';
-import { MdOutlineContentCopy } from 'react-icons/md';
 import { FiDownloadCloud, FiUploadCloud } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
-import {
-  selectDownloadRate,
-  selectUploadRate
-} from '../../features/statusSlice';
 import { selectedTheme, } from '../../features/uiStatusSlice';
 
 import  {DarkThemeCopyButton}  from './ThemeChangeButton/DarkThemeCopyButton';
 import  {LightThemeCopyButton}  from './ThemeChangeButton/LightThemeCopyButton';
-import { downloadColorChart, uploadColorChart } from './SpeedChart';
 
 const GeneralInfoLabelKey = styled.div`
   color: ${(props) => props.theme.labelKeyColor};

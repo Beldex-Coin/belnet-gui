@@ -25,7 +25,7 @@ import UploadDarkIcon from '../../../images/upload_dark.svg';
 const UploadDownloadIcon = styled.img`
 height: 11px;
 width: 9px;
-margin-right: 8px;
+margin-right: 5px;
 `;
 
 const SpeedLabel = styled.span`
@@ -34,18 +34,18 @@ const SpeedLabel = styled.span`
   font-size: 14px;
   font-weight: 500;
   padding: 0 5px;`;
+
 const DownSpeedValue = styled.span`
   font-size: 18px;
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
   border-left: solid 1px #747484;
-  padding: 0 5px;
+  padding: 0 4px;
   color: ${(props) => props.theme.tabSelected};
 `;
 const DownSpeedUnit = styled.span`
   font-size: 12px;
   font-weight: 300;
-  padding-right: 4px;
   font-family: 'Poppins', sans-serif;
   color: ${(props) => props.theme.tabSelected};
 `;
@@ -54,14 +54,13 @@ const UploadSpeedValue = styled.span`
   font-size: 18px;
   font-weight: 600;
   border-left: solid 1px #747484;
-  padding: 0 5px;
+  padding: 0 4px;
   font-family: 'Poppins', sans-serif;
   color: ${(props) => props.theme.activePathColor};
   `;
 const UploadSpeedUnit = styled.span`
   font-size: 12px;
   font-weight: 300;
-  padding-right: 4px;
   font-family: 'Poppins', sans-serif;
   color: ${(props) => props.theme.activePathColor};
   `;
@@ -120,9 +119,9 @@ export const SpeedChart = (): JSX.Element => {
             }
           }}
           minDomain={{ x: 0, y: 1 }}
-          width={500}
+          width={510}
           height={300}
-          padding={{ left: 80, top: 20, right: 0, bottom: 30 }}
+          padding={{ left: 40, top: 0, right: 0, bottom: 25 }}
         >
           <VictoryAxis
             dependentAxis={true}
@@ -151,12 +150,14 @@ export const SpeedChart = (): JSX.Element => {
               style={{
                 data: { stroke: theme.tabSelected, fill: theme.tabSelected }
               }}
+              interpolation="natural"
               data={downloadCoordinates}
             />
             <VictoryArea
               style={{
                 data: { stroke: theme.activePathColor, fill: theme.activePathColor }
               }}
+              interpolation="natural"
               data={uploadCoordinates}
             />
           </VictoryGroup>
@@ -166,6 +167,7 @@ export const SpeedChart = (): JSX.Element => {
           width="100%"
           alignSelf="center"
           justifyContent="space-between"
+          margin="5px 0 0"
         >
           <div>
             <svg height="16" width="5">
@@ -182,8 +184,8 @@ export const SpeedChart = (): JSX.Element => {
             </svg>
             <SpeedLabel>Upload</SpeedLabel>
             {themeType === 'light' ? <UploadDownloadIcon src={UploadWhiteIcon} alt="" /> : <UploadDownloadIcon src={UploadDarkIcon} alt="" />}
-            <UploadSpeedValue> {upSpeed.split(' ')[0]}</UploadSpeedValue>
-            <UploadSpeedUnit> {`${upSpeed.split(' ')[1]}ps`}</UploadSpeedUnit>
+            <UploadSpeedValue>{upSpeed.split(' ')[0]}</UploadSpeedValue>
+            <UploadSpeedUnit>{`${upSpeed.split(' ')[1]}ps`}</UploadSpeedUnit>
           </div>
         </Flex>
       </Flex>

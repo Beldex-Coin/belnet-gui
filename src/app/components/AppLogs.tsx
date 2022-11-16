@@ -48,7 +48,7 @@ export const AppLogs = (): JSX.Element => {
         wordBreak="break-all"
         fontFamily="'Poppins', sans-serif"
         borderRadius="12px"
-        flexDirection="column-reverse"
+        flexDirection="column"
         flexGrow={1}
         flexShrink={300}
         backgroundColor={theme.inputBackground}
@@ -60,8 +60,8 @@ export const AppLogs = (): JSX.Element => {
             const content = logLine.substring(separator);
             return (
               <span style={{padding: '3px 14px 4px 26px'}}>
-                <Timestamp>{new Date(parseInt(timestamp)).toLocaleTimeString()}</Timestamp>
-                <Content>{content}</Content>
+                <Timestamp>{new Date(parseInt(timestamp)).toLocaleTimeString()}:</Timestamp>
+                <Content>{content.replace(': ','')}</Content>
               </span>
             );
           })

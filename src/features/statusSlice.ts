@@ -165,7 +165,7 @@ export function makeRate(originalValue: number, forceMBUnit = false): string {
   const units = ['b', 'Kb', 'Mb'];
 
   if (forceMBUnit) {
-    return `${(originalValue / (1024 * 1024)).toFixed(2)} ${units[2]}`;
+    return `${(originalValue / (1024 * 1024)).toFixed(1)} ${units[2]}`;
   }
   let value = originalValue;
   while (value > 1024.0 && unit_idx + 1 < units.length) {

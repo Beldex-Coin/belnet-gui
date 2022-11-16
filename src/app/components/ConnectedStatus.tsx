@@ -58,7 +58,7 @@ export const ConnectedStatus = (): JSX.Element => {
     const errorText =
       status === 'error-start-stop'
         ? 'FAILED TO START BELNET'
-        : 'UNABLE TO CONNECT';
+        : 'DISCONNECTED';
     return (
       <div>
       <ConnectedStatusContainer>
