@@ -1,7 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import styled, { DefaultTheme, useTheme } from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import {
   VictoryChart,
   VictoryGroup,
@@ -19,8 +19,6 @@ import DownloadWhiteIcon from '../../../images/download_white.svg';
 import DownloadDarkIcon from '../../../images/download_dark.svg';
 import UploadWhiteIcon from '../../../images/upload_white.svg';
 import UploadDarkIcon from '../../../images/upload_dark.svg';
-
-
 
 const UploadDownloadIcon = styled.img`
 height: 11px;

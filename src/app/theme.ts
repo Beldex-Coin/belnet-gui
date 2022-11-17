@@ -24,7 +24,11 @@ export const darkTheme = {
   mainTabInputContainerColor: '#292937',
   exitNodeIconColor: '#56566F',
   menuListColor: '#FFFFFF',
-  scrollBar: '#323241'
+  scrollBar: '#323241',
+  aboutLabel: '#AEAEBC',
+  modalBg: '#252532',
+  aboutBelnetColor: '#23DC27'
+
 
 };
 
@@ -50,5 +54,8 @@ export const lightTheme: DefaultTheme = {
   mainTabInputContainerColor: '#FFFFFF',
   exitNodeIconColor: '#D4D4D4',
   menuListColor: '#56566F',
-  scrollBar: '#EBEBEB'
+  scrollBar: '#EBEBEB',
+  aboutLabel: '#747484',
+  modalBg: '#EBEBEB',
+  aboutBelnetColor: '#1DC021'
 };

@@ -24,5 +24,8 @@ declare module 'styled-components' {
     exitNodeIconColor: string;
     menuListColor: string;
     scrollBar: string;
+    aboutLabel: string;
+    modalBg: string;
+    aboutBelnetColor: string;
   }
 }

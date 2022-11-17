@@ -1,11 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-
 import { useSelector } from 'react-redux';
 import { selectedTheme } from '../../features/uiStatusSlice';
-import {
-    selectDownloadRate,
-  } from '../../features/statusSlice';
+import { selectDownloadRate } from '../../features/statusSlice';
 import DownloadWhiteIcon from '../../../images/download_white.svg';
 import DownloadDarkIcon from '../../../images/download_dark.svg';
 

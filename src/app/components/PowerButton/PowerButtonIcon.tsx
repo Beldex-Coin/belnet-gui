@@ -14,11 +14,9 @@ import LightThemePowerOn from "./power_on_white.svg";
 import LightThemePowerOff from "./power_off_white.svg";
 
 export const PowerButtonIcon = (): JSX.Element => {
-  const globalStatus = useGlobalConnectingStatus();
   const theme = useTheme();
   const themeType = useSelector(selectedTheme);
   const [power_on, setPowerOn] = useState(false);
-  // 
 
   const connectingStatus = useGlobalConnectingStatus();
   const dispatch = useDispatch();

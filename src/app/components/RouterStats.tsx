@@ -1,7 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { LabelSubtleWithValue } from './LabelSubtleWithValue';
-
 
 const RouterHeading = styled.div`
 color: ${(props) => props.theme.appLogContentColor};

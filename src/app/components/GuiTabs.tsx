@@ -5,7 +5,6 @@ import { useTheme } from 'styled-components';
 import {
   selectSelectedTab,
   setTabSelected,
-  TabIndex
 } from '../../features/uiStatusSlice';
 import { AppLogs } from './AppLogs';
 import { MainTab } from './MainTab';
@@ -25,7 +24,7 @@ export const GuiTabs = (): JSX.Element => {
     fontSize: '18px'
   };
 
-  const CustomTab = React.forwardRef((props) => {
+  const CustomTab = React.forwardRef((props: any) => {
       // 1. Reuse the `useTab` hook
       const tabProps = useTab({ ...props})
       // 2. Hook into the Tabs `size`, `variant`, props
@@ -64,12 +63,9 @@ export const GuiTabs = (): JSX.Element => {
       variant="unstyled"
     >
       <TabList justifyContent="space-evenly">
-        {/* <Tab _selected={selectedStyle}>Main</Tab> */}
         <CustomTab >Main</CustomTab>
         <CustomTab >Chart</CustomTab>
         <CustomTab >Logs</CustomTab>
-        {/* <Tab _selected={selectedStyle}>Chart</Tab>
-        <Tab _selected={selectedStyle}>Logs</Tab> */}
       </TabList>
       <TabPanels flexGrow={1} padding={1} height="0px">
         <TabPanel flexGrow={1}>

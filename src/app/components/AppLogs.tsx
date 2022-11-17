@@ -1,12 +1,10 @@
 import { Code, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
-import { MdOutlineContentCopy } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useCopyToClipboard } from 'react-use';
 import styled, { useTheme } from 'styled-components';
 import { clearLogs, selectAppLogs } from '../../features/appLogsSlice';
 import { useAppSelector } from '../hooks';
-import { BelnetIconButton } from './BelnetIconButton';
 import { TextButton } from './TextButton';
 
 const ButtonRow = styled.div`

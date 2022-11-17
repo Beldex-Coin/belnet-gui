@@ -1,15 +1,17 @@
 import React from 'react';
+import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 import  {LightThemeButton}  from './ThemeChangeButton/LightThemeButton';
 import  {DarkThemeButton}  from './ThemeChangeButton/DarkThemeButton';
 import  {LightThemeCloseBtn}  from './ThemeChangeButton/LightThemeCloseBtn';
+import  {LightThemeMinimizeBtn}  from './ThemeChangeButton/LightThemeMinimizeBtn';
+import  {DarkThemeMinimizeBtn}  from './ThemeChangeButton/DarkThemeMinimizeBtn';
 import  {DarkThemeCloseBtn}  from './ThemeChangeButton/DarkThemeCloseBtn';
-import { RiCloseFill } from 'react-icons/ri';
-import styled from 'styled-components';
-
 import { selectedTheme, setTheme } from '../../features/uiStatusSlice';
-import { useDispatch, useSelector } from 'react-redux';
 import { minimizeToTray } from '../../ipc/ipcRenderer';
-
+import {
+  useGlobalConnectingStatus
+} from '../hooks/connectingStatus';
 const Container = styled.div`
   z-index: 99;
   position: sticky;
@@ -41,6 +43,10 @@ const StyledIconButton = styled.button`
 export const TitleBar = (): JSX.Element => {
   const themeSelected = useSelector(selectedTheme);
   const dispatch = useDispatch();
+  const globalStatus = useGlobalConnectingStatus();
+  const closeButton = themeSelected === 'light' ?  <LightThemeCloseBtn /> : <DarkThemeCloseBtn/>;
+  const minimizeButton = themeSelected === 'light' ?  <LightThemeMinimizeBtn /> : <DarkThemeMinimizeBtn/>;
+      
   return (
     <Container>
       <StyledIconButton
@@ -54,7 +60,7 @@ export const TitleBar = (): JSX.Element => {
       </StyledIconButton>
 
       <StyledIconButton title="Minimize to tray" onClick={minimizeToTray}>
-      {themeSelected === 'light' ?  <LightThemeCloseBtn /> : <DarkThemeCloseBtn/>}
+        {globalStatus === 'connected' ? minimizeButton : closeButton}
       </StyledIconButton>
     </Container>
   );

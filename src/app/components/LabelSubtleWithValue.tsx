@@ -5,7 +5,6 @@ import styled, { DefaultTheme } from 'styled-components';
 import { FiDownloadCloud, FiUploadCloud } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
 import { selectedTheme, } from '../../features/uiStatusSlice';
-
 import  {DarkThemeCopyButton}  from './ThemeChangeButton/DarkThemeCopyButton';
 import  {LightThemeCopyButton}  from './ThemeChangeButton/LightThemeCopyButton';
 
@@ -55,14 +54,12 @@ const InlineIconButton = styled.button<{ size: string; theme: DefaultTheme }>`
   height: ${(props) => props.size};
   color: ${(props) => props.theme.labelKeyColor};
   background: none;
-
   flex-shrink: 0;
   border: none;
   cursor: pointer;
-
   transition: 0.25s linear;
   border-radius: 7px;
-
+  margin-left: auto;
   :hover {
     color: ${(props) => props.theme.labelValueColor};
   }
