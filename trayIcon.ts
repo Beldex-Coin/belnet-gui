@@ -11,8 +11,8 @@ export function createTrayIcon(
   // keep the duplicated part to allow for search and find
   const iconFile =
     process.platform === 'darwin'
-      ? 'belnet_logo.png'
-      : 'belnet_logo.png';
+      ? 'belnet_logo*16.png'
+      : 'belnet_logo*32.png';
 
   const icon = join(__dirname, '../', 'images', iconFile);
   tray = new Tray(icon);
