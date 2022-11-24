@@ -59,7 +59,7 @@ async function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       devTools: true,
-      webSecurity: false,
+      webSecurity: true,
     },
     backgroundColor: '#fff',
     autoHideMenuBar: true,
