@@ -167,7 +167,7 @@ export function makeRate(originalValue: number, forceMBUnit = false): string {
   if (forceMBUnit) {
     return `${(originalValue / (1024 * 1024)).toFixed(1)} ${units[2]}`;
   }
-  let value = originalValue;
+  let value = (originalValue * 8);
   while (value > 1024.0 && unit_idx + 1 < units.length) {
     value /= 1024.0;
     unit_idx += 1;

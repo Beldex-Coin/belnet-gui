@@ -42,7 +42,7 @@ async function createWindow() {
       validScreenIndexToUse = screenIndexFromStore;
     }
   }
-  const openDevTools = true;
+  const openDevTools = false;
 
   const isDev = process.env.NODE_ENV === 'development';
   const indexToUse = validScreenIndexToUse || 0;
@@ -59,7 +59,7 @@ async function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       devTools: true,
-      webSecurity: true,
+      webSecurity: false,
     },
     backgroundColor: '#fff',
     autoHideMenuBar: true,

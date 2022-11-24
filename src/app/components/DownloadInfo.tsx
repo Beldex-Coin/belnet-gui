@@ -35,7 +35,6 @@ const LabelWrapper = styled.div`
     width: 65px;
     position: absolute;
     bottom: 0;
-    text-align: right;
 `;
 export const DownloadInfo = (): JSX.Element => {
     const themeType = useSelector(selectedTheme);

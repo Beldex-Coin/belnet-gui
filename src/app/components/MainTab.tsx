@@ -10,6 +10,7 @@ import AboutIconDark from '../../../images/about_dark.svg';
 import AboutIconWhite from '../../../images/about_white.svg';
 import AboutCloseIconDark from '../../../images/about_close_dark.svg';
 import AboutCloseIconWhite from '../../../images/about_close_white.svg';
+const { shell } = require('electron')
 
 const AboutText = styled.div`
 font-size: 14px;
@@ -81,6 +82,7 @@ line-height: 20px;
 const Anchor = styled.a`
 color: #2d93f7;
 word-break: break-all;
+cursor: pointer;
 `;
 const Heading = styled.h3`
 font-size: 14px;
@@ -116,8 +118,11 @@ export const MainTab = (): JSX.Element => {
   const themeType = useSelector(selectedTheme);
   const [openModal, isOpen] = useState(false);
   const openAboutModal = () => {
-    console.log('---open About Modal---');
     isOpen(true);
+  }
+
+  const openExternalLink = (path: any) => {
+    shell.openExternal(path)
   }
 
   return (
@@ -182,7 +187,7 @@ export const MainTab = (): JSX.Element => {
           <Para>There are currently three active exit nodes maintained by the Beldex foundation. They are located in the Netherlands (2) and France (1).</Para>
           <br/>
           <Heading>Can you set up an exit node?</Heading>
-          <Para>Yes, anyone can set up an exit node. Check the <Anchor href="https://belnet.beldex.io/">BelNet</Anchor> website for complete documentation on how to set up an exit node.</Para>
+          <Para>Yes, anyone can set up an exit node. Check the <Anchor onClick={() => openExternalLink("https://belnet.beldex.io/")}>BelNet</Anchor> website for complete documentation on how to set up an exit node.</Para>
           <br/>
           <Para>Exit node contributors will be rewarded and their node will be added to the BelNet app.</Para>
           <br/>
@@ -195,7 +200,7 @@ export const MainTab = (): JSX.Element => {
           <br/>
           <Para>Below is a sample MNApp that you can access by enabling BelNet:</Para>
           <br/>
-          <Para><Anchor href="http://cw41adqqhykuxw51xmagkkb3fixyieat1josbux13jn6o973tqgy.bdx">http://cw41adqqhykuxw51xmagkkb3fixyieat1josbux13jn6o973tqgy.bdx/</Anchor></Para>
+          <Para><Anchor onClick={() => openExternalLink("http://cw41adqqhykuxw51xmagkkb3fixyieat1josbux13jn6o973tqgy.bdx")}>http://cw41adqqhykuxw51xmagkkb3fixyieat1josbux13jn6o973tqgy.bdx/</Anchor></Para>
           <br/>
           <Heading>What are BNS Names?</Heading>
           <Para>BNS stands for Beldex Name Service. BNS names are human readable domain names on BelNet. BNS is a censorship-free, decentralized, unstoppable domain name service. </Para>

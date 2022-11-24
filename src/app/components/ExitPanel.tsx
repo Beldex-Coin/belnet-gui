@@ -7,6 +7,7 @@ import {
   onUserExitNodeSet,
   selectExitStatus
 } from '../../features/exitStatusSlice';
+import AsyncCreatableSelect from 'react-select/async-creatable';
 import CreatableSelect from "react-select/creatable";
 import { selectedTheme, setTheme } from '../../features/uiStatusSlice';
 import Select, { components, DropdownIndicatorProps, IndicatorSeparatorProps } from 'react-select';
@@ -119,10 +120,28 @@ const colourStyles = {
     })
   },
 }
+const promiseOptions = () =>
+  new Promise<[]>((resolve) => {
+    fetch("https://testdeb.beldex.io/Beldex-Projects/Belnet/android/exitlist/exitlist.json")
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+
+      const exitNodeArr = data.map((item: any) => {
+        return {
+          value: item.name,
+          label: item.name
+        }
+      })
+      console.log(exitNodeArr);
+      resolve(exitNodeArr)
+    })
+  });
 
 
 export const ExitPanel = (): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [exitNode, setExitNode] = useState([]);
   const exitStatus = useSelector(selectExitStatus);
   const dispatch = useAppDispatch();
   const theme = useTheme();
@@ -142,11 +161,7 @@ export const ExitPanel = (): JSX.Element => {
       dispatch(onUserExitNodeSet(e.value))
     }
   };
-  const exitNode = [
-    { value: "iyu3gajuzumj573tdy54sjs7b94fbqpbo3o44msrba4zez1o4p3o.bdx", label: "iyu3gajuzumj573tdy54sjs7b94fbqpbo3o44msrba4zez1o4p3o.bdx" },
-    { value: "a6iiyy3c4qsp8kdt49ao79dqxskd81eejidhq9j36d8oodznibqy.bdx", label: "a6iiyy3c4qsp8kdt49ao79dqxskd81eejidhq9j36d8oodznibqy.bdx" },
-    { value: "snoq7arak4d5mkpfsg69saj7bp1ikxyzqjkhzb96keywn6iyhc5y.bdx", label: "snoq7arak4d5mkpfsg69saj7bp1ikxyzqjkhzb96keywn6iyhc5y.bdx" },
-  ];
+  
 
   const onMenuOpen = () => setIsMenuOpen(true);
   const onMenuClose = () => setIsMenuOpen(false);
@@ -184,11 +199,14 @@ export const ExitPanel = (): JSX.Element => {
             noOfLines={1}
             value={exitToUse || ''}
           /> :
-            <CreatableSelect
+            <AsyncCreatableSelect
               isDisabled={disableInputEdits}
               isClearable={isMenuOpen}
               onChange={handleChange}
-              options={exitNode}
+              // options={exitNode}
+              cacheOptions
+              defaultOptions
+              loadOptions={promiseOptions}
               styles={colourStyles}
               onMenuOpen={onMenuOpen}
               onMenuClose={onMenuClose}

@@ -22,7 +22,7 @@ const initialStatusState: ExitStatusState = {
   // default to true to let the user know we are fetching data on app load
   exitLoading: true,
   initialLoadingFinished: false,
-  exitNodeFromUser: '8zhrwu36op5y6kz51qbwzgde1wrnhzmf8y14u7whmaiao3njn11y.beldex',
+  exitNodeFromUser: 'snoq7arak4d5mkpfsg69saj7bp1ikxyzqjkhzb96keywn6iyhc5y.bdx',
   exitAuthCodeFromUser: undefined,
   exitNodeFromDaemon: undefined,
   exitAuthCodeFromDaemon: undefined

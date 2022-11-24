@@ -25,14 +25,16 @@ export const PowerButtonIcon = (): JSX.Element => {
   const exitNodeFromUser = useSelector(selectExitNodeFromUser);
   const setPowerStatus = () => {
       if (connectingStatus === 'connecting' || connectingStatus === 'error-start-stop') {
+        setPowerOn(!power_on);
         return;
       }
       if (connectingStatus === 'connected') {
+        setPowerOn(!power_on);
         turnExitOff(dispatch);
       } else {
+        setPowerOn(!power_on);
         turnExitOn(dispatch, exitNodeFromUser, authCodeFromUser);
       }
-      setPowerOn(!power_on);
   }
   return (
     <>

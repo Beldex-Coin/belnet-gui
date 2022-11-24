@@ -56,7 +56,7 @@ export const RoutersStats = ({
     <RouterHeading>Routers</RouterHeading>
     <RouterDetailsWrapper>
       <RouterLabel> Total Count:
-        <RouterValue type="count">12</RouterValue>
+        <RouterValue type="count">{numRouters}</RouterValue>
       </RouterLabel>
       <RouterLabel>
         <svg height="21" width="8">
@@ -64,7 +64,7 @@ export const RoutersStats = ({
         </svg>
       </RouterLabel>
       <RouterLabel> Active Paths:
-        <RouterValue type="paths">13</RouterValue>
+        <RouterValue type="paths">{activePaths}</RouterValue>
       </RouterLabel>
       <RouterLabel>
         <svg height="21" width="8">
@@ -72,7 +72,7 @@ export const RoutersStats = ({
         </svg>
       </RouterLabel>
       <RouterLabel> Success:
-        <RouterValue type="success">64%</RouterValue>
+        <RouterValue type="success">{ratio}</RouterValue>
       </RouterLabel>
     </RouterDetailsWrapper>
   </div>
