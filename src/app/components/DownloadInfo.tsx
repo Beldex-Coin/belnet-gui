@@ -28,13 +28,14 @@ const SpeedUnit = styled.span`
 const SpeedValue = styled.p`
     font-size: 16px;
     font-weight: 600;
+    padding-top: 3px;
     color: ${(props) => props.theme.streamLabelColor};
 `;
 
 const LabelWrapper = styled.div`
     width: 65px;
     position: absolute;
-    bottom: 0;
+    bottom: 20px;
 `;
 export const DownloadInfo = (): JSX.Element => {
     const themeType = useSelector(selectedTheme);

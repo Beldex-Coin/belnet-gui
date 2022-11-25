@@ -66,7 +66,7 @@ const ModalHeaderBelnetLabel = styled.span`
 `;
 const ModalBody = styled.div`
   height: 226px;
-  overflow: scroll;
+  overflow: hidden scroll;
   padding-bottom: 25px;
 `;
 

@@ -83,6 +83,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
 
   ::-webkit-scrollbar {
     width: 6px;
+    height: 20px;
   }
 
   ::-webkit-scrollbar-track {

@@ -4,7 +4,7 @@ import DesktopMapDark from '../../images/Desktop_map_dark.svg';
 
 export const darkTheme = {
   backgroundImage: `url(${DesktopMapDark})`,
-  backgroundColor: '#181821',
+  backgroundColor: '#1d1d27',
   backgroundOpacity: 'rgba(24, 24, 33, 0)',
   labelKeyColor: '#747484',
   overlayBackground: 'linear-gradient(#20202B, #1C1C26)',
