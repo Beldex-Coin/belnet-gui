@@ -64,6 +64,12 @@ export const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
     transition: 0.25s linear;
     transition: width 0s;
     text-rendering: optimizeLegibility;
+    -webkit-touch-callout: none;
+  -webkit-user-select: none;
+   -khtml-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
   }
 
   code {
