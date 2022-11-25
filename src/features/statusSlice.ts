@@ -164,9 +164,10 @@ export function makeRate(originalValue: number, forceMBUnit = false): string {
   let unit_idx = 0;
   const units = ['b', 'Kb', 'Mb'];
   if (forceMBUnit) {
-    return `${(originalValue / ((1024 * 1024))*8).toFixed(1)} ${units[2]}/s`;
+    return `${((originalValue / (1024 * 1024))*8).toFixed(1)} ${units[2]}/s`;
   }
   let value = (originalValue * 8);
+
   while (value > 1000 && unit_idx + 1 < units.length) {
     value /= 1000;
     unit_idx += 1;
