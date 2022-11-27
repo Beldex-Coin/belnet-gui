@@ -49,17 +49,21 @@ async function createWindow() {
   const bounds = allDisplays[indexToUse].bounds;
 
 
-  const width = openDevTools ? 1200 : 421;
+  const width =  421;
   const height = 800;
   mainWindow = new BrowserWindow({
     width: 421,
     height,
+    maxHeight: height,
+    maxWidth: width,
+    minHeight: height,
+    minWidth: width,
     resizable: true,
     icon: './build/belnet_icon.png',
     webPreferences: {
       nodeIntegration: true,
-      devTools: true,
-      webSecurity: false,
+      devTools: false,
+      webSecurity: true,
     },
     backgroundColor: '#fff',
     autoHideMenuBar: true,

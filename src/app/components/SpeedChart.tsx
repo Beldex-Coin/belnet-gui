@@ -110,15 +110,15 @@ export const SpeedChart = (): JSX.Element => {
             axis: {
               style: {
                 axis: { stroke: theme.labelKeyColor },
-                axisLabel: { stroke: theme.labelKeyColor },
-                tickLabels: { fill: theme.labelKeyColor },
+                axisLabel: { stroke: theme.chartLabel },
+                tickLabels: { fill: theme.chartLabel },
                 grid: { stroke: 'none' }
               }
             }
           }}
-          minDomain={{ x: 0, y: 1 }}
+          minDomain={{ x: 1, y: 1 }}
           width={510}
-          height={300}
+          height={240}
           padding={{ left: 40, top: 0, right: 0, bottom: 25 }}
         >
           <VictoryAxis
@@ -131,7 +131,7 @@ export const SpeedChart = (): JSX.Element => {
           />
 
           <VictoryAxis
-            domain={[-60, 0]}
+            domain={[-40, 0]}
             padding={30}
             dependentAxis={false}
             tickLabelComponent={<VictoryLabel dy={10} />}
@@ -165,7 +165,7 @@ export const SpeedChart = (): JSX.Element => {
           width="100%"
           alignSelf="center"
           justifyContent="space-between"
-          margin="5px 0 0"
+          margin="22px 0 0"
         >
           <div>
             <svg height="16" width="5">

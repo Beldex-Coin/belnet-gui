@@ -4,7 +4,7 @@ import DesktopMapDark from '../../images/Desktop_map_dark.svg';
 
 export const darkTheme = {
   backgroundImage: `url(${DesktopMapDark})`,
-  backgroundColor: '#181821',
+  backgroundColor: '#1d1d27',
   backgroundOpacity: 'rgba(24, 24, 33, 0)',
   labelKeyColor: '#747484',
   overlayBackground: 'linear-gradient(#20202B, #1C1C26)',
@@ -27,9 +27,9 @@ export const darkTheme = {
   scrollBar: '#323241',
   aboutLabel: '#AEAEBC',
   modalBg: '#252532',
-  aboutBelnetColor: '#23DC27'
-
-
+  aboutBelnetColor: '#23DC27',
+  chartLabel: '#FFFFFF',
+  chartAxis: '#A1A1C1'
 };
 
 export const lightTheme: DefaultTheme = {
@@ -57,5 +57,7 @@ export const lightTheme: DefaultTheme = {
   scrollBar: '#EBEBEB',
   aboutLabel: '#747484',
   modalBg: '#EBEBEB',
-  aboutBelnetColor: '#1DC021'
+  aboutBelnetColor: '#1DC021',
+  chartLabel: '#747484',
+  chartAxis: '#747484'
 };

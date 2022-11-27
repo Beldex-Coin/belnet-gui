@@ -27,5 +27,7 @@ declare module 'styled-components' {
     aboutLabel: string;
     modalBg: string;
     aboutBelnetColor: string;
+    chartLabel: string;
+    chartAxis: string;
   }
 }
