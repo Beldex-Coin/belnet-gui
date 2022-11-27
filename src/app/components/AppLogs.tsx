@@ -1,12 +1,10 @@
 import { Code, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
-import { MdOutlineContentCopy } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useCopyToClipboard } from 'react-use';
 import styled, { useTheme } from 'styled-components';
 import { clearLogs, selectAppLogs } from '../../features/appLogsSlice';
 import { useAppSelector } from '../hooks';
-import { BelnetIconButton } from './BelnetIconButton';
 import { TextButton } from './TextButton';
 
 const ButtonRow = styled.div`
@@ -18,7 +16,7 @@ const ButtonRow = styled.div`
 const Timestamp = styled.span`
   font-size: 10px;
   display: inline-block;
-  width: 42px;
+  width: 48px;
   color: ${(props) => props.theme.appLogTimeStampColor};
 `;
 
@@ -48,7 +46,7 @@ export const AppLogs = (): JSX.Element => {
         wordBreak="break-all"
         fontFamily="'Poppins', sans-serif"
         borderRadius="12px"
-        flexDirection="column-reverse"
+        flexDirection="column"
         flexGrow={1}
         flexShrink={300}
         backgroundColor={theme.inputBackground}
@@ -60,8 +58,8 @@ export const AppLogs = (): JSX.Element => {
             const content = logLine.substring(separator);
             return (
               <span style={{padding: '3px 14px 4px 26px'}}>
-                <Timestamp>{new Date(parseInt(timestamp)).toLocaleTimeString()}</Timestamp>
-                <Content>{content}</Content>
+                <Timestamp>{new Date(parseInt(timestamp)).toLocaleTimeString()}:</Timestamp>
+                <Content>{content.replace(': ','')}</Content>
               </span>
             );
           })

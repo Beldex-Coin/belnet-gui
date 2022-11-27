@@ -6,8 +6,11 @@ import { GeneralInfos } from './GeneralInfos';
 import { GuiTabs } from './GuiTabs';
 import { PowerButton } from './PowerButton/PowerButton';
 import { TitleBar } from './TitleBar';
-import {UploadInfo} from './UploadInfo';
-import {DownloadInfo} from './DownloadInfo';
+import { UploadInfo } from './UploadInfo';
+import { DownloadInfo } from './DownloadInfo';
+import {
+  useGlobalConnectingStatus
+} from '../hooks/connectingStatus';
 import AnimationDots from "../../../images/Animation_dots.svg";
 import BelnetLogo from '../../../images/Belnet.svg';
 
@@ -27,9 +30,11 @@ const ConnectionInfo = styled.div`
 `;
 
 export const AppLayout = (): JSX.Element => {
+  const globalStatus = useGlobalConnectingStatus();
+
   return (
     <Container>
-    <img src={AnimationDots} style={{position: 'absolute', top: '0%'}} width="auto" height="auto"/>
+      {globalStatus === 'connected' && <img src={AnimationDots} style={{ position: 'absolute', top: '0%' }} width="auto" height="auto" />}
       <TitleBar />
       <Stack
         padding="0px 25px 0 25px"
@@ -38,16 +43,16 @@ export const AppLayout = (): JSX.Element => {
         flexGrow={1}
         zIndex="1"
       >
-         <div style={{margin: 'auto'}}>
-      <img width="235" height="40" src={BelnetLogo} alt="Belnet Logo" />
-    </div> 
+        <div style={{ margin: 'auto' }}>
+          <img width="235" height="40" src={BelnetLogo} alt="Belnet Logo" />
+        </div>
         <GeneralInfos />
-       <ConnectionInfo>
-       <DownloadInfo />
-        <PowerButton />
-        <UploadInfo />
-       </ConnectionInfo>
-       <ConnectedStatus />
+        <ConnectionInfo>
+          <DownloadInfo />
+          <PowerButton />
+          <UploadInfo />
+        </ConnectionInfo>
+        <ConnectedStatus />
         <GuiTabs />
       </Stack>
     </Container>

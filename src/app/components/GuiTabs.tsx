@@ -5,7 +5,6 @@ import { useTheme } from 'styled-components';
 import {
   selectSelectedTab,
   setTabSelected,
-  TabIndex
 } from '../../features/uiStatusSlice';
 import { AppLogs } from './AppLogs';
 import { MainTab } from './MainTab';
@@ -25,7 +24,7 @@ export const GuiTabs = (): JSX.Element => {
     fontSize: '18px'
   };
 
-  const CustomTab = React.forwardRef((props) => {
+  const CustomTab = React.forwardRef((props: any) => {
       // 1. Reuse the `useTab` hook
       const tabProps = useTab({ ...props})
       // 2. Hook into the Tabs `size`, `variant`, props
@@ -37,10 +36,6 @@ export const GuiTabs = (): JSX.Element => {
         color: theme.streamLabelColor,
         height: '25px'
       }
-      console.log('--styles--', styles.tab)
-      console.log('--tabProps--', tabProps)
-  
-  
       return (
         <div>
         <Button _selected={selectedStyle} __css={styles.tab} {...tabProps}>
@@ -54,7 +49,7 @@ export const GuiTabs = (): JSX.Element => {
     <Tabs
       height="0px"
       width="100%"
-      padding="12px 5px 0 5px"
+      padding="12px 0 0"
       display="flex"
       flexDir="column"
       flexGrow={1}
@@ -68,21 +63,18 @@ export const GuiTabs = (): JSX.Element => {
       variant="unstyled"
     >
       <TabList justifyContent="space-evenly">
-        {/* <Tab _selected={selectedStyle}>Main</Tab> */}
         <CustomTab >Main</CustomTab>
         <CustomTab >Chart</CustomTab>
         <CustomTab >Logs</CustomTab>
-        {/* <Tab _selected={selectedStyle}>Chart</Tab>
-        <Tab _selected={selectedStyle}>Logs</Tab> */}
       </TabList>
       <TabPanels flexGrow={1} padding={1} height="0px">
-        <TabPanel flexGrow={1} padding={2}>
+        <TabPanel flexGrow={1}>
           <MainTab />
         </TabPanel>
-        <TabPanel flexGrow={1} padding={2}>
+        <TabPanel flexGrow={1}>
           <SpeedChart />
         </TabPanel>
-        <TabPanel flexGrow={1} padding={2} height="100%">
+        <TabPanel flexGrow={1} height="100%">
           <AppLogs />
         </TabPanel>
       </TabPanels>

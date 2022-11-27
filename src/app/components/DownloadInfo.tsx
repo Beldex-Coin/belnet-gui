@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-
 import { useSelector } from 'react-redux';
 import { selectedTheme } from '../../features/uiStatusSlice';
+import { selectDownloadRate } from '../../features/statusSlice';
 import DownloadWhiteIcon from '../../../images/download_white.svg';
 import DownloadDarkIcon from '../../../images/download_dark.svg';
 
@@ -28,17 +28,18 @@ const SpeedUnit = styled.span`
 const SpeedValue = styled.p`
     font-size: 16px;
     font-weight: 600;
+    padding-top: 3px;
     color: ${(props) => props.theme.streamLabelColor};
 `;
 
 const LabelWrapper = styled.div`
     width: 65px;
     position: absolute;
-    bottom: 0;
-    text-align: right;
+    bottom: 20px;
 `;
 export const DownloadInfo = (): JSX.Element => {
     const themeType = useSelector(selectedTheme);
+  const downSpeed = useSelector(selectDownloadRate);
     return (
         <DownloadContainer>
             <LabelWrapper>
@@ -46,8 +47,8 @@ export const DownloadInfo = (): JSX.Element => {
                     {themeType === 'light' ? <img src={DownloadWhiteIcon} alt="" /> : <img src={DownloadDarkIcon} alt="" />}
                     <DownloadText>Download</DownloadText></p>
                 <SpeedValue>
-                    40.5
-                    <SpeedUnit>Mbps</SpeedUnit>
+                    {downSpeed.split(' ')[0]}
+                    <SpeedUnit>{`${downSpeed.split(' ')[1]}ps`}</SpeedUnit>
                 </SpeedValue>
             </LabelWrapper>
         </DownloadContainer>

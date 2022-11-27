@@ -52,13 +52,12 @@ const StyledLogoAndTitle = styled.svg`
 export const ConnectedStatus = (): JSX.Element => {
   const globalStatus = useGlobalConnectingStatus();
   const themeType = useSelector(selectedTheme);
-  // const lineImage =  themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />;
 
   if (isGlobalStatusError(globalStatus)) {
     const errorText =
       status === 'error-start-stop'
         ? 'FAILED TO START BELNET'
-        : 'UNABLE TO CONNECT';
+        : 'Disconnected';
     return (
       <div>
       <ConnectedStatusContainer>

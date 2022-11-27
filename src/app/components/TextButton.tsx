@@ -17,7 +17,7 @@ const StyledButton = styled.button<{ text: string; theme: DefaultTheme }>`
     border-radius: 15px;
     border: ${(props) => props.theme.textButtonBorder};
     ont-weight: 500;
-    font-size: 16px;
+    font-size: 15px;
     margin: 0 10px;
     box-shadow: ${(props) => props.theme.textButtonBoxSh};
 `;

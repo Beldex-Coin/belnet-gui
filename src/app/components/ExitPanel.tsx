@@ -1,17 +1,20 @@
-import { Flex, Stack, Input } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+import { Flex, Stack, Input, theme } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import styled, { useTheme } from 'styled-components';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import {
   onUserAuthCodeSet,
   onUserExitNodeSet,
   selectExitStatus
 } from '../../features/exitStatusSlice';
+import AsyncCreatableSelect from 'react-select/async-creatable';
+import CreatableSelect from "react-select/creatable";
+import { selectedTheme, setTheme } from '../../features/uiStatusSlice';
+import Select, { components, DropdownIndicatorProps, IndicatorSeparatorProps } from 'react-select';
 import { useAppDispatch } from '../hooks';
 import { paddingDividers } from './Dividers';
-import CreatableSelect from "react-select/creatable";
-import { ActionMeta, OnChangeValue } from "react-select";
-
+import DropDownWhite from '../../../images/drop_down_white.svg';
+import DropDownDark from '../../../images/drop_down_dark.svg';
 // let defaultExitUse;
 // const exitNode = [
 //   {value:defaultExitUse ||'' ,label:defaultExitUse || ''},
@@ -23,79 +26,170 @@ import { ActionMeta, OnChangeValue } from "react-select";
 
 const ExitInput = styled(Input)`
   background-color: ${(props) => props.theme.inputBackground};
-  color: ${(props) => props.theme.labelKeyColor};
+  color: ${(props) => props.theme.activePathColor};
   outline-color: transparent;
   font-family: 'Poppins', sans-serif;
+  height: 33px;
   font-weight: 400;
-  border-radius: 3px;
+  border-radius: 6px;
   border: none;
-  font-size: 1.1rem;
-  padding: 5px;
+  font-size: 12px;
+  padding: 10px 12px;
   outline: none;
   transition: 0.5s;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'auto')};
 `;
 
 const InputLabel = styled.div`
+color: ${(props) => props.theme.appLogContentColor};
   font-family: 'Poppins', sans-serif;
   font-style: normal;
-  font-weight: 500;
-  font-size: 1.1rem;
+  font-weight: 700;
+  font-size: 13px;
   text-align: start;
   user-select: none;
+  padding: 7px 0;
+  letter-spacing: 0.75px;
 `;
 
+const DropdownIndicator = (
+  props: DropdownIndicatorProps
+) => {
+  const themeSelected = useSelector(selectedTheme);
+  return (
+    <components.DropdownIndicator {...props}>
+      {themeSelected === 'light' ? <img src={DropDownWhite} alt="white" /> : <img src={DropDownDark} alt="dark" />}
+    </components.DropdownIndicator>
+  );
+};
+
+
+
+const colourStyles = {
+  control: (styles: any) => {
+    const theme = useTheme();
+    const themeSelected = useSelector(selectedTheme);
+    const bgColour = theme.mainTabInputContainerColor;
+    return ({ ...styles, backgroundColor: bgColour, border: 'none', boxShadow: 'none', borderRadius: '6px',  "&:hover": {
+      boxShadow: "red"
+    } })
+  },
+  option: (style: any, state: any) => {
+    const theme = useTheme();
+    return ({...style, 
+      backgroundColor: state.isSelected ? '#1994FC' : theme.inputBackground, 
+      width: 'fit-content',
+      minWidth: '100%',
+      color: state.isSelected ? '#FFFFFF' : theme.menuListColor, 
+      textAlign: 'center'})
+  },
+  singleValue: (style: any, state: any) => {
+    const theme = useTheme();
+    return ({...style, color: theme.tabSelected})
+  },
+  clearIndicator: (style: any, state: any) => {
+    const theme = useTheme();
+    return ({...style, color: theme.exitNodeIconColor})
+  },
+  menu: (style: any, state: any) => {
+    const theme = useTheme();
+    return ({
+      ...style,
+      backgroundColor: theme.inputBackground,
+      margin: '4px 0'
+    })
+  },
+  menuList: (style: any, state: any) => {
+    const theme = useTheme();
+    return ({
+      ...style,
+      "::-webkit-scrollbar": {
+        width: "150px",
+        borderRadius: '10px',
+        height: "6px",
+      },
+      "::-webkit-scrollbar-track": {
+        background: theme.inputBackground
+      },
+      "::-webkit-scrollbar-thumb": {
+        background: theme.scrollBar
+      },
+      "::-webkit-scrollbar-thumb:hover": {
+        background: theme.scrollBar
+      }
+    })
+  },
+}
+const promiseOptions = () =>
+  new Promise<[]>((resolve) => {
+    fetch("https://testdeb.beldex.io/Beldex-Projects/Belnet/android/exitlist/exitlist.json")
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+
+      const exitNodeArr = data.map((item: any) => {
+        return {
+          value: item.name,
+          label: item.name
+        }
+      })
+      console.log(exitNodeArr);
+      resolve(exitNodeArr)
+    })
+  });
+
+
 export const ExitPanel = (): JSX.Element => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [exitNode, setExitNode] = useState([]);
   const exitStatus = useSelector(selectExitStatus);
   const dispatch = useAppDispatch();
+  const theme = useTheme();
 
   // if the exit is loading (awaiting answer from daemon)
   // or if the exit node is set, we cannot edit the input fields.
   // We first need to disable the exit node mode
   const disableInputEdits =
     exitStatus.exitLoading || Boolean(exitStatus.exitNodeFromDaemon);
-  console.log("disableInputEdits   ", disableInputEdits);
-
   const exitToUse = disableInputEdits
     ? exitStatus.exitNodeFromDaemon
     : exitStatus.exitNodeFromUser;
   // const exitDaemon = exitStatus.exitNodeFromDaemon;
-  console.log("exitStatus.exitNodeFromDaemon ",exitStatus.exitNodeFromDaemon);
-  console.log("exitStatus.exitNodeFromUser ",exitStatus.exitNodeFromUser);
-  console.log("exitToUse ",exitToUse);
   // defaultExitUse = exitToUse;
   const handleChange = (e: any) => {
     if (e) {
       dispatch(onUserExitNodeSet(e.value))
-
-      console.log(e.value);
     }
   };
-  const exitNode = [
-    { value: "8zhrwu36op5y6kz51qbwzgde1wrnhzmf8y14u7whmaiao3njn11y.beldex", label: "8zhrwu36op5y6kz51qbwzgde1wrnhzmf8y14u7whmaiao3njn11y.beldex" },
-    { value: "exittest.beldex", label: "exittest.beldex" },
-    { value: "test.beldex", label: "test.beldex" }
-  ];
-  // useEffect(()=> {
-  //   exitNode.unshift({value:exitToUse ||'' ,label:exitToUse || ''});
-  // }, [])
+  
+
+  const onMenuOpen = () => setIsMenuOpen(true);
+  const onMenuClose = () => setIsMenuOpen(false);
+  const IndicatorSeparator = (props: IndicatorSeparatorProps) => {
+    const indicatorSeparatorStyle = {
+      alignSelf: 'stretch',
+      backgroundColor: theme.exitNodeIconColor,
+      marginBottom: 8,
+      marginTop: 8,
+      width: 1,
+    };
+    return isMenuOpen ? <span style={indicatorSeparatorStyle} {...props} /> : null;
+  };
 
   return (
     <Flex
       flexDirection="column"
       flexGrow={1}
-      paddingLeft={paddingDividers}
-      paddingRight={paddingDividers}
     >
       <Stack direction="row" alignSelf="center" width="100%" height="100%">
         <Flex flexDirection="column" flexGrow={1}>
-          <InputLabel>EXIT NODE</InputLabel>
+          <InputLabel>Exit Node</InputLabel>
           {disableInputEdits ? <ExitInput
             disabled={disableInputEdits}
-            onChange={(e) =>
+            onChange={(e: any) =>
               dispatch(onUserExitNodeSet(e?.currentTarget?.value))
             }
-            onPaste={(e) =>
+            onPaste={(e: any) =>
               dispatch(onUserExitNodeSet(e?.currentTarget?.value))
             }
             size="sm"
@@ -105,22 +199,32 @@ export const ExitPanel = (): JSX.Element => {
             noOfLines={1}
             value={exitToUse || ''}
           /> :
-            <CreatableSelect
+            <AsyncCreatableSelect
               isDisabled={disableInputEdits}
-              isClearable={true}
+              isClearable={isMenuOpen}
               onChange={handleChange}
-              options={exitNode}
-              defaultValue={{value:exitStatus.exitNodeFromUser, label:exitStatus.exitNodeFromUser}}
+              // options={exitNode}
+              cacheOptions
+              defaultOptions
+              loadOptions={promiseOptions}
+              styles={colourStyles}
+              onMenuOpen={onMenuOpen}
+              onMenuClose={onMenuClose}
+              components={{
+                DropdownIndicator,
+                IndicatorSeparator
+              }}
+              defaultValue={{ value: exitStatus.exitNodeFromUser, label: exitStatus.exitNodeFromUser }}
             />}
-          <InputLabel>AUTH CODE</InputLabel>
+          <InputLabel>Auth Code</InputLabel>
 
           <ExitInput
             disabled={disableInputEdits}
             spellCheck={false}
-            onChange={(e) =>
+            onChange={(e: any) =>
               dispatch(onUserAuthCodeSet(e?.currentTarget?.value))
             }
-            onPaste={(e) =>
+            onPaste={(e: any) =>
               dispatch(onUserAuthCodeSet(e?.currentTarget?.value))
             }
             size="sm"
