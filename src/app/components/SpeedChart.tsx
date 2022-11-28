@@ -119,7 +119,7 @@ export const SpeedChart = (): JSX.Element => {
           minDomain={{ x: 1, y: 1 }}
           width={510}
           height={240}
-          padding={{ left: 40, top: 0, right: 0, bottom: 25 }}
+          padding={{ left: 65, top: 0, right: 0, bottom: 25 }}
         >
           <VictoryAxis
             dependentAxis={true}

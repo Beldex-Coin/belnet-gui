@@ -30,6 +30,8 @@ const ModalWrapper = styled.div`
   width: 421px;
   height: 296px;
   bottom: 0;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 `;
 const ModalHeader = styled.div`
   height: 70px;
