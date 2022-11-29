@@ -10,8 +10,8 @@ export type GeneralInfosState = {
   theme: ThemeType;
 };
 const initialGeneralInfosState: GeneralInfosState = {
-  tabSelected: 2,
-  theme: 'light'
+  tabSelected: 0,
+  theme: 'dark'
 };
 export const uiSlice = createSlice({
   name: 'ui',

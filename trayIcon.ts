@@ -75,8 +75,9 @@ export function createTrayIcon(
         id: 'quit',
         label: 'Quit',
         click: () => {
-          mainWindow.destroy();
-          app.quit.bind(app);
+          app.quit()
+          // mainWindow.destroy();
+          // app.quit.bind(app);
         }
       }
     ]);
