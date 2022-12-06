@@ -134,7 +134,7 @@ export const SpeedChart = (): JSX.Element => {
             domain={[-40, 0]}
             padding={30}
             dependentAxis={false}
-            tickLabelComponent={<VictoryLabel dy={10} />}
+            tickLabelComponent={<VictoryLabel dx={-25} dy={10} />}
             tickFormat={(t) => {
               return t === 60 ? 'now' : t === 10 ? 'a minute ago' : '';
             }}

@@ -51,10 +51,10 @@ export const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
 
   body {
     background-color:  ${({ theme }) => theme.backgroundColor};
-    background-image: ${({ theme }) => theme.backgroundImage};
-    background-repeat: no-repeat;
-    background-position: center 0%;
-    background-attachment: fixed;
+    background-image: ${({ theme }) => theme.backgroundColor};
+    // background-repeat: no-repeat;
+    // background-position: center 0%;
+    // background-attachment: fixed;
     color:  ${({ theme }) => theme.labelKeyColor};
     height: 100%;
     width: 100vw;
@@ -106,6 +106,10 @@ export const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
   }
 
   #root {
+    background-image: ${({ theme }) => theme.backgroundImage};
+    background-repeat: no-repeat;
+    background-position: center 0%;
+    background-attachment: fixed;
     height: 100%;
     overflow-x: hidden;
   }
