@@ -8,7 +8,6 @@ import {
   selectExitStatus
 } from '../../features/exitStatusSlice';
 import AsyncCreatableSelect from 'react-select/async-creatable';
-import CreatableSelect from "react-select/creatable";
 import { selectedTheme, setTheme } from '../../features/uiStatusSlice';
 import Select, { components, DropdownIndicatorProps, IndicatorSeparatorProps } from 'react-select';
 import { useAppDispatch } from '../hooks';
@@ -16,13 +15,6 @@ import { paddingDividers } from './Dividers';
 import DropDownWhite from '../../../images/drop_down_white.svg';
 import DropDownDark from '../../../images/drop_down_dark.svg';
 // let defaultExitUse;
-// const exitNode = [
-//   {value:defaultExitUse ||'' ,label:defaultExitUse || ''},
-//   { value: "exit.beldex", label: "exit.beldex" },
-//   { value: "test.beldex", label: "test.beldex" }
-// ];
-
-
 
 const ExitInput = styled(Input)`
   background-color: ${(props) => props.theme.inputBackground};
@@ -36,7 +28,6 @@ const ExitInput = styled(Input)`
   font-size: 12px;
   padding: 10px 12px;
   outline: none;
-  transition: 0.5s;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'auto')};
 `;
 
@@ -70,7 +61,7 @@ const colourStyles = {
     const theme = useTheme();
     const themeSelected = useSelector(selectedTheme);
     const bgColour = theme.mainTabInputContainerColor;
-    return ({ ...styles, backgroundColor: bgColour, border: 'none', boxShadow: 'none', borderRadius: '6px',  "&:hover": {
+    return ({ ...styles, minHeight: '33px', height: '33px', backgroundColor: bgColour, border: 'none', boxShadow: 'none', borderRadius: '6px', transition: 'none', "&:hover": {
       boxShadow: "red"
     } })
   },
@@ -89,7 +80,7 @@ const colourStyles = {
   },
   clearIndicator: (style: any, state: any) => {
     const theme = useTheme();
-    return ({...style, color: theme.exitNodeIconColor})
+    return ({...style, color: theme.exitNodeIconColor, padding: '4px 8px'})
   },
   menu: (style: any, state: any) => {
     const theme = useTheme();
@@ -141,7 +132,6 @@ const promiseOptions = () =>
 
 export const ExitPanel = (): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [exitNode, setExitNode] = useState([]);
   const exitStatus = useSelector(selectExitStatus);
   const dispatch = useAppDispatch();
   const theme = useTheme();
@@ -203,7 +193,6 @@ export const ExitPanel = (): JSX.Element => {
               isDisabled={disableInputEdits}
               isClearable={isMenuOpen}
               onChange={handleChange}
-              // options={exitNode}
               cacheOptions
               defaultOptions
               loadOptions={promiseOptions}

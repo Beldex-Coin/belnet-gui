@@ -32,9 +32,9 @@ const SpeedValue = styled.p`
 `;
 
 const LabelWrapper = styled.div`
-width: 65px;
 position: absolute;
 bottom: 20px;
+right: 0px;
 text-align: right;
 `;
 
