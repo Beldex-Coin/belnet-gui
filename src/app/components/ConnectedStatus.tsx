@@ -99,8 +99,8 @@ export const ConnectedStatus = (): JSX.Element => {
   }
   return <div>
     <ConnectedStatusContainer>
-      <ConnectedStatusTitle>Connecting</ConnectedStatusTitle>
-      <ConnectedStatusLED ledColor="#EBD619" />
+      <ConnectedStatusTitle>Disconnected</ConnectedStatusTitle>
+      <ConnectedStatusLED ledColor="#F33232" />
     </ConnectedStatusContainer>
     <TextLineImage>
     {themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { useTheme } from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectedTheme } from '../../../features/uiStatusSlice';
@@ -8,44 +8,43 @@ import {
 } from '../../../features/exitStatusSlice';
 import { turnExitOn, turnExitOff } from './PowerButtonActions';
 import { useGlobalConnectingStatus } from '../../hooks/connectingStatus';
-import DarkThemePowerOn from "./power_on.svg";
-import DarkThemePowerOff from "./power_off.svg";
-import LightThemePowerOn from "./power_on_white.svg";
-import LightThemePowerOff from "./power_off_white.svg";
+import PowerOnDarkSvg from './PowerOnDarkSvg';
+import PowerOffDarkSvg from './PowerOffDarkSvg';
+import PowerOnWhiteSvg from './PowerOnWhiteSvg';
+import PowerOffWhiteSvg from './PowerOffWhiteSvg';
 
 export const PowerButtonIcon = (): JSX.Element => {
   const theme = useTheme();
   const themeType = useSelector(selectedTheme);
-  const [power_on, setPowerOn] = useState(false);
-
   const connectingStatus = useGlobalConnectingStatus();
+  const [power_on, setPowerOn] = useState(connectingStatus === "connected");
   const dispatch = useDispatch();
-
+  useEffect(() => {
+    setPowerOn(connectingStatus === "connected")
+  }, [connectingStatus])
   const authCodeFromUser = useSelector(selectAuthCodeFromUser);
   const exitNodeFromUser = useSelector(selectExitNodeFromUser);
   const setPowerStatus = () => {
-      if (connectingStatus === 'connecting' || connectingStatus === 'error-start-stop') {
-        setPowerOn(!power_on);
-        return;
-      }
-      if (connectingStatus === 'connected') {
-        setPowerOn(!power_on);
-        turnExitOff(dispatch);
-      } else {
-        setPowerOn(!power_on);
-        turnExitOn(dispatch, exitNodeFromUser, authCodeFromUser);
-      }
+    if (connectingStatus === 'connecting' || connectingStatus === 'error-start-stop') {
+      setPowerOn(!power_on);
+      return;
+    }
+    if (connectingStatus === 'connected') {
+      setPowerOn(false);
+      turnExitOff(dispatch);
+    } else {
+      setPowerOn(true);
+      turnExitOn(dispatch, exitNodeFromUser, authCodeFromUser);
+    }
   }
   return (
     <>
-      {themeType === 'light' && <div style={{margin: 'auto'}} onClick={() => setPowerStatus()}>
-      {power_on ? <img height="216" width="222" src={LightThemePowerOn} alt=""/> : <img height="216" width="222" src={LightThemePowerOff} alt=""/>}
-        </div>}
-        {themeType === 'dark' && <div style={{margin: 'auto'}} onClick={() => setPowerStatus()}>
-        {power_on ? <img height="216" width="222" src={DarkThemePowerOn} alt=""/> : <img height="216" width="222" src={DarkThemePowerOff} alt=""/>}
-        </div>}
-      {/* {power_on ? <img height="214" width="214" src={DarkThemePowerOn} alt=""/> : <img height="214" width="214" src={DarkThemePowerOff} alt=""/>} */}
-      
+      {themeType === 'light' && <div style={{ margin: 'auto' }} onClick={() => setPowerStatus()}>
+        {power_on ? <PowerOnWhiteSvg /> : <PowerOffWhiteSvg />}
+      </div>}
+      {themeType === 'dark' && <div style={{ margin: 'auto' }} onClick={() => setPowerStatus()}>
+        {power_on ? <PowerOnDarkSvg /> : <PowerOffDarkSvg />}
+      </div>}
     </>
   );
 };
