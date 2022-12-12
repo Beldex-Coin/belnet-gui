@@ -56,7 +56,7 @@ export const DarkThemeButton = (): JSX.Element => {
             </g>
             <g id="icons8-moon_symbol_1" data-name="icons8-moon_symbol 1" transform="translate(363.526 32.794)">
               <rect id="icons8-moon_symbol_1-2" data-name="icons8-moon_symbol 1" width="22" height="22" transform="translate(0.474 0.206)" fill="none" />
-              <path id="Vector" d="M17.037,12.627A9,9,0,1,1,6.229,0,9,9,0,0,0,17.037,12.627Z" transform="translate(2.252 2.693)" fill="#222" />
+              <path id="VectorDarkThemeBtn" d="M17.037,12.627A9,9,0,1,1,6.229,0,9,9,0,0,0,17.037,12.627Z" transform="translate(2.252 2.693)" fill="#222" />
             </g>
           </g>
       </StyledSvgPlusIcon>
