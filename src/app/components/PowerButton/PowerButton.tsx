@@ -6,9 +6,9 @@ import { PowerButtonIcon } from './PowerButtonIcon';
 const StyledSpinner = styled.svg`
   position: absolute;
   top: 215px;
-  webkit-animation:spin 15s linear infinite;
-  -moz-animation:spin 15s linear infinite;
-  animation:spin 15s linear infinite;
+  webkit-animation:spin 5s linear infinite;
+  -moz-animation:spin 5s linear infinite;
+  animation:spin 5s linear infinite;
   @-moz-keyframes spin { 
     100% { -moz-transform: rotate(360deg); } 
   }

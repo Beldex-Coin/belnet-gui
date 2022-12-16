@@ -83,7 +83,7 @@ const PowerOnDarkSvg = (props: any) => {
             <g transform="matrix(1, 0, 0, 1, 89, 208)" filter="url(#Ellipse_1-2)">
               <circle id="Ellipse_1-4" data-name="Ellipse 1" cx="94.69" cy="94.69" r="94.69" transform="translate(26.31 26.31)" fill="url(#linear-gradient)" />
             </g>
-           {connectingStatus !== "connecting" && <g id="rotate">
+           {connectingStatus === "connected" && <g id="rotate">
               <g className='rotate1Circle' transform="matrix(1, 0, 0, 1, 89, 208)" filter="url(#Vector-1)">
                 <path id="Vector-5" data-name="Vector" d="M162.008,81.015a79.175,79.175,0,1,0-6.718,33.8,1.873,1.873,0,0,1,2.423-.988,1.808,1.808,0,0,1,.978,2.4,82.854,82.854,0,1,1,7-35.21,1.808,1.808,0,0,1-1.819,1.839,1.873,1.873,0,0,1-1.861-1.839Z" transform="translate(37.67 37.67)" fill="#0072dc" />
               </g>

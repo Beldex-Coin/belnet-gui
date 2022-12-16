@@ -70,8 +70,8 @@ const PowerOnWhiteSvg = (props: any) => {
               <path id="Ellipse_1-4" data-name="Ellipse 1" d="M94.69,0A94.69,94.69,0,1,1,0,94.69,94.69,94.69,0,0,1,94.69,0Z" transform="translate(26.31 26.31)" fill="url(#linear-gradient)" />
             </g>
           </g>
-          {connectingStatus !== "connecting" && <path id="Ellipse_2" data-name="Ellipse 2" d="M162.008,81.015a79.175,79.175,0,1,0-6.718,33.8,1.873,1.873,0,0,1,2.423-.988,1.808,1.808,0,0,1,.978,2.4,82.854,82.854,0,1,1,7-35.21,1.808,1.808,0,0,1-1.819,1.839,1.873,1.873,0,0,1-1.861-1.839Z" transform="translate(126.672 245.672)" fill="#00a9ff" />}
-          {connectingStatus !== "connecting" && <path id="Ellipse_4" data-name="Ellipse 4" d="M.078,15.055A79.176,79.176,0,0,0,2.8,1.67,1.873,1.873,0,0,1,4.824.008a1.808,1.808,0,0,1,1.644,2A82.855,82.855,0,0,1,3.582,16.179a1.808,1.808,0,0,1-2.294,1.2,1.873,1.873,0,0,1-1.21-2.32Z" transform="translate(285.38 335.903)" fill="#00a9ff" />}
+          {connectingStatus === "connected" && <path id="Ellipse_2" data-name="Ellipse 2" d="M162.008,81.015a79.175,79.175,0,1,0-6.718,33.8,1.873,1.873,0,0,1,2.423-.988,1.808,1.808,0,0,1,.978,2.4,82.854,82.854,0,1,1,7-35.21,1.808,1.808,0,0,1-1.819,1.839,1.873,1.873,0,0,1-1.861-1.839Z" transform="translate(126.672 245.672)" fill="#00a9ff" />}
+          {connectingStatus === "connected" && <path id="Ellipse_4" data-name="Ellipse 4" d="M.078,15.055A79.176,79.176,0,0,0,2.8,1.67,1.873,1.873,0,0,1,4.824.008a1.808,1.808,0,0,1,1.644,2A82.855,82.855,0,0,1,3.582,16.179a1.808,1.808,0,0,1-2.294,1.2,1.873,1.873,0,0,1-1.21-2.32Z" transform="translate(285.38 335.903)" fill="#00a9ff" />}
           <path id="Ellipse_3" data-name="Ellipse 3" d="M135.407,67.7A67.7,67.7,0,1,1,67.7,0,67.7,67.7,0,0,1,135.407,67.7ZM.568,67.7A67.135,67.135,0,1,0,67.7.568,67.135,67.135,0,0,0,.568,67.7Z" transform="translate(142.77 260.823)" fill="#00f900" />
           <g data-type="innerShadowGroup">
             <g transform="matrix(1, 0, 0, 1, 89, 208)" filter="url(#Vector)">

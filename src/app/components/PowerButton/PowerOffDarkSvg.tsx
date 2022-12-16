@@ -21,7 +21,7 @@ const PowerOffDarkSvg = () => {
           <feComposite operator="in" in2="blur-2" />
           <feComposite in="SourceGraphic" />
         </filter>
-        <radialGradient id="radial-gradient" cx="0.384" cy="0.128" r="0.647" gradientTransform="matrix(0.313, 0.95, -0.95, 0.313, 0.385, -0.277)" gradientUnits="objectBoundingBox">
+        <radialGradient id="radial1-gradient" cx="0.384" cy="0.128" r="0.647" gradientTransform="matrix(0.313, 0.95, -0.95, 0.313, 0.385, -0.277)" gradientUnits="objectBoundingBox">
           <stop offset="0" stop-color="#2e2e40" />
           <stop offset="1" stop-color="#1d1d2b" />
         </radialGradient>
@@ -32,7 +32,7 @@ const PowerOffDarkSvg = () => {
           <feComposite operator="in" in2="blur-3" />
           <feComposite in="SourceGraphic" />
         </filter>
-        <radialGradient id="radial-gradient-2" cx="0.272" cy="0.059" r="0.647" gradientTransform="matrix(0.313, 0.95, -0.95, 0.313, 0.385, -0.277)" gradientUnits="objectBoundingBox">
+        <radialGradient id="radial1-gradient-2" gradientTransform="matrix(0,0,0,0,0,0)" gradientUnits="objectBoundingBox">
           <stop offset="0" stop-color="#2b2b3c" />
           <stop offset="1" stop-color="#1d1d2b" />
         </radialGradient>
@@ -70,10 +70,10 @@ const PowerOffDarkSvg = () => {
           </g>
         </g>
         <g transform="matrix(1, 0, 0, 1, 91, 210)" filter="url(#Ellipse_1)">
-          <circle id="Ellipse_1-3" data-name="Ellipse 1" cx="94.69" cy="94.69" r="94.69" transform="translate(24.31 24.31)" fill="url(#radial-gradient)" />
+          <circle id="Ellipse_1-3" data-name="Ellipse 1" cx="94.69" cy="94.69" r="94.69" transform="translate(24.31 24.31)" fill="url(#radial1-gradient)" />
         </g>
         <g transform="matrix(1, 0, 0, 1, 91, 210)" filter="url(#Ellipse_1-2)">
-          <circle id="Ellipse_1-4" data-name="Ellipse 1" cx="94.69" cy="94.69" r="94.69" transform="translate(24.31 24.31)" fill="url(#radial-gradient-2)" />
+          <circle id="Ellipse_1-4" data-name="Ellipse 1" cx="94.69" cy="94.69" r="94.69" transform="translate(24.31 24.31)" fill="url(#radial1-gradient-2)" />
         </g>
         <g data-type="innerShadowGroup">
           <path id="Vector-3" data-name="Vector" d="M158.786,105.285A79.176,79.176,0,0,0,161.511,91.9a1.873,1.873,0,0,1,2.021-1.662,1.808,1.808,0,0,1,1.644,2,82.855,82.855,0,0,1-2.886,14.174A1.808,1.808,0,0,1,160,107.6,1.873,1.873,0,0,1,158.786,105.285Z" transform="translate(126.672 245.672)" fill="#323241" />
