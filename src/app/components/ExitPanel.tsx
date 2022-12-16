@@ -95,15 +95,16 @@ const colourStyles = {
     return ({
       ...style,
       "::-webkit-scrollbar": {
-        width: "150px",
+        width: "6px",
+        height: "0px",
         borderRadius: '10px',
-        height: "6px",
       },
       "::-webkit-scrollbar-track": {
-        background: theme.inputBackground
+        background: theme.scrollBar
       },
       "::-webkit-scrollbar-thumb": {
-        background: theme.scrollBar
+        borderRadius: '10px',
+        background: theme.labelKeyColor
       },
       "::-webkit-scrollbar-thumb:hover": {
         background: theme.scrollBar

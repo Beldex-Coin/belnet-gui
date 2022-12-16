@@ -11,8 +11,8 @@ export function createTrayIcon(
   // keep the duplicated part to allow for search and find
   const iconFile =
     process.platform === 'darwin'
-      ? 'belnet_logo*16.png'
-      : 'belnet_logo*32.png';
+      ? 'belnet_logo.png'
+      : 'belnet_logo.png';
 
   const icon = join(__dirname, '../', 'images', iconFile);
   tray = new Tray(icon);
@@ -27,7 +27,14 @@ export function createTrayIcon(
       mainWindow.setAlwaysOnTop(false);
     }
   };
-
+  
+  (tray as any).closeApp = () => {
+    const mainWindow = getMainWindow();
+    if (!mainWindow) {
+      return;
+    }
+    app.quit()
+  };
   (tray as any).toggleWindowVisibility = () => {
     const mainWindow = getMainWindow();
     if (mainWindow) {

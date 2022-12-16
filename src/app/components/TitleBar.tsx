@@ -59,7 +59,7 @@ export const TitleBar = (): JSX.Element => {
        {themeSelected === 'light' ?  <DarkThemeButton /> : <LightThemeButton/>}
       </StyledIconButton>
 
-      <StyledIconButton title="Minimize to tray" onClick={minimizeToTray}>
+      <StyledIconButton title="Minimize to tray" onClick={() => minimizeToTray(globalStatus === 'connected' ? 'minimize' : 'close')}>
         {globalStatus === 'connected' ? minimizeButton : closeButton}
       </StyledIconButton>
     </Container>
