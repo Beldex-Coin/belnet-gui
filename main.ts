@@ -93,7 +93,7 @@ async function createWindow() {
   // Emitted when the window is about to be closed.
   // Note: We do most of our shutdown logic here because all windows are closed by
   //   Electron before the app quits.
-  mainWindow.on('close', async (e) => {
+  mainWindow.on('close', async (e: any) => {
     if (!mainWindow || shouldQuit()) {
       return;
     }

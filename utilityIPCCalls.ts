@@ -11,13 +11,17 @@ export function markRendererReady(jobId: string): void {
   void belnetProcessManager.doStartBelnetProcess(jobId);
 }
 
-export function minimizeToTray(jobId: string): void {
+export function minimizeToTray(jobId: string, type: string): void {
   const mainWindow = getMainWindow();
-  if (mainWindow?.isVisible()) {
-    mainWindow.hide();
+  const tray = getTrayIcon();
+  if (mainWindow?.isVisible() && type === 'minimize') {
+    mainWindow.minimize();
+  } else if(type === 'close') {
+    if (tray) {
+      (tray as any).closeApp();
+    }
   }
 
-  const tray = getTrayIcon();
   if (tray) {
     (tray as any).updateContextMenu();
   }
