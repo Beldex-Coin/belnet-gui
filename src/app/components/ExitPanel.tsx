@@ -114,18 +114,15 @@ const colourStyles = {
 }
 const promiseOptions = () =>
   new Promise<[]>((resolve) => {
-    fetch("https://testdeb.beldex.io/Beldex-Projects/Belnet/android/exitlist/exitlist.json")
+    fetch("https://deb.beldex.io/Beldex-projects/Belnet/exitlist.json")
     .then(response => response.json())
     .then(data => {
-      console.log(data);
-
       const exitNodeArr = data.map((item: any) => {
         return {
           value: item.name,
           label: item.name
         }
       })
-      console.log(exitNodeArr);
       resolve(exitNodeArr)
     })
   });
