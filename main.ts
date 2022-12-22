@@ -42,28 +42,28 @@ async function createWindow() {
       validScreenIndexToUse = screenIndexFromStore;
     }
   }
-  const openDevTools = false;
+  const openDevTools = true;
 
   const isDev = process.env.NODE_ENV === 'development';
   const indexToUse = validScreenIndexToUse || 0;
   const bounds = allDisplays[indexToUse].bounds;
 
 
-  const width =  421;
+  const width =  821;
   const height = 800;
   mainWindow = new BrowserWindow({
     width: 421,
     height,
-    maxHeight: height,
-    maxWidth: width,
-    minHeight: height,
-    minWidth: width,
+    // maxHeight: height,
+    // maxWidth: width,
+    // minHeight: height,
+    // minWidth: width,
     resizable: true,
-    icon: './build/belnet_icon.png',
+    icon: './build/256x256.png',
     webPreferences: {
       nodeIntegration: true,
-      devTools: false,
-      webSecurity: true,
+      devTools: true,
+      webSecurity: false,
     },
     backgroundColor: '#fff',
     autoHideMenuBar: true,

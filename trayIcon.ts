@@ -14,7 +14,7 @@ export function createTrayIcon(
       ? 'belnet_logo.png'
       : 'belnet_logo.png';
 
-  const icon = join(__dirname, '../', 'images', iconFile);
+  const icon = join(__dirname, '../', 'images', '256x256.png');
   tray = new Tray(icon);
 
   (tray as any).forceOnTop = (mainWindow: BrowserWindow) => {
