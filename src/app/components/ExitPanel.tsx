@@ -61,26 +61,30 @@ const colourStyles = {
     const theme = useTheme();
     const themeSelected = useSelector(selectedTheme);
     const bgColour = theme.mainTabInputContainerColor;
-    return ({ ...styles, minHeight: '33px', height: '33px', backgroundColor: bgColour, border: 'none', boxShadow: 'none', borderRadius: '6px', transition: 'none', "&:hover": {
-      boxShadow: "red"
-    } })
+    return ({
+      ...styles, minHeight: '33px', height: '33px', backgroundColor: bgColour, border: 'none', boxShadow: 'none', borderRadius: '6px', transition: 'none', "&:hover": {
+        boxShadow: "red"
+      }
+    })
   },
   option: (style: any, state: any) => {
     const theme = useTheme();
-    return ({...style, 
-      backgroundColor: state.isSelected ? '#1994FC' : theme.inputBackground, 
+    return ({
+      ...style,
+      backgroundColor: state.isSelected ? '#1994FC' : theme.inputBackground,
       width: 'fit-content',
       minWidth: '100%',
-      color: state.isSelected ? '#FFFFFF' : theme.menuListColor, 
-      textAlign: 'center'})
+      color: state.isSelected ? '#FFFFFF' : theme.menuListColor,
+      textAlign: 'center'
+    })
   },
   singleValue: (style: any, state: any) => {
     const theme = useTheme();
-    return ({...style, color: theme.tabSelected})
+    return ({ ...style, color: theme.tabSelected })
   },
   clearIndicator: (style: any, state: any) => {
     const theme = useTheme();
-    return ({...style, color: theme.exitNodeIconColor, padding: '4px 8px'})
+    return ({ ...style, color: theme.exitNodeIconColor, padding: '4px 8px' })
   },
   menu: (style: any, state: any) => {
     const theme = useTheme();
@@ -115,21 +119,22 @@ const colourStyles = {
 const promiseOptions = () =>
   new Promise<[]>((resolve) => {
     fetch("https://deb.beldex.io/Beldex-projects/Belnet/exitlist.json")
-    .then(response => response.json())
-    .then(data => {
-      const exitNodeArr = data.map((item: any) => {
-        return {
-          value: item.name,
-          label: item.name
-        }
+      .then(response => response.json())
+      .then(data => {
+        const exitNodeArr = data.map((item: any) => {
+          return {
+            value: item.name,
+            label: item.name
+          }
+        })
+        resolve(exitNodeArr)
       })
-      resolve(exitNodeArr)
-    })
   });
 
 
 export const ExitPanel = (): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuList, setMenuList] = useState([]);
   const exitStatus = useSelector(selectExitStatus);
   const dispatch = useAppDispatch();
   const theme = useTheme();
@@ -144,12 +149,25 @@ export const ExitPanel = (): JSX.Element => {
     : exitStatus.exitNodeFromUser;
   // const exitDaemon = exitStatus.exitNodeFromDaemon;
   // defaultExitUse = exitToUse;
+
+  useEffect(() => {
+    promiseOptions().then((list: any) => {
+      setMenuList(list)
+    })
+  }, [])
+
+  const getRandomExitNode = () => {
+    const maxMenuLenIndex = menuList.length - 1;
+    const min = 0;
+    const randomExitNodeIndex = Math.floor(Math.random() * (maxMenuLenIndex - min + 1) + min);
+    return menuList[randomExitNodeIndex]
+  }
+
   const handleChange = (e: any) => {
     if (e) {
       dispatch(onUserExitNodeSet(e.value))
     }
   };
-  
 
   const onMenuOpen = () => setIsMenuOpen(true);
   const onMenuClose = () => setIsMenuOpen(false);
@@ -201,7 +219,7 @@ export const ExitPanel = (): JSX.Element => {
                 DropdownIndicator,
                 IndicatorSeparator
               }}
-              defaultValue={{ value: exitStatus.exitNodeFromUser, label: exitStatus.exitNodeFromUser }}
+              defaultValue={getRandomExitNode}
             />}
           <InputLabel>Auth Code</InputLabel>
 
