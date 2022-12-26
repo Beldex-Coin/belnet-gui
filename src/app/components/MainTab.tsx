@@ -204,7 +204,7 @@ export const MainTab = (): JSX.Element => {
           <br/>
           <Para>Below is a sample MNApp that you can access by enabling BelNet:</Para>
           <br/>
-          <Para><Anchor onClick={() => openExternalLink("http://cw41adqqhykuxw51xmagkkb3fixyieat1josbux13jn6o973tqgy.bdx")}>http://cw41adqqhykuxw51xmagkkb3fixyieat1josbux13jn6o973tqgy.bdx/</Anchor></Para>
+          <Para><Anchor onClick={() => openExternalLink("http://675wmqqbzg6nqs688e1n3bti6ter4kt5q4u5bs1c4quutpnyxsxy.bdx")}>http://675wmqqbzg6nqs688e1n3bti6ter4kt5q4u5bs1c4quutpnyxsxy.bdx/</Anchor></Para>
           <br/>
           <Heading>What are BNS Names?</Heading>
           <Para>BNS stands for Beldex Name Service. BNS names are human readable domain names on BelNet. BNS is a censorship-free, decentralized, unstoppable domain name service. </Para>

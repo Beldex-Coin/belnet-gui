@@ -160,7 +160,9 @@ export const ExitPanel = (): JSX.Element => {
     const maxMenuLenIndex = menuList.length - 1;
     const min = 0;
     const randomExitNodeIndex = Math.floor(Math.random() * (maxMenuLenIndex - min + 1) + min);
-    return menuList[randomExitNodeIndex]
+    const randomExitNode : any = menuList[randomExitNodeIndex]
+    dispatch(onUserExitNodeSet(randomExitNode?.value))
+    return randomExitNode
   }
 
   const handleChange = (e: any) => {
