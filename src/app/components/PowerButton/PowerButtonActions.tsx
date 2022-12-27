@@ -16,7 +16,7 @@ const dispatchExitFailedToTurnOn = (dispatch: Dispatch<any>) => {
 
   if (store.getState().status.globalError === undefined) {
     dispatch(setGlobalError('error-add-exit'));
-    dispatch(setTabSelected('logs'));
+    // dispatch(setTabSelected('logs'));
   }
 };
 

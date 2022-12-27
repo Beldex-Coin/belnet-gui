@@ -59,7 +59,7 @@ async function createWindow() {
     minHeight: height,
     minWidth: width,
     resizable: true,
-    icon: './build/belnet_icon.png',
+    icon: './build/256x256.png',
     webPreferences: {
       nodeIntegration: true,
       devTools: false,
