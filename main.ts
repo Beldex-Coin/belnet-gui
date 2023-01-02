@@ -51,6 +51,14 @@ async function createWindow() {
 
   const width =  421;
   const height = 800;
+  // let appIcon = "./build/256x256.png";
+  // const WIN = 'win32';
+
+  // if (process.platform === WIN) {
+  //   appIcon = "./build/512x512.png";
+  // } else {
+  //   appIcon = "./build/256x256.png";
+  // }
   mainWindow = new BrowserWindow({
     width: 421,
     height,
@@ -59,7 +67,7 @@ async function createWindow() {
     minHeight: height,
     minWidth: width,
     resizable: true,
-    icon: './build/256x256.png',
+    //icon: appIcon,
     webPreferences: {
       nodeIntegration: true,
       devTools: false,

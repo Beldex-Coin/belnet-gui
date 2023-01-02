@@ -11,10 +11,10 @@ export function createTrayIcon(
   // keep the duplicated part to allow for search and find
   const iconFile =
     process.platform === 'darwin'
-      ? 'belnet_logo.png'
-      : 'belnet_logo.png';
+      ? '256x256.png'
+      : '512x512.png';
 
-  const icon = join(__dirname, '../', 'images', '256x256.png');
+  const icon = join(__dirname, '../', 'images', iconFile);
   tray = new Tray(icon);
 
   (tray as any).forceOnTop = (mainWindow: BrowserWindow) => {
