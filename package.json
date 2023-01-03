@@ -5,8 +5,8 @@
   "version": "1.0.0",
   "license": "GPL-3.0",
   "author": {
-    "name": "victor-tucci",
-    "email": "victor.tucci@beldex.io"
+    "name": "Beldex International",
+    "email": "admin@beldex.io"
   },
   "main": "./dist/main.js",
   "scripts": {
@@ -35,9 +35,11 @@
     },
     "asar": true,
     "mac": {
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "icon": "build/belnet.icns"
     },
     "win": {
+      "icon": "build/belnet.ico",
       "target": [
         "portable"
       ]
