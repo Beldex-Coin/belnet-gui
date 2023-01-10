@@ -55,7 +55,7 @@ export const statusSlice = createSlice({
       }>
     ) => {
       state.isRunning = action.payload.daemonStatus?.isRunning || false;
-      if (!state.isRunning) {
+      if (!state.isRunning || !action.payload.daemonStatus?.beldexAddress) {
         state.downloadUsage = 0;
         state.uploadUsage = 0;
         state.numPathsBuilt = 0;
