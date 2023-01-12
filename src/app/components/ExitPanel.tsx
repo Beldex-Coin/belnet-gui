@@ -67,6 +67,21 @@ const colourStyles = {
       }
     })
   },
+  input: (style: any, state: any) => {
+    const theme = useTheme();
+    return ({
+      ...style,
+      fontSize: 12,
+      fontWeight: 400,
+      width: 200,
+      color: theme.tabSelected,
+      '[type="text"]': {
+        fontSize: 12,
+        fontWeight: 400,
+        color: theme.tabSelected,
+      }
+    })
+  },
   option: (style: any, state: any) => {
     const theme = useTheme();
     return ({
@@ -223,7 +238,7 @@ export const ExitPanel = (): JSX.Element => {
               }}
               defaultValue={getRandomExitNode}
             />}
-          <InputLabel>Auth Code</InputLabel>
+          {/* <InputLabel>Auth Code</InputLabel>
 
           <ExitInput
             disabled={disableInputEdits}
@@ -239,7 +254,7 @@ export const ExitPanel = (): JSX.Element => {
             value={exitStatus.exitAuthCodeFromUser || ''}
             marginBottom={2}
             noOfLines={1}
-          />
+          /> */}
         </Flex>
       </Stack>
     </Flex>

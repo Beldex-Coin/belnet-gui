@@ -13,12 +13,14 @@ import AboutCloseIconWhite from '../../../images/about_close_white.svg';
 const { shell } = require('electron')
 
 const AboutText = styled.div`
-font-size: 14px;
-color: ${(props) => props.theme.aboutLabel};
-display: flex;
-justify-content: space-between;
-width: 65px;
-cursor: pointer;
+  font-size: 14px;
+  position: fixed;
+  bottom: 15px;
+  color: ${(props) => props.theme.aboutLabel};
+  display: flex;
+  justify-content: space-between;
+  width: 65px;
+  cursor: pointer;
 `;
 
 const ModalWrapper = styled.div`
