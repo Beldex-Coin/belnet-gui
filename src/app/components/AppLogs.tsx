@@ -13,10 +13,19 @@ const ButtonRow = styled.div`
   margin-top: 17px;
 `;
 
+const NoLogYet = styled.div`
+  color: ${(props) => props.theme.appLogTimeStampColor};
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  margin: auto;
+`;
+
 const Timestamp = styled.span`
   font-size: 10px;
   display: inline-block;
-  width: 48px;
+  min-width: 48px;
+  max-width: 100px;
   color: ${(props) => props.theme.appLogTimeStampColor};
 `;
 
@@ -64,7 +73,7 @@ export const AppLogs = (): JSX.Element => {
             );
           })
         ) : (
-          <Text fontSize={12}>No logs yet...</Text>
+          <NoLogYet>No logs yet...</NoLogYet>
         )}
       </Code>
       <ButtonRow>
