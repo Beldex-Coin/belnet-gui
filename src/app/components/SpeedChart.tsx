@@ -1,5 +1,5 @@
-import { Flex } from '@chakra-ui/react';
 import React from 'react';
+import { Flex } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
 import {
@@ -76,8 +76,8 @@ export const SpeedChart = (): JSX.Element => {
   const daemonStatus = useSelector(selectStatus);
   const theme = useTheme();
   const themeType = useSelector(selectedTheme);
-  const upSpeed = useSelector(selectUploadRate);
-  const downSpeed = useSelector(selectDownloadRate);
+  const upSpeed : any= useSelector(selectUploadRate);
+  const downSpeed : any= useSelector(selectDownloadRate);
 
   const uploadCoordinates = daemonStatus.speedHistory.upload.map((y, index) => {
     return {

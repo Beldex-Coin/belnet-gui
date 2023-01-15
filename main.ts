@@ -42,7 +42,7 @@ async function createWindow() {
       validScreenIndexToUse = screenIndexFromStore;
     }
   }
-  const openDevTools = true;
+  const openDevTools = false;
 
   const isDev = process.env.NODE_ENV === 'development';
   const indexToUse = validScreenIndexToUse || 0;
@@ -60,18 +60,18 @@ async function createWindow() {
   //   appIcon = "./build/256x256.png";
   // }
   mainWindow = new BrowserWindow({
-    width: 800,
+    width: 421,
     height,
-    // maxHeight: height,
-    // maxWidth: width,
-    // minHeight: height,
-    // minWidth: width,
+    maxHeight: height,
+    maxWidth: width,
+    minHeight: height,
+    minWidth: width,
     resizable: true,
     //icon: appIcon,
     webPreferences: {
       nodeIntegration: true,
-      devTools: true,
-      webSecurity: false,
+      devTools: false,
+      webSecurity: true,
     },
     backgroundColor: '#fff',
     autoHideMenuBar: true,

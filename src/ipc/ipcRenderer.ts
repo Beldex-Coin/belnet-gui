@@ -45,7 +45,7 @@ export async function addExit(
   exitToken?: string
 ): Promise<string> {
   console.info(
-    `Triggering exit node set with node ${exitAddress}, authCode:${exitToken}`
+    `Triggering exit node set with node ${exitAddress}.`
   );
   return channels.addExit(exitAddress, exitToken);
 }
