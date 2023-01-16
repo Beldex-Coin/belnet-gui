@@ -39,7 +39,7 @@ const LabelWrapper = styled.div`
 `;
 export const DownloadInfo = (): JSX.Element => {
     const themeType = useSelector(selectedTheme);
-  const downSpeed = useSelector(selectDownloadRate);
+  const downSpeed : any = useSelector(selectDownloadRate);
     return (
         <DownloadContainer>
             <LabelWrapper>

@@ -6,6 +6,7 @@ import { selectStatus } from '../../features/statusSlice';
 import { selectedTheme } from '../../features/uiStatusSlice';
 import { ExitPanel } from './ExitPanel';
 import { RoutersStats } from './RouterStats';
+import { SpeedStats } from './SpeedStats';
 import AboutIconDark from '../../../images/about_dark.svg';
 import AboutIconWhite from '../../../images/about_white.svg';
 import AboutCloseIconDark from '../../../images/about_close_dark.svg';
@@ -132,6 +133,7 @@ export const MainTab = (): JSX.Element => {
   return (
     <>
       <ExitPanel />
+      
       <Flex
         flexDirection="row"
         justifyContent="space-between"
@@ -142,6 +144,18 @@ export const MainTab = (): JSX.Element => {
           ratio={daemonStatus.ratio}
           numRouters={daemonStatus.numRoutersKnown}
         />
+      </Flex>
+      <Flex
+        flexDirection="row"
+        justifyContent="space-between"
+        minWidth="300px"
+      >
+        <SpeedStats/>
+        {/* <RoutersStats
+          activePaths={daemonStatus.numPathsBuilt}
+          ratio={daemonStatus.ratio}
+          numRouters={daemonStatus.numRoutersKnown}
+        /> */}
       </Flex>
       <Flex justifyContent="center" paddingTop="15px">
         <AboutText onClick={openAboutModal}>{themeType === 'light' ? <img src={AboutIconWhite} alt="" /> : <img src={AboutIconDark} alt="" />} About</AboutText>

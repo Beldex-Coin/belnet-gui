@@ -40,7 +40,7 @@ text-align: right;
 
 export const UploadInfo = (): JSX.Element => {
     const themeType = useSelector(selectedTheme);
-    const upSpeed = useSelector(selectUploadRate);
+    const upSpeed : any = useSelector(selectUploadRate);
 
     return (
         <UploadContainer>
