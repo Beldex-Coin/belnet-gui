@@ -225,7 +225,7 @@ export const ExitPanel = (): JSX.Element => {
             <AsyncCreatableSelect
               isDisabled={disableInputEdits}
               isSearchable={false}
-              isClearable={isMenuOpen}
+              // isClearable={isMenuOpen}
               onChange={handleChange}
               cacheOptions
               defaultOptions
