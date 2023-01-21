@@ -35,11 +35,9 @@
     },
     "asar": true,
     "mac": {
-      "category": "public.app-category.utilities",
-      "icon": "build/belnet.icns"
+      "category": "public.app-category.utilities"
     },
     "win": {
-      "icon": "build/belnet.ico",
       "target": [
         "portable"
       ]
