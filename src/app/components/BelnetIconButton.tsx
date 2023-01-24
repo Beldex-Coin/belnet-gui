@@ -4,7 +4,7 @@ import styled, { DefaultTheme } from 'styled-components';
 const StyledIconButton = styled.button<{ size: string; theme: DefaultTheme }>`
   width: ${(props) => props.size};
   height: ${(props) => props.size};
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
 
   flex-shrink: 0;
   border: none;
@@ -14,7 +14,7 @@ const StyledIconButton = styled.button<{ size: string; theme: DefaultTheme }>`
   border-radius: 7px;
   padding: 5px;
   :hover {
-    color: ${(props) => props.theme.textColorSubtle};
+    color: ${(props) => props.theme.labelValueColor};
   }
 
   svg {

@@ -30,11 +30,11 @@ export const PowerButtonContainerBorder = (props: {
   const borderColor =
     globalStatus === 'default' || globalStatusIsError
       ? isHovered
-        ? theme.textColor
-        : theme.textColorSubtle
+        ? theme.labelKeyColor
+        : theme.labelValueColor
       : isHovered
-      ? theme.textColorSubtle
-      : theme.textColor;
+      ? theme.labelValueColor
+      : theme.labelKeyColor;
 
   const filterShadow =
     !isHovered && globalStatus === 'connected' && themeType === 'light'

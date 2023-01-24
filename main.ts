@@ -5,7 +5,6 @@ import { doStopBelnetProcess } from './belnetProcessManager';
 import { closeRpcConnection } from './belnetRpcCall';
 import { createTrayIcon } from './trayIcon';
 import { markShouldQuit, shouldQuit } from './windowState';
-
 import ElectronStore from 'electron-store';
 
 let store: ElectronStore | undefined;
@@ -44,36 +43,35 @@ async function createWindow() {
     }
   }
   const openDevTools = false;
-  const defaultHeight = 850; // 850
-  const defaultWidth = openDevTools ? 1000 : 450; // 450
 
   const isDev = process.env.NODE_ENV === 'development';
   const indexToUse = validScreenIndexToUse || 0;
-  const sz = allDisplays[indexToUse].size;
   const bounds = allDisplays[indexToUse].bounds;
 
-  const displayWidth = Math.max(sz.width, sz.height);
-  const displayHeight = Math.min(sz.width, sz.height);
 
-  const scaleFactorDiy = Math.min(displayWidth / 1920, displayHeight / 1080);
-  console.warn(scaleFactorDiy);
+  const width =  421;
+  const height = 800;
+  // let appIcon = "./build/256x256.png";
+  // const WIN = 'win32';
 
-  const width = defaultWidth * scaleFactorDiy;
-  const height = defaultHeight * scaleFactorDiy;
-
+  // if (process.platform === WIN) {
+  //   appIcon = "./build/512x512.png";
+  // } else {
+  //   appIcon = "./build/256x256.png";
+  // }
   mainWindow = new BrowserWindow({
-    width,
+    width: 421,
     height,
+    maxHeight: height,
+    maxWidth: width,
     minHeight: height,
-    minWidth: 450,
+    minWidth: width,
     resizable: true,
-
-    icon: './build/belnet_icon.png',
+    //icon: appIcon,
     webPreferences: {
       nodeIntegration: true,
-      devTools: true,
+      devTools: false,
       webSecurity: true,
-      zoomFactor: scaleFactorDiy
     },
     backgroundColor: '#fff',
     autoHideMenuBar: true,
@@ -103,7 +101,7 @@ async function createWindow() {
   // Emitted when the window is about to be closed.
   // Note: We do most of our shutdown logic here because all windows are closed by
   //   Electron before the app quits.
-  mainWindow.on('close', async (e) => {
+  mainWindow.on('close', async (e: any) => {
     if (!mainWindow || shouldQuit()) {
       return;
     }

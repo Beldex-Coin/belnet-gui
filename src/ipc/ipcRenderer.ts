@@ -45,7 +45,7 @@ export async function addExit(
   exitToken?: string
 ): Promise<string> {
   console.info(
-    `Triggering exit node set with node ${exitAddress}, authCode:${exitToken}`
+    `Triggering exit node set with node ${exitAddress}.`
   );
   return channels.addExit(exitAddress, exitToken);
 }
@@ -62,8 +62,8 @@ export async function markRendererReady(): Promise<void> {
   channels.markRendererReady();
 }
 
-export async function minimizeToTray(): Promise<void> {
-  channels.minimizeToTray();
+export async function minimizeToTray(type: string): Promise<void> {
+  channels.minimizeToTray(type);
 }
 export async function setConfig(
   section: string,

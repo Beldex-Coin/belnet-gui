@@ -2,7 +2,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
 import 'focus-visible/dist/focus-visible';
-
 import { useInterval } from '@chakra-ui/react';
 
 import {
@@ -101,7 +100,6 @@ const useSummaryStatusPolling = () => {
       }
       dispatch(markInitialLoadingFinished());
     } catch (e) {
-      console.log('getSummaryStatus() failed');
       dispatch(markAsStopped());
       dispatch(markInitialLoadingFinished());
 

@@ -1,5 +1,7 @@
 import React from 'react';
 import BelnetLogo from '../../../images/Belnet.svg';
+import LineWhite from '../../../images/line_white.svg';
+import LineDark from '../../../images/line_dark.svg';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { selectedTheme } from '../../features/uiStatusSlice';
@@ -9,14 +11,16 @@ import {
 } from '../hooks/connectingStatus';
 
 const ConnectedStatusContainer = styled.div`
-  height: 40px;
   display: flex;
-  line-height: 25px;
-  margin-top: 0;
-
+  margin: 8px 0 14px;
   justify-content: center;
   align-items: center;
 `;
+
+const TextLineImage = styled.div`
+height: 2px;
+    display: flex;
+    justify-content: center;`;
 
 const ConnectedStatusContainerWithLogo = styled(ConnectedStatusContainer)`
   display: block;
@@ -24,28 +28,25 @@ const ConnectedStatusContainerWithLogo = styled(ConnectedStatusContainer)`
   height: 20px;
 `;
 
-const ConnectedStatusTitle = styled.span<{ textShadow: string }>`
-  font-family: Archivo;
+const ConnectedStatusTitle = styled.span`
   font-style: normal;
-  font-weight: bold;
-  font-size: 1.4rem;
+  font-weight: 600;
+  font-size: 14px;
   text-align: center;
-  user-select: none;
-  text-shadow: ${(props) => props.textShadow};
-`;
+  user-select: none;`;
 
 const ConnectedStatusLED = styled.span<{ ledColor: string }>`
-  width: 1rem;
-  height: 1em;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  margin-left: 1rem;
+  margin-left: 7px;
   background-color: ${(props) => props.ledColor};
 `;
 
 const StyledLogoAndTitle = styled.svg`
   height: 100%;
   margin-bottom: 0;
-  fill: ${(props) => props.theme.textColor};
+  fill: ${(props) => props.theme.labelKeyColor};
 `;
 
 export const ConnectedStatus = (): JSX.Element => {
@@ -56,38 +57,62 @@ export const ConnectedStatus = (): JSX.Element => {
     const errorText =
       status === 'error-start-stop'
         ? 'FAILED TO START BELNET'
-        : 'UNABLE TO CONNECT';
+        : 'Disconnected';
     return (
+      <div>
       <ConnectedStatusContainer>
-        <ConnectedStatusTitle textShadow="">{errorText}</ConnectedStatusTitle>
+        <ConnectedStatusTitle>{errorText}</ConnectedStatusTitle>
         <ConnectedStatusLED ledColor="#F33232" />
       </ConnectedStatusContainer>
+       <TextLineImage>
+       {themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />}
+       </TextLineImage>
+       </div>
     );
   }
 
   if (globalStatus === 'connecting') {
     return (
+      <div>
       <ConnectedStatusContainer>
-        <ConnectedStatusTitle textShadow="">CONNECTING</ConnectedStatusTitle>
+        <ConnectedStatusTitle>Connecting</ConnectedStatusTitle>
         <ConnectedStatusLED ledColor="#EBD619" />
       </ConnectedStatusContainer>
+      <TextLineImage>
+      {themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />}
+      </TextLineImage>
+      </div>
     );
   }
   if (globalStatus === 'connected') {
     return (
+      <div>
       <ConnectedStatusContainer>
-        <ConnectedStatusTitle
-          textShadow={themeType == 'light' ? '' : '0px 0px 3px #FFFFFF'}
-        >
-          CONNECTED
-        </ConnectedStatusTitle>
+        <ConnectedStatusTitle>Connected</ConnectedStatusTitle>
         <ConnectedStatusLED ledColor="#37EB19" />
       </ConnectedStatusContainer>
+      <TextLineImage>
+      {themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />}
+      </TextLineImage>
+      </div>
     );
   }
-  return (
-    <div>
-      <img width="300px" src={BelnetLogo} alt="Belnet Logo" />
-    </div> 
-  );
+  return <div>
+    <ConnectedStatusContainer>
+      <ConnectedStatusTitle>Disconnected</ConnectedStatusTitle>
+      <ConnectedStatusLED ledColor="#F33232" />
+    </ConnectedStatusContainer>
+    <TextLineImage>
+    {themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />}
+    </TextLineImage>
+    {/* <ConnectedStatusContainer>
+      <ConnectedStatusTitle>
+        CONNECTED
+      </ConnectedStatusTitle>
+      <ConnectedStatusLED ledColor="#37EB19" />
+    </ConnectedStatusContainer> */}
+  </div>;
+  // <div style={{margin: 'auto'}}>
+  //   <img width="235" height="40" src={BelnetLogo} alt="Belnet Logo" />
+  // </div> 
 };

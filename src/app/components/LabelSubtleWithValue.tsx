@@ -2,26 +2,47 @@ import { Flex } from '@chakra-ui/react';
 import React from 'react';
 import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 import styled, { DefaultTheme } from 'styled-components';
-import { MdOutlineContentCopy } from 'react-icons/md';
 import { FiDownloadCloud, FiUploadCloud } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
-import {
-  selectDownloadRate,
-  selectUploadRate
-} from '../../features/statusSlice';
-import { downloadColorChart, uploadColorChart } from './SpeedChart';
+import { selectedTheme, } from '../../features/uiStatusSlice';
+import  {DarkThemeCopyButton}  from './ThemeChangeButton/DarkThemeCopyButton';
+import  {LightThemeCopyButton}  from './ThemeChangeButton/LightThemeCopyButton';
 
-const StyledLabelSubtle = styled.div`
-  color: ${(props) => props.theme.textColorSubtle};
+const GeneralInfoLabelKey = styled.div`
+  color: ${(props) => props.theme.labelKeyColor};
   padding-inline-end: 5px;
+  font-size: 12px;
   user-select: none;
   white-space: nowrap;
+  font-family: 'Poppins', sans-serif;
+`;
+
+const GeneralInfoLabelValue = styled(GeneralInfoLabelKey)<{
+  theme: DefaultTheme;
+}>`
+  color: ${(props) => props.theme.labelValueColor};
+  white-space: nowrap;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  user-select: none;
+`;
+
+const StyledLabelSubtle = styled.div`
+  color: ${(props) => props.theme.labelValueColor};
+  padding-inline-end: 5px;
+  font-size: 13px;
+  line-height: 20px;
+  user-select: none;
+  white-space: nowrap;
+  font-family: 'Poppins', sans-serif;
 `;
 
 const StyledValue = styled(StyledLabelSubtle)<{
   theme: DefaultTheme;
 }>`
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -31,18 +52,16 @@ const StyledValue = styled(StyledLabelSubtle)<{
 const InlineIconButton = styled.button<{ size: string; theme: DefaultTheme }>`
   width: ${(props) => props.size};
   height: ${(props) => props.size};
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
   background: none;
-
   flex-shrink: 0;
   border: none;
   cursor: pointer;
-
   transition: 0.25s linear;
   border-radius: 7px;
-
+  margin-left: auto;
   :hover {
-    color: ${(props) => props.theme.textColorSubtle};
+    color: ${(props) => props.theme.labelValueColor};
   }
 
   svg {
@@ -54,7 +73,7 @@ const InlineIconButton = styled.button<{ size: string; theme: DefaultTheme }>`
 const InlineIcon = styled.div<{ size: string; theme: DefaultTheme }>`
   width: ${(props) => props.size};
   height: ${(props) => props.size};
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
   background: none;
   flex-shrink: 0;
   border: none;
@@ -67,6 +86,7 @@ const InlineIcon = styled.div<{ size: string; theme: DefaultTheme }>`
 
 const CopyToClipboardIcon = (props: { valueToCopy: string }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const themeSelected = useSelector(selectedTheme);
   const [_getclipboard, copyToClipboard] = useCopyToClipboard();
   return (
     <InlineIconButton
@@ -76,7 +96,7 @@ const CopyToClipboardIcon = (props: { valueToCopy: string }) => {
       }}
       title="Copy to clipboard"
     >
-      <MdOutlineContentCopy />
+      {themeSelected === 'light' ?  <LightThemeCopyButton /> : <DarkThemeCopyButton/>}
     </InlineIconButton>
   );
 };
@@ -91,8 +111,8 @@ export const LabelSubtleWithValue = (props: {
 
   return (
     <Flex justifyContent={center ? 'center' : 'start'}>
-      <StyledLabelSubtle>{label}: </StyledLabelSubtle>
-      <StyledValue>{value}</StyledValue>
+      <GeneralInfoLabelKey>{label}: </GeneralInfoLabelKey>
+      <GeneralInfoLabelValue>{value}</GeneralInfoLabelValue>
       {value?.length && showCopyToClipBoard ? (
         <CopyToClipboardIcon valueToCopy={value} />
       ) : null}
@@ -134,7 +154,6 @@ const KeyValueWithIconAndPill = (props: {
   pillColor?: string;
 }): JSX.Element => {
   const { label, value, icon, pillColor } = props;
-
   return (
     <Flex
       justifyContent="start"
@@ -146,47 +165,6 @@ const KeyValueWithIconAndPill = (props: {
       <StyledLabelSubtle>{label}: </StyledLabelSubtle>
       <StyledValue>{value}</StyledValue>
     </Flex>
-  );
-};
-
-const SpeedWithPillAndIcon = (props: {
-  label: string;
-  value: string;
-  pillColor: string;
-  icon: React.ReactNode;
-}): JSX.Element => {
-  return (
-    <KeyValueWithIconAndPill
-      fontSize="0.9rem"
-      label={props.label}
-      value={props.value}
-      icon={props.icon}
-      pillColor={props.pillColor}
-    />
-  );
-};
-
-export const UpSpeedWithPillAndIcon = (): JSX.Element => {
-  const upSpeed = useSelector(selectUploadRate);
-  return (
-    <SpeedWithPillAndIcon
-      pillColor={uploadColorChart}
-      icon={<UploadInlineIcon size="15px" />}
-      label="Upload"
-      value={upSpeed}
-    />
-  );
-};
-
-export const DownSpeedWithPillAndIcon = (): JSX.Element => {
-  const downSpeed = useSelector(selectDownloadRate);
-  return (
-    <SpeedWithPillAndIcon
-      pillColor={downloadColorChart}
-      icon={<DownloadInlineIcon size="15px" />}
-      label="Download"
-      value={downSpeed}
-    />
   );
 };
 
@@ -202,40 +180,6 @@ const SpeedWithIcon = (props: {
       marginBottom="0.5rem"
       value={props.value}
       icon={props.icon}
-    />
-  );
-};
-
-export const UpSpeedWithIcon = (): JSX.Element => {
-  const upSpeed = useSelector(selectUploadRate);
-
-  return (
-    <SpeedWithIcon
-      label="Upload"
-      value={upSpeed}
-      icon={
-        <>
-          <UploadInlineIcon size="1.2rem" />
-          <HSpacer width="10px" />
-        </>
-      }
-    />
-  );
-};
-
-export const DownSpeedWithIcon = (): JSX.Element => {
-  const downSpeed = useSelector(selectDownloadRate);
-
-  return (
-    <SpeedWithIcon
-      label="Download"
-      value={downSpeed}
-      icon={
-        <>
-          <DownloadInlineIcon size="1.2rem" />
-          <HSpacer width="10px" />
-        </>
-      }
     />
   );
 };

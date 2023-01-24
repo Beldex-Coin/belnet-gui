@@ -11,8 +11,8 @@ export function createTrayIcon(
   // keep the duplicated part to allow for search and find
   const iconFile =
     process.platform === 'darwin'
-      ? 'belnet_logo.png'
-      : 'belnet_logo.png';
+      ? '256x256.png'
+      : '512x512.png';
 
   const icon = join(__dirname, '../', 'images', iconFile);
   tray = new Tray(icon);
@@ -27,7 +27,14 @@ export function createTrayIcon(
       mainWindow.setAlwaysOnTop(false);
     }
   };
-
+  
+  (tray as any).closeApp = () => {
+    const mainWindow = getMainWindow();
+    if (!mainWindow) {
+      return;
+    }
+    app.quit()
+  };
   (tray as any).toggleWindowVisibility = () => {
     const mainWindow = getMainWindow();
     if (mainWindow) {
@@ -75,8 +82,9 @@ export function createTrayIcon(
         id: 'quit',
         label: 'Quit',
         click: () => {
-          mainWindow.destroy();
-          app.quit.bind(app);
+          app.quit()
+          // mainWindow.destroy();
+          // app.quit.bind(app);
         }
       }
     ]);

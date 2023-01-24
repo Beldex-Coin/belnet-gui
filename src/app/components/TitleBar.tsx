@@ -1,16 +1,19 @@
 import React from 'react';
-import { RiCloseFill } from 'react-icons/ri';
-import { HiMoon } from 'react-icons/hi';
 import styled from 'styled-components';
-
-import { selectedTheme, setTheme } from '../../features/uiStatusSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import  {LightThemeButton}  from './ThemeChangeButton/LightThemeButton';
+import  {DarkThemeButton}  from './ThemeChangeButton/DarkThemeButton';
+import  {LightThemeCloseBtn}  from './ThemeChangeButton/LightThemeCloseBtn';
+import  {LightThemeMinimizeBtn}  from './ThemeChangeButton/LightThemeMinimizeBtn';
+import  {DarkThemeMinimizeBtn}  from './ThemeChangeButton/DarkThemeMinimizeBtn';
+import  {DarkThemeCloseBtn}  from './ThemeChangeButton/DarkThemeCloseBtn';
+import { selectedTheme, setTheme } from '../../features/uiStatusSlice';
 import { minimizeToTray } from '../../ipc/ipcRenderer';
-
+import {
+  useGlobalConnectingStatus
+} from '../hooks/connectingStatus';
 const Container = styled.div`
-  background: ${(props) => props.theme.backgroundColor};
   z-index: 99;
-
   position: sticky;
   top: 0;
   overflow-y: auto;
@@ -19,12 +22,12 @@ const Container = styled.div`
   -webkit-app-region: drag;
   -webkit-user-select: none;
   flex-shrink: 0;
-  padding: 0.5rem 1rem;
+  padding: 15px 15px 5px 15px;
 `;
 
 const StyledIconButton = styled.button`
   font-size: 2rem;
-  color: ${(props) => props.theme.textColor};
+  color: ${(props) => props.theme.labelKeyColor};
   border: none;
   cursor: pointer;
   background: none;
@@ -33,13 +36,17 @@ const StyledIconButton = styled.button`
 
   transition: 0.25s;
   :hover {
-    color: ${(props) => props.theme.textColorSubtle};
+    color: ${(props) => props.theme.labelValueColor};
   }
 `;
 
 export const TitleBar = (): JSX.Element => {
   const themeSelected = useSelector(selectedTheme);
   const dispatch = useDispatch();
+  const globalStatus = useGlobalConnectingStatus();
+  const closeButton = themeSelected === 'light' ?  <LightThemeCloseBtn /> : <DarkThemeCloseBtn/>;
+  const minimizeButton = themeSelected === 'light' ?  <LightThemeMinimizeBtn /> : <DarkThemeMinimizeBtn/>;
+      
   return (
     <Container>
       <StyledIconButton
@@ -49,11 +56,11 @@ export const TitleBar = (): JSX.Element => {
         }}
         style={{ marginRight: 'auto' }}
       >
-        <HiMoon />
+       {themeSelected === 'light' ?  <DarkThemeButton /> : <LightThemeButton/>}
       </StyledIconButton>
 
-      <StyledIconButton title="Minimize to tray" onClick={minimizeToTray}>
-        <RiCloseFill />
+      <StyledIconButton title="Minimize to tray" onClick={() => minimizeToTray(globalStatus === 'connected' ? 'minimize' : 'close')}>
+        {globalStatus === 'connected' ? minimizeButton : closeButton}
       </StyledIconButton>
     </Container>
   );

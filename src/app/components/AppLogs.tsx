@@ -1,28 +1,37 @@
 import { Code, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
-import { MdOutlineContentCopy } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useCopyToClipboard } from 'react-use';
 import styled, { useTheme } from 'styled-components';
 import { clearLogs, selectAppLogs } from '../../features/appLogsSlice';
 import { useAppSelector } from '../hooks';
-import { MinusDivider, PlusDivider } from './Dividers';
-import { BelnetIconButton } from './BelnetIconButton';
 import { TextButton } from './TextButton';
 
 const ButtonRow = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 17px;
+`;
+
+const NoLogYet = styled.div`
+  color: ${(props) => props.theme.appLogTimeStampColor};
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  margin: auto;
 `;
 
 const Timestamp = styled.span`
   font-size: 10px;
-  color: ${(props) => props.theme.textColorSubtle};
+  display: inline-block;
+  min-width: 48px;
+  max-width: 100px;
+  color: ${(props) => props.theme.appLogTimeStampColor};
 `;
 
 const Content = styled(Timestamp)`
-  color: ${(props) => props.theme.textColor};
+  display: inline;
+  color: ${(props) => props.theme.appLogContentColor};
 `;
 
 export const AppLogs = (): JSX.Element => {
@@ -35,19 +44,18 @@ export const AppLogs = (): JSX.Element => {
   const [_clip, copyToClipboard] = useCopyToClipboard();
 
   return (
-    <Flex flexDirection="column" height="100%">
-      <PlusDivider />
-
+    <Flex flexDirection="column" height="100%" style={{paddingTop: '10px'}}>
       <Code
         size="xs"
+        boxShadow={theme.appLogBS}
         overflowY="auto"
         textAlign="left"
-        maxHeight="70vh"
+        maxHeight="163px"
         display="flex"
         wordBreak="break-all"
-        padding="10px"
-        borderRadius="8px"
-        flexDirection="column-reverse"
+        fontFamily="'Poppins', sans-serif"
+        borderRadius="12px"
+        flexDirection="column"
         flexGrow={1}
         flexShrink={300}
         backgroundColor={theme.inputBackground}
@@ -58,14 +66,14 @@ export const AppLogs = (): JSX.Element => {
             const timestamp = logLine.substring(0, separator);
             const content = logLine.substring(separator);
             return (
-              <span>
-                <Timestamp>{timestamp}</Timestamp>
-                <Content>{content}</Content>
+              <span style={{padding: '3px 14px 4px 26px'}}>
+                <Timestamp>{new Date(parseInt(timestamp)).toLocaleTimeString()}:</Timestamp>
+                <Content>{content.replace(': ','')}</Content>
               </span>
             );
           })
         ) : (
-          <Text fontSize={12}>No logs yet...</Text>
+          <NoLogYet>No logs yet...</NoLogYet>
         )}
       </Code>
       <ButtonRow>
@@ -74,14 +82,12 @@ export const AppLogs = (): JSX.Element => {
           text="Clear"
           title="Clear logs"
         />
-        <BelnetIconButton
+         <TextButton
           onClick={() => copyToClipboard(appLogs.join('\r\n'))}
-          size="30px"
-          icon={<MdOutlineContentCopy />}
+          text="Copy"
           title="Copy to clipboard"
         />
       </ButtonRow>
-      <MinusDivider />
     </Flex>
   );
 };
