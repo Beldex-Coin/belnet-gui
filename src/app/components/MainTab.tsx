@@ -207,7 +207,7 @@ export const MainTab = (): JSX.Element => {
           <Heading>Can you set up an exit node?</Heading>
           <Para>Yes, anyone can set up an exit node. Check the <Anchor onClick={() => openExternalLink("https://belnet.beldex.io/")}>BelNet</Anchor> website for complete documentation on how to set up an exit node.</Para>
           <br/>
-          <Para>You can also find the setup guide under <Anchor onClick={() => openExternalLink("https://docs.beldex.io/advanced/belnet/exit-node-setup-guide")}>Beldex docs.</Anchor></Para>
+          <Para>You can also find the setup guide under <Anchor onClick={() => openExternalLink("https://docs.beldex.io/belnet/exit-node-setup-guide")}>Beldex docs.</Anchor></Para>
           <br/>
           <Para>Exit node contributors will be rewarded and their node will be added to the BelNet app. To add your exit node to the BelNet app, reach out to <Anchor href="mailto:outreach@beldex.io">outreach@beldex.io</Anchor></Para>
           <br/>
