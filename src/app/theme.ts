@@ -29,7 +29,8 @@ export const darkTheme = {
   modalBg: '#252532',
   aboutBelnetColor: '#23DC27',
   chartLabel: '#FFFFFF',
-  chartAxis: '#A1A1C1'
+  chartAxis: '#A1A1C1',
+  nodeSeparator: 'solid 1px #48485d'
 };
 
 export const lightTheme: DefaultTheme = {
@@ -59,5 +60,7 @@ export const lightTheme: DefaultTheme = {
   modalBg: '#EBEBEB',
   aboutBelnetColor: '#1DC021',
   chartLabel: '#747484',
-  chartAxis: '#747484'
+  chartAxis: '#747484',
+  nodeSeparator: 'solid 1px #DFDFDF'
+
 };

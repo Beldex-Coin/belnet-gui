@@ -29,5 +29,6 @@ declare module 'styled-components' {
     aboutBelnetColor: string;
     chartLabel: string;
     chartAxis: string;
+    nodeSeparator: string;
   }
 }
