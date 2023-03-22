@@ -169,7 +169,7 @@ const ArrowStyle = {
 export const ExitPanel = (): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuList, setMenuList] = useState([]);
-  const [selectedNode, setNode] = useState();
+  const [selectedNode, setNode] = useState({});
   const exitStatus = useSelector(selectExitStatus);
   const dispatch = useAppDispatch();
   const ref = React.useRef()
@@ -216,13 +216,13 @@ export const ExitPanel = (): JSX.Element => {
 
   const handleChange = (nodeList: any) => {
     if (nodeList && nodeList.name) {
-      setNode(nodeList.name)
+      setNode(nodeList)
       openNodeList();
       dispatch(onUserExitNodeSet(nodeList.name))
     }
   }
 
-  const getRandomExitNode = (list) => {
+  const getRandomExitNode = (list: any) => {
     const allNodes: any = [];
     list.forEach((item: any) => {
       const node = item?.node;
@@ -233,7 +233,7 @@ export const ExitPanel = (): JSX.Element => {
     const randomExitNodeIndex = Math.floor(Math.random() * (maxMenuLenIndex - min + 1) + min);
     const randomExitNode: any = allNodes[randomExitNodeIndex]
     dispatch(onUserExitNodeSet(randomExitNode?.name))
-    setNode(randomExitNode?.name)
+    setNode(randomExitNode)
     return randomExitNode
   }
 
@@ -262,11 +262,12 @@ export const ExitPanel = (): JSX.Element => {
             value={exitToUse || ''}
           /> :
             <ExitNodeValue className='exitNode' onClick={openNodeList}>
-              <p className='exitNode' style={{ textOverflow: 'ellipsis', maxWidth: '324px', overflow: 'hidden', whiteSpace: 'nowrap' }}>{selectedNode || exitToUse}</p>
-              {isMenuOpen && selectedNode && <div className='exitNode' style={{ padding: '0 5px' }}>
+               <CountryFlags style={{marginTop: '3px'}} keyItem={selectedNode?.name} countryName={selectedNode?.country.toLowerCase()} />
+              <p className='exitNode' style={{ textOverflow: 'ellipsis', maxWidth: '324px', overflow: 'hidden', whiteSpace: 'nowrap' }}>{selectedNode?.name || exitToUse}</p>
+              {isMenuOpen && selectedNode?.name && <div className='exitNode' style={{ padding: '0 5px' }}>
                 {themeSelected === 'light' ? <img src={ClearWhite} alt="white" /> : <img src={ClearDark} alt="dark" />}
               </div>}
-              {isMenuOpen && selectedNode && <span style={{ margin: '0 5px', border: `solid 0.5px ${theme.exitNodeIconColor}` }}></span>}
+              {isMenuOpen && selectedNode?.name && <span style={{ margin: '0 5px', border: `solid 0.5px ${theme.exitNodeIconColor}` }}></span>}
               <div className='exitNode' style={arrowMenuStyle}>
                 {themeSelected === 'light' ? <img src={DropDownWhite} alt="white" /> : <img src={DropDownDark} alt="dark" />}
               </div>
@@ -285,8 +286,8 @@ export const ExitPanel = (): JSX.Element => {
                   </NodeAccordionButton>
                   <NodeAccordionPanel >
                     {nodeArr.node.map((nodeList: any) =>
-                      <NodeDetail key={nodeList.name} onClick={() => handleChange(nodeList)} style={selectedNode === nodeList.name ? { background: '#1994FC', borderRadius: '8px' } : {}}>
-                        <CountryFlags keyItem={nodeList.name} countryName={nodeList.country.toLowerCase()} />
+                      <NodeDetail key={nodeList.name} onClick={() => handleChange(nodeList)} style={selectedNode?.name === nodeList.name ? { background: '#1994FC', borderRadius: '8px' } : {}}>
+                        <CountryFlags style={{}} keyItem={nodeList.name} countryName={nodeList.country.toLowerCase()} />
                         <div>
                           <NodeName>{nodeList.name}</NodeName>
                           <NodeCountry>{nodeList.country}</NodeCountry>
