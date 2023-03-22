@@ -32,7 +32,7 @@ const CountryFlagImg = styled.img<{ ledColor: string }>`
 const CountryFlags = (props: any) => {
     const imgSrc = CountryFlagsList[props.countryName];
     return (
-        <CountryFlagImg id={props.keyItem} src={imgSrc} />
+        <CountryFlagImg style={{...props.style}} id={props.keyItem} src={imgSrc} />
     )
 }
 
