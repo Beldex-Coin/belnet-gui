@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Flex, Stack, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box } from '@chakra-ui/react';
+import { Flex, Stack, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, InputGroup, InputLeftElement } from '@chakra-ui/react';
 import { useOutsideClick } from '@chakra-ui/react'
 import styled, { useTheme } from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -24,12 +24,13 @@ overflow: hidden;
     background-color: ${(props) => props.theme.inputBackground};
     bottom: 65px;
     max-height: 500px;
+    z-index: 10;
     border-radius: 8px;
     width: 368px;`;
 
 const NodeAccordionItem = styled(AccordionItem)`
   min-height: 62px;
-  padding: 14px 10px 14px 22px;
+  padding: 14px 0 0;
  border-bottom: ${(props) => props.theme.nodeSeparator};
  border-radius: ${(props) => props.className === 'nodeItem-0' ? '8px 8px 0 0' : '0 0 8px 8px'};
 `;
@@ -38,6 +39,7 @@ const NodeAccordionButton = styled(AccordionButton)`
   background: none;
     outline: none;
     border: 0;
+    padding: 0 10px 0 22px;
 `;
 
 const NodeAccordionIcon = styled(AccordionIcon)`
@@ -84,13 +86,13 @@ const NodeDetail = styled.div`
   padding: 7px 10px;
   justify-content: space-around;
   align-items: center;
-`;
+  border-bottom: ${(props) => props.theme.nodeSeparator};
+  `;
 
 const NodeAccordionPanel = styled(AccordionPanel)`
     max-height: 372px;
-    overflow-y: scroll;
+    overflow: auto;
     padding: 0;
-    overflow-x: hidden;
 `;
 
 const NodeCircle = styled.span`
@@ -117,6 +119,16 @@ font-size: 12px;
 padding: 10px 12px;
 outline: none;
 `;
+
+const ExitInputGroup = styled(InputGroup)`
+  height: 33px;
+`;
+
+const ExitInputLeftElement = styled(InputLeftElement)`
+  height: 33px;
+  padding-left: 10px;
+`;
+
 const ExitInput = styled(Input)`
   background-color: ${(props) => props.theme.inputBackground};
   color: ${(props) => props.theme.activePathColor};
@@ -127,8 +139,9 @@ const ExitInput = styled(Input)`
   border-radius: 6px;
   border: none;
   font-size: 12px;
-  padding: 10px 12px;
+  padding: 10px 12px 10px 35px;
   outline: none;
+  width: 100%;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'auto')};
 `;
 
@@ -169,7 +182,7 @@ const ArrowStyle = {
 export const ExitPanel = (): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuList, setMenuList] = useState([]);
-  const [selectedNode, setNode] = useState({});
+  const [selectedNode, setNode] = useState<any>({});
   const exitStatus = useSelector(selectExitStatus);
   const dispatch = useAppDispatch();
   const ref = React.useRef()
@@ -181,7 +194,7 @@ export const ExitPanel = (): JSX.Element => {
     handler: (e) => {
       if (e && e?.target) {
         const DOMClassList = e?.target?.className?.split(' ')
-        const isExitNode = DOMClassList && DOMClassList?.find(item => item === 'exitNode');
+        const isExitNode = DOMClassList && DOMClassList?.find((item: any) => item === 'exitNode');
         if (isExitNode && isExitNode === 'exitNode') {
           return
         } else {
@@ -246,23 +259,31 @@ export const ExitPanel = (): JSX.Element => {
       <Stack direction="row" alignSelf="center" width="100%" height="100%">
         <Flex flexDirection="column" flexGrow={1}>
           <InputLabel>Exit Node</InputLabel>
-          {disableInputEdits ? <ExitInput
-            disabled={disableInputEdits}
-            onChange={(e: any) =>
-              dispatch(onUserExitNodeSet(e?.currentTarget?.value))
-            }
-            onPaste={(e: any) =>
-              dispatch(onUserExitNodeSet(e?.currentTarget?.value))
-            }
-            size="sm"
-            variant="flushed"
-            marginBottom={2}
-            spellCheck={false}
-            noOfLines={1}
-            value={exitToUse || ''}
-          /> :
+          {disableInputEdits ? <ExitInputGroup>
+            <ExitInputLeftElement
+              pointerEvents='none'
+              children={
+                (!exitStatus.exitLoading) && <CountryFlags style={{ marginTop: '3px' }} keyItem={selectedNode?.name} countryName={selectedNode?.country?.toLowerCase()} />
+              }
+            />
+            <ExitInput
+              disabled={disableInputEdits}
+              onChange={(e: any) =>
+                dispatch(onUserExitNodeSet(e?.currentTarget?.value))
+              }
+              onPaste={(e: any) =>
+                dispatch(onUserExitNodeSet(e?.currentTarget?.value))
+              }
+              size="sm"
+              variant="flushed"
+              marginBottom={2}
+              spellCheck={false}
+              noOfLines={1}
+              value={exitToUse || ''}
+            />  </ExitInputGroup>
+            :
             <ExitNodeValue className='exitNode' onClick={openNodeList}>
-               <CountryFlags style={{marginTop: '3px'}} keyItem={selectedNode?.name} countryName={selectedNode?.country.toLowerCase()} />
+              {selectedNode?.name && <CountryFlags style={{ marginTop: '3px' }} keyItem={selectedNode?.name} countryName={selectedNode?.country?.toLowerCase()} />}
               <p className='exitNode' style={{ textOverflow: 'ellipsis', maxWidth: '324px', overflow: 'hidden', whiteSpace: 'nowrap' }}>{selectedNode?.name || exitToUse}</p>
               {isMenuOpen && selectedNode?.name && <div className='exitNode' style={{ padding: '0 5px' }}>
                 {themeSelected === 'light' ? <img src={ClearWhite} alt="white" /> : <img src={ClearDark} alt="dark" />}
