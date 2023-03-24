@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Flex, Stack, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, InputGroup, InputLeftElement } from '@chakra-ui/react';
+import { Flex, Stack, Input, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, InputGroup, InputLeftElement, InputRightElement } from '@chakra-ui/react';
 import { useOutsideClick } from '@chakra-ui/react'
 import styled, { useTheme } from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -192,7 +192,7 @@ export const ExitPanel = (): JSX.Element => {
   useOutsideClick({
     ref: ref,
     handler: (e) => {
-      if (e && e?.target) {
+      if (e && e?.target && e?.target?.className) {
         const DOMClassList = e?.target?.className?.split(' ')
         const isExitNode = DOMClassList && DOMClassList?.find((item: any) => item === 'exitNode');
         if (isExitNode && isExitNode === 'exitNode') {
@@ -227,6 +227,10 @@ export const ExitPanel = (): JSX.Element => {
     setIsMenuOpen((prev) => !prev);
   }
 
+  const closeNodeList = () => {
+    setIsMenuOpen(false);
+  }
+
   const handleChange = (nodeList: any) => {
     if (nodeList && nodeList.name) {
       setNode(nodeList)
@@ -259,6 +263,23 @@ export const ExitPanel = (): JSX.Element => {
       <Stack direction="row" alignSelf="center" width="100%" height="100%">
         <Flex flexDirection="column" flexGrow={1}>
           <InputLabel>Exit Node</InputLabel>
+          {/* <InputGroup>
+            <InputLeftElement
+              pointerEvents='none'
+              color='gray.300'
+              fontSize='1.2em'
+              children='$'
+            />
+            <Input
+              placeholder=''
+              className='exitNode'
+              onFocus={openNodeList}
+              // onBlur={closeNodeList}
+              defaultValue={selectedNode?.name}
+              // value={exitToUse || ''}
+            />
+            <InputRightElement children={<div />} />
+          </InputGroup> */}
           {disableInputEdits ? <ExitInputGroup>
             <ExitInputLeftElement
               pointerEvents='none'
