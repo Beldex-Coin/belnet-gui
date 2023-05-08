@@ -22,8 +22,8 @@ const NodeAccordion = styled(Accordion)`
 overflow: hidden;
     position: absolute;
     background-color: ${(props) => props.theme.inputBackground};
-    bottom: 65px;
-    max-height: 500px;
+    bottom: ${(props) => props.className === 'newValuePresent' ? '45px' : '72px'};
+    max-height: 520px;
     z-index: 10;
     border-radius: 8px;
     width: 368px;`;
@@ -102,10 +102,15 @@ const NodeCircle = styled.span`
   margin-left: 7px;
   background-color: ${(props) => props.theme.tabSelected};
 `;
+const NewExitNode = styled.p`
+text-align: center;
+    font-size: 14px;
+    padding: 5px;
+    color: ${(props) => props.theme.activePathColor};
+`;
 
 const ExitNodeValue = styled.div`
 display: flex;
-justify-content: flex-end;
 background-color: ${(props) => props.theme.inputBackground};
 color: ${(props) => props.theme.activePathColor};
 outline-color: transparent;
@@ -183,11 +188,18 @@ export const ExitPanel = (): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuList, setMenuList] = useState([]);
   const [selectedNode, setNode] = useState<any>({});
+
   const exitStatus = useSelector(selectExitStatus);
   const dispatch = useAppDispatch();
   const ref = React.useRef()
   const theme = useTheme();
   const themeSelected = useSelector(selectedTheme);
+  const disableInputEdits =
+    exitStatus.exitLoading || Boolean(exitStatus.exitNodeFromDaemon);
+  const exitToUse = disableInputEdits
+    ? exitStatus.exitNodeFromDaemon
+    : exitStatus.exitNodeFromUser;
+  const [newValue, setNewValue] = React.useState<string>("");
 
   useOutsideClick({
     ref: ref,
@@ -207,11 +219,7 @@ export const ExitPanel = (): JSX.Element => {
   // if the exit is loading (awaiting answer from daemon)
   // or if the exit node is set, we cannot edit the input fields.
   // We first need to disable the exit node mode
-  const disableInputEdits =
-    exitStatus.exitLoading || Boolean(exitStatus.exitNodeFromDaemon);
-  const exitToUse = disableInputEdits
-    ? exitStatus.exitNodeFromDaemon
-    : exitStatus.exitNodeFromUser;
+
   // const exitDaemon = exitStatus.exitNodeFromDaemon;
   // defaultExitUse = exitToUse;
 
@@ -219,7 +227,6 @@ export const ExitPanel = (): JSX.Element => {
     promiseOptions().then((list: any) => {
       setMenuList(list);
       getRandomExitNode(list);
-
     })
   }, [])
 
@@ -227,8 +234,29 @@ export const ExitPanel = (): JSX.Element => {
     setIsMenuOpen((prev) => !prev);
   }
 
+  const changeExitNode = (e: any) => {
+    const html = e.target.innerText;
+    setIsMenuOpen(false)
+    setNewValue(html);
+  }
   const closeNodeList = () => {
     setIsMenuOpen(false);
+  }
+
+  const setNewExitNode = () => {
+    if (newValue) {
+      const nodeList = {
+        country: "",
+        icon: "",
+        id: 0,
+        isActive: "true",
+        name: newValue
+      }
+      setNode(nodeList)
+      openNodeList();
+      setNewValue("");
+      dispatch(onUserExitNodeSet(nodeList.name))
+    }
   }
 
   const handleChange = (nodeList: any) => {
@@ -237,6 +265,12 @@ export const ExitPanel = (): JSX.Element => {
       openNodeList();
       dispatch(onUserExitNodeSet(nodeList.name))
     }
+  }
+
+  const clearNodeValue = (e: any) => {
+    dispatch(onUserExitNodeSet(''))
+    setNode({})
+    setNewValue("");
   }
 
   const getRandomExitNode = (list: any) => {
@@ -276,7 +310,7 @@ export const ExitPanel = (): JSX.Element => {
               onFocus={openNodeList}
               // onBlur={closeNodeList}
               defaultValue={selectedNode?.name}
-              // value={exitToUse || ''}
+            // value={exitToUse || ''}
             />
             <InputRightElement children={<div />} />
           </InputGroup> */}
@@ -303,20 +337,23 @@ export const ExitPanel = (): JSX.Element => {
               value={exitToUse || ''}
             />  </ExitInputGroup>
             :
-            <ExitNodeValue className='exitNode' onClick={openNodeList}>
-              {selectedNode?.name && <CountryFlags style={{ marginTop: '3px' }} keyItem={selectedNode?.name} countryName={selectedNode?.country?.toLowerCase()} />}
-              <p className='exitNode' style={{ textOverflow: 'ellipsis', maxWidth: '324px', overflow: 'hidden', whiteSpace: 'nowrap' }}>{selectedNode?.name || exitToUse}</p>
-              {isMenuOpen && selectedNode?.name && <div className='exitNode' style={{ padding: '0 5px' }}>
-                {themeSelected === 'light' ? <img src={ClearWhite} alt="white" /> : <img src={ClearDark} alt="dark" />}
-              </div>}
-              {isMenuOpen && selectedNode?.name && <span style={{ margin: '0 5px', border: `solid 0.5px ${theme.exitNodeIconColor}` }}></span>}
-              <div className='exitNode' style={arrowMenuStyle}>
-                {themeSelected === 'light' ? <img src={DropDownWhite} alt="white" /> : <img src={DropDownDark} alt="dark" />}
+
+            <ExitNodeValue className='exitNode' >
+              {selectedNode?.name && <CountryFlags onClick={openNodeList} style={{ marginTop: '3px' }} keyItem={selectedNode?.name} countryName={selectedNode?.country?.toLowerCase()} />}
+              <p onClick={openNodeList} contentEditable={true} onInput={changeExitNode} className='exitNode' style={{ textOverflow: 'ellipsis', maxWidth: '324px', width: '100%', overflow: 'hidden', whiteSpace: 'nowrap' }}>{selectedNode?.name || exitToUse}</p>
+              <div style={{display: 'flex', marginLeft: 'auto'}}>
+                 <div className='exitNode' onClick={clearNodeValue} style={{ padding: '0 5px', zIndex: 100 }}>
+                  {themeSelected === 'light' ? <img src={ClearWhite} alt="white" /> : <img src={ClearDark} alt="dark" />}
+                </div>
+               <span style={{ margin: '0 5px', border: `solid 0.5px ${theme.exitNodeIconColor}` }}></span>
+                <div onClick={openNodeList} className='exitNode' style={arrowMenuStyle}>
+                  {themeSelected === 'light' ? <img src={DropDownWhite} alt="white" /> : <img src={DropDownDark} alt="dark" />}
+                </div>
               </div>
             </ExitNodeValue>
           }
           {isMenuOpen && menuList && menuList.length > 0 &&
-            <NodeAccordion allowToggle ref={ref}>
+            <NodeAccordion className={newValue ? 'newValuePresent' : 'noNewValue'} allowToggle ref={ref}>
               {menuList.map((nodeArr: any, index: number) =>
                 <NodeAccordionItem key={nodeArr.type} className={`nodeItem-${index}`}>
                   <NodeAccordionButton>
@@ -340,6 +377,7 @@ export const ExitPanel = (): JSX.Element => {
                   </NodeAccordionPanel>
                 </NodeAccordionItem>
               )}
+              {newValue && <NewExitNode onClick={setNewExitNode}>Create New: {newValue}</NewExitNode>}
             </NodeAccordion>
           }
         </Flex>
