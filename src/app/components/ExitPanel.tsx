@@ -236,7 +236,7 @@ export const ExitPanel = (): JSX.Element => {
 
   const changeExitNode = (e: any) => {
     const html = e.target.innerText;
-    setIsMenuOpen(true)
+    setIsMenuOpen(false)
     setNewValue(html);
   }
   const closeNodeList = () => {
@@ -265,6 +265,12 @@ export const ExitPanel = (): JSX.Element => {
       openNodeList();
       dispatch(onUserExitNodeSet(nodeList.name))
     }
+  }
+
+  const clearNodeValue = (e: any) => {
+    dispatch(onUserExitNodeSet(''))
+    setNode({})
+    setNewValue("");
   }
 
   const getRandomExitNode = (list: any) => {
@@ -332,15 +338,15 @@ export const ExitPanel = (): JSX.Element => {
             />  </ExitInputGroup>
             :
 
-            <ExitNodeValue className='exitNode' onClick={openNodeList}>
-              {selectedNode?.name && <CountryFlags style={{ marginTop: '3px' }} keyItem={selectedNode?.name} countryName={selectedNode?.country?.toLowerCase()} />}
-              <p contentEditable={true} onInput={changeExitNode} className='exitNode' style={{ textOverflow: 'ellipsis', maxWidth: '324px', width: '100%', overflow: 'hidden', whiteSpace: 'nowrap' }}>{selectedNode?.name || exitToUse}</p>
+            <ExitNodeValue className='exitNode' >
+              {selectedNode?.name && <CountryFlags onClick={openNodeList} style={{ marginTop: '3px' }} keyItem={selectedNode?.name} countryName={selectedNode?.country?.toLowerCase()} />}
+              <p onClick={openNodeList} contentEditable={true} onInput={changeExitNode} className='exitNode' style={{ textOverflow: 'ellipsis', maxWidth: '324px', width: '100%', overflow: 'hidden', whiteSpace: 'nowrap' }}>{selectedNode?.name || exitToUse}</p>
               <div style={{display: 'flex', marginLeft: 'auto'}}>
-                {isMenuOpen && selectedNode?.name && <div className='exitNode' style={{ padding: '0 5px' }}>
+                 <div className='exitNode' onClick={clearNodeValue} style={{ padding: '0 5px', zIndex: 100 }}>
                   {themeSelected === 'light' ? <img src={ClearWhite} alt="white" /> : <img src={ClearDark} alt="dark" />}
-                </div>}
-                {isMenuOpen && selectedNode?.name && <span style={{ margin: '0 5px', border: `solid 0.5px ${theme.exitNodeIconColor}` }}></span>}
-                <div className='exitNode' style={arrowMenuStyle}>
+                </div>
+               <span style={{ margin: '0 5px', border: `solid 0.5px ${theme.exitNodeIconColor}` }}></span>
+                <div onClick={openNodeList} className='exitNode' style={arrowMenuStyle}>
                   {themeSelected === 'light' ? <img src={DropDownWhite} alt="white" /> : <img src={DropDownDark} alt="dark" />}
                 </div>
               </div>
