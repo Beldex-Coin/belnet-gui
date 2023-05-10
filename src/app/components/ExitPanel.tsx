@@ -121,7 +121,7 @@ font-weight: 400;
 border-radius: 6px;
 border: none;
 font-size: 12px;
-padding: 10px 12px;
+padding: 9px 12px;
 outline: none;
 `;
 
@@ -132,6 +132,18 @@ const ExitInputGroup = styled(InputGroup)`
 const ExitInputLeftElement = styled(InputLeftElement)`
   height: 33px;
   padding-left: 10px;
+`;
+
+const EnterExitNodeInput = styled(Input)`
+background-color: rgb(37, 37, 50);
+color: rgb(0, 163, 255);
+font-family: Poppins, sans-serif;
+width: 370px;
+font-weight: 400;
+border-radius: 6px;
+border: none;
+font-size: 12px;
+outline: none;
 `;
 
 const ExitInput = styled(Input)`
@@ -191,7 +203,8 @@ export const ExitPanel = (): JSX.Element => {
 
   const exitStatus = useSelector(selectExitStatus);
   const dispatch = useAppDispatch();
-  const ref = React.useRef()
+  const ref = React.useRef();
+  const exitnodeInputRef = React.useRef();
   const theme = useTheme();
   const themeSelected = useSelector(selectedTheme);
   const disableInputEdits =
@@ -227,20 +240,33 @@ export const ExitPanel = (): JSX.Element => {
     promiseOptions().then((list: any) => {
       setMenuList(list);
       getRandomExitNode(list);
-    })
+    });
   }, [])
 
+  useEffect(() => {
+    if(newValue === '') {
+      setTimeout(()=>{exitnodeInputRef.current?.focus();}, 500)
+      
+    }
+  }, [newValue])
   const openNodeList = () => {
     setIsMenuOpen((prev) => !prev);
   }
 
-  const changeExitNode = (e: any) => {
-    const html = e.target.innerText;
-    setIsMenuOpen(false)
+  const onInputBlur = (e: any) => {
+    const html = e.target.value;
+    console.log('-html--', html)
+    const nodeList = {
+      country: "",
+      icon: "",
+      id: 0,
+      isActive: "true",
+      name: html
+    }
+    setNode(nodeList)
+    // openNodeList();
     setNewValue(html);
-  }
-  const closeNodeList = () => {
-    setIsMenuOpen(false);
+    dispatch(onUserExitNodeSet(nodeList.name))
   }
 
   const setNewExitNode = () => {
@@ -270,7 +296,7 @@ export const ExitPanel = (): JSX.Element => {
   const clearNodeValue = (e: any) => {
     dispatch(onUserExitNodeSet(''))
     setNode({})
-    setNewValue("");
+    setNewValue('');
   }
 
   const getRandomExitNode = (list: any) => {
@@ -340,9 +366,10 @@ export const ExitPanel = (): JSX.Element => {
 
             <ExitNodeValue className='exitNode' >
               {selectedNode?.name && <CountryFlags onClick={openNodeList} style={{ marginTop: '3px' }} keyItem={selectedNode?.name} countryName={selectedNode?.country?.toLowerCase()} />}
-              <p onClick={openNodeList} contentEditable={true} onInput={changeExitNode} className='exitNode' style={{ textOverflow: 'ellipsis', maxWidth: '324px', width: '100%', overflow: 'hidden', whiteSpace: 'nowrap' }}>{selectedNode?.name || exitToUse}</p>
+              {selectedNode?.name || exitToUse || newValue ? <p className='exitNode' style={{ textOverflow: 'ellipsis', maxWidth: '324px', width: '100%', overflow: 'hidden', whiteSpace: 'nowrap' }}>{selectedNode?.name || exitToUse || newValue || ''}</p> :
+              <EnterExitNodeInput ref={exitnodeInputRef} onBlur={onInputBlur} style={{ textOverflow: 'ellipsis', maxWidth: '324px', width: '100%', overflow: 'hidden', whiteSpace: 'nowrap' }}  maxLength={56}/>}
               <div style={{display: 'flex', marginLeft: 'auto'}}>
-                 <div className='exitNode' onClick={clearNodeValue} style={{ padding: '0 5px', zIndex: 100 }}>
+                 <div className='exitNode' onClick={clearNodeValue} style={{ padding: '0 5px', zIndex: 10 }}>
                   {themeSelected === 'light' ? <img src={ClearWhite} alt="white" /> : <img src={ClearDark} alt="dark" />}
                 </div>
                <span style={{ margin: '0 5px', border: `solid 0.5px ${theme.exitNodeIconColor}` }}></span>
@@ -377,7 +404,7 @@ export const ExitPanel = (): JSX.Element => {
                   </NodeAccordionPanel>
                 </NodeAccordionItem>
               )}
-              {newValue && <NewExitNode onClick={setNewExitNode}>Create New: {newValue}</NewExitNode>}
+              {/* {newValue && <NewExitNode onClick={setNewExitNode}>Create New: {newValue}</NewExitNode>} */}
             </NodeAccordion>
           }
         </Flex>
