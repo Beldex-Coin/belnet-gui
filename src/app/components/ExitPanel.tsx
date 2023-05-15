@@ -135,8 +135,8 @@ const ExitInputLeftElement = styled(InputLeftElement)`
 `;
 
 const EnterExitNodeInput = styled(Input)`
-background-color: rgb(37, 37, 50);
-color: rgb(0, 163, 255);
+background-color: ${(props) => props.theme.inputBackground};
+color: ${(props) => props.theme.activePathColor};
 font-family: Poppins, sans-serif;
 width: 370px;
 font-weight: 400;
