@@ -1,12 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { app, BrowserWindow, screen, Tray } from 'electron';
+import { app, BrowserWindow, screen, Tray, dialog } from 'electron';
 import { initializeIpcNodeSide, logLineToAppSide } from './ipcNode';
 import { doStopBelnetProcess } from './belnetProcessManager';
 import { closeRpcConnection } from './belnetRpcCall';
 import { createTrayIcon } from './trayIcon';
+import  { autoUpdater } from "electron-updater";
+
 import { markShouldQuit, shouldQuit } from './windowState';
 import ElectronStore from 'electron-store';
 
+let updateInterval = null;
+let updateNotAvailable = false;
+let updateCheck = false;
+let updateFound = false;
 let store: ElectronStore | undefined;
 const configScreenIndex = 'SCREEN_INDEX';
 
@@ -172,5 +178,51 @@ app.on('web-contents-created', (createEvent, contents) => {
   });
 });
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow();
+  updateInterval = setInterval(() => autoUpdater.checkForUpdates(), 600000);
+
+} );
+
+autoUpdater.on("update-available", (_event: any, releaseNotes: any, releaseName: any) => {
+  const dialogOpts = {
+      type: 'info',
+      buttons: ['Ok'],
+      title: `${autoUpdater.channel} Update Available`,
+      message: process.platform === 'win32' ? releaseNotes : releaseName,
+      detail: `A new ${autoUpdater.channel} version download started.`
+  };
+
+  if (!updateCheck) {
+      updateInterval = null;
+      dialog.showMessageBox(dialogOpts);
+      updateCheck = true;
+  }
+});
+
+autoUpdater.on("update-downloaded", (_event) => {
+  if (!updateFound) {
+      updateInterval = null;
+      updateFound = true;
+
+      setTimeout(() => {
+          autoUpdater.quitAndInstall();
+      }, 3500);
+  }
+});
+
+autoUpdater.on("update-not-available", (_event) => {
+  const dialogOpts = {
+      type: 'info',
+      buttons: ['Ok'],
+      title: `Update Not available for ${autoUpdater.channel}`,
+      message: "A message!",
+      detail: `Update Not available for ${autoUpdater.channel}`
+  };
+
+  if (!updateNotAvailable) {
+      updateNotAvailable = true;
+      dialog.showMessageBox(dialogOpts);
+  }
+});
 app.allowRendererProcessReuse = true;
