@@ -1,21 +1,20 @@
 import { IBelnetProcessManager, invoke } from './belnetProcessManager';
+import { app } from 'electron';
 
 export class BelnetMacOSProcessManager implements IBelnetProcessManager {
   doStartBelnetProcess(): Promise<string | null> {
-    const startNotification =
-      '-e \'display notification "We should start BELNET mac extension"\'';
-    return invoke('osascript', [startNotification]);
+    return invoke(getBelnetBinLocation(), ["--start"]);
   }
 
   doStopBelnetProcess(): Promise<string | null> {
-    const stopNotification =
-      '-e \'display notification "We should stop BELNET mac extension"\'';
+    return invoke(getBelnetBinLocation(), ["--stop"]);
+  }
 
-    return invoke('osascript', [stopNotification]);
+  getBelnetBinLocation(): string {
+    return app.getPath("belnet");
   }
 
   getDefaultBootstrapFileLocation(): string {
-    throw new Error('FIXME');
-    return 'C:\\ProgramData\\belnet\\bootstrap.signed';
+    return "";
   }
 }
