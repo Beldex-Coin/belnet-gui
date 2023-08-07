@@ -1,0 +1,51 @@
+{
+    "appId": "com.electron.belnet.gui",
+    "directories": {
+      "output": "release/"
+    },
+    "asar": true,
+    "mac": {
+      "target": "mas",
+        "type": "development",
+        "hardenedRuntime": false,
+      "category": "public.app-category.utilities",
+      "entitlementsInherit": "./external/belnet/contrib/macos/belnet-extension.entitlements.plist",
+      "provisioningProfile": "./external/belnet/contrib/macos/belnet-extension.provisionprofile",
+      "extraFiles": [
+        {
+          "from": "./external/belnet/build-mac/daemon/belnet.app/Contents/Plugins",
+          "to": "Plugins"
+        },
+        {
+          "from": "./external/belnet/build-mac/daemon/belnet.app/Contents/MacOS",
+          "to": "MacOS"
+        }
+      ],
+      "binaries": [
+        "./release/mas/Belnet-GUI.app/Contents/Plugins/belnet-extension.appex",
+        "./release/mas/Belnet-GUI.app/Contents/MacOS/belnet"
+      ]
+    },
+    "win": {
+      "target": ["portable"]
+    },
+    "portable": {
+      "artifactName": "BELNET-GUI_portable.exe",
+      "requestExecutionLevel": "admin"
+    },
+    "linux": {
+      "target": ["deb"]
+    },
+    "deb": {
+      "afterInstall": "build-scripts/deb-postinstall.sh"
+    },
+    "files": [
+      "dist/**/*",
+      "dist/*",
+      "build-scripts/*",
+      "icons/*",
+      "fonts/*",
+      "images/*",
+      "js/main.js"
+    ]
+  }
