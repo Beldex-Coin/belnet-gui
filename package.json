@@ -1,6 +1,6 @@
 {
   "name": "belnet-gui",
-  "productName": "Belnet-GUI",
+  "productName": "belnet-gui",
   "description": "A Control panel for Belnet",
   "version": "1.1.1",
   "license": "GPL-3.0",
@@ -22,6 +22,7 @@
     "pack": "yarn compile && electron-builder --dir --publish=never --config=contrib/electron-builder-release.json",
     "postinstall": "yarn patch-package && electron-builder install-app-deps",
     "macos": "yarn cleanup && yarn compile && electron-builder --mac --publish=never --config=contrib/electron-builder-release.json",
+    "macos:raw": "yarn cleanup && yarn compile && electron-builder --mac dir --publish=never --config=contrib/electron-builder-release.json",
     "win32": "yarn cleanup && yarn compile && electron-builder --windows portable --publish=never --config=contrib/electron-builder-release.json",
     "deb": "yarn cleanup && yarn compile && electron-builder --linux deb --publish=never --config=contrib/electron-builder-release.json",
     "appImage": "yarn cleanup && yarn compile && electron-builder --linux appImage --publish=never --config=contrib/electron-builder-release.json",
