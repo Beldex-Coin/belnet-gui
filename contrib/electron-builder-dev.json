@@ -30,7 +30,7 @@
       "target": ["portable"]
     },
     "portable": {
-      "artifactName": "BELNET-GUI_portable.exe",
+      "artifactName": "Belnet-GUI_portable-dev.exe",
       "requestExecutionLevel": "admin"
     },
     "linux": {

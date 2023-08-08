@@ -11,7 +11,7 @@ export class BelnetMacOSProcessManager implements IBelnetProcessManager {
   }
 
   getBelnetBinLocation(): string {
-    return app.getPath("belnet");
+    return app.getPath("Belnet");
   }
 
   getDefaultBootstrapFileLocation(): string {
