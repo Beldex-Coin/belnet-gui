@@ -1,6 +1,5 @@
 import { IBelnetProcessManager, invoke } from './belnetProcessManager';
 import { app } from 'electron';
-
 import { dirname } from 'path';
 
 function getBelnetControlLocation() {

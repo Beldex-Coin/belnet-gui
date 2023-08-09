@@ -3,7 +3,7 @@
   "productName": "Belnet-gui",
   "description": "A Control panel for Belnet",
   "version": "1.1.1",
-  "license": "GPL-3.0",
+  "license": "GPL-3.0-or-later",
   "author": {
     "name": "Beldex International",
     "email": "admin@beldex.io"
