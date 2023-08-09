@@ -8,8 +8,4 @@ export class BelnetWindowsProcessManager implements IBelnetProcessManager {
   doStopBelnetProcess(): Promise<string | null> {
     return invoke('net', ['stop', 'belnet']);
   }
-
-  getDefaultBootstrapFileLocation(): string {
-    return 'C:\\ProgramData\\belnet\\bootstrap.signed';
-  }
 }

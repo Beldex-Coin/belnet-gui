@@ -87,8 +87,4 @@ export class BelnetSystemDProcessManager implements IBelnetProcessManager {
     logLineToAppSide('SystemD: belnet service stop action called');
     return invoke('systemctl', ['--no-block', 'stop', belnetService]);
   }
-
-  getDefaultBootstrapFileLocation(): string {
-    throw new Error('getDefaultBootstrapFileLocation TODO for Systemd');
-  }
 }

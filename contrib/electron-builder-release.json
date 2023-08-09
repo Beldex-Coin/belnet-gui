@@ -1,5 +1,5 @@
 {
-    "appId": "com.electron.belnet.gui",
+    "appId": "org.belnet.gui",
     "directories": {
       "output": "release/"
     },
@@ -7,7 +7,9 @@
     "mac": {
       "identity": null,
       "target": "dmg",
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "minimumSystemVersion": "10.15",
+      "executableName": "Belnet-GUI"
     },
     "win": {
       "target": ["portable"]

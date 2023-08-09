@@ -1,30 +1,17 @@
 {
-    "appId": "com.electron.belnet.gui",
+    "appId": "org.belnet.gui",
     "directories": {
       "output": "release/"
     },
     "asar": true,
     "mac": {
-      "target": "mas",
+      "identity": null,
+      "target": "dmg",
       "type": "development",
       "hardenedRuntime": false,
       "category": "public.app-category.utilities",
-      "entitlementsInherit": "./external/belnet/contrib/macos/belnet-extension.entitlements.plist",
-      "provisioningProfile": "./external/belnet/contrib/macos/belnet-extension.provisionprofile",
-      "extraFiles": [
-        {
-          "from": "./external/belnet/build-mac/daemon/belnet.app/Contents/Plugins",
-          "to": "Plugins"
-        },
-        {
-          "from": "./external/belnet/build-mac/daemon/belnet.app/Contents/MacOS",
-          "to": "MacOS"
-        }
-      ],
-      "binaries": [
-        "./release/mas/Belnet-GUI.app/Contents/Plugins/belnet-extension.appex",
-        "./release/mas/Belnet-GUI.app/Contents/MacOS/belnet"
-      ]
+      "minimumSystemVersion": "10.15",
+      "executableName": "Belnet-GUI"
     },
     "win": {
       "target": ["portable"]

@@ -54,9 +54,6 @@ export const invoke = async (
 export interface IBelnetProcessManager {
   doStartBelnetProcess: () => Promise<string | null>;
   doStopBelnetProcess: () => Promise<string | null>;
-
-  // /var/lib/belnet/bootstrap.signed for MacOS
-  getDefaultBootstrapFileLocation: () => string;
 }
 
 let belnetProcessManager: IBelnetProcessManager;
