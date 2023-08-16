@@ -132,7 +132,7 @@ app.on('before-quit', () => {
   void closeRpcConnection();
   if (!process.env.DISABLE_AUTO_START_STOP) {
   console.log('belnet stop called');
-    void doStopBelnetProcess();
+    void doStopBelnetProcess(true);
   } else {
     logLineToAppSide(
       'ENV "DISABLE_AUTO_START_STOP" is set, not auto starting belnet daemon'

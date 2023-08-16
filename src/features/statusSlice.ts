@@ -113,6 +113,7 @@ export const statusSlice = createSlice({
       return state;
     },
     markAsStopped: (state) => {
+      console.info('marking as daemon stopped');
       return { ...initialSummaryStatusState, globalError: state.globalError };
     },
     setGlobalError: (state, action: PayloadAction<StatusErrorType>) => {

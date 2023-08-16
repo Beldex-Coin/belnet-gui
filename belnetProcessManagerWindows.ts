@@ -5,7 +5,7 @@ export class BelnetWindowsProcessManager implements IBelnetProcessManager {
     return invoke('net', ['start', 'belnet']);
   }
 
-  doStopBelnetProcess(): Promise<string | null> {
+  doStopBelnetProcess(duringAppExit = false): Promise<string | null> {
     return invoke('net', ['stop', 'belnet']);
   }
 }

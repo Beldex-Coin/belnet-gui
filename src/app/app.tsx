@@ -41,6 +41,10 @@ export function setErrorOutsideRedux(errorStatus: StatusErrorType): void {
   store.dispatch(setGlobalError(errorStatus));
 }
 
+export function markAsStoppedOutsideRedux(): void {
+  store.dispatch(markAsStopped());
+}
+
 const useSummaryStatusPolling = () => {
   // dispatch is used to make updates to the redux store
   const dispatch = useAppDispatch();
@@ -88,7 +92,7 @@ const useSummaryStatusPolling = () => {
             exitAuthCodeFromDaemon: parsedStatus.exitAuthCode
           })
         );
-        // the daermon told us we have an exit set but our current state says we have an error on the status.
+        // the daemon told us we have an exit set but our current state says we have an error on the status.
         // make sure to remove that error from the UI
         if (
           hasExitNodeChange &&

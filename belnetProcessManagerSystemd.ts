@@ -78,11 +78,13 @@ export class BelnetSystemDProcessManager implements IBelnetProcessManager {
     return result;
   }
 
-  async doStopBelnetProcess(): Promise<string | null> {
-    const isRunning = await this.checkForActiveBelnetService();
+  async doStopBelnetProcess(duringAppExit = false): Promise<string | null> {
+    if (!duringAppExit) {
+      const isRunning = await this.checkForActiveBelnetService();
 
-    if (!isRunning) {
-      return null;
+      if (!isRunning) {
+        return null;
+      }
     }
     logLineToAppSide('SystemD: belnet service stop action called');
     return invoke('systemctl', ['--no-block', 'stop', belnetService]);
