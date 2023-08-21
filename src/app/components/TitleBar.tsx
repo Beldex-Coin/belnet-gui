@@ -11,7 +11,7 @@ import { selectedTheme, setTheme } from '../../features/uiStatusSlice';
 import { minimizeToTray } from '../../ipc/ipcRenderer';
 import {
   useGlobalConnectingStatus
-} from '../hooks/connectingStatus';
+} from '../hooks/connectingStatus.tsx';
 const Container = styled.div`
   z-index: 99;
   position: sticky;

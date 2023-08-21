@@ -27,11 +27,13 @@ const Timestamp = styled.span`
   min-width: 48px;
   max-width: 100px;
   color: ${(props) => props.theme.appLogTimeStampColor};
+  user-select: text;
 `;
 
 const Content = styled(Timestamp)`
   display: inline;
   color: ${(props) => props.theme.appLogContentColor};
+  user-select: text;
 `;
 
 export const AppLogs = (): JSX.Element => {
@@ -77,11 +79,7 @@ export const AppLogs = (): JSX.Element => {
         )}
       </Code>
       <ButtonRow>
-        <TextButton
-          onClick={() => dispatch(clearLogs())}
-          text="Clear"
-          title="Clear logs"
-        />
+        <TextButton onClick={() => dispatch(clearLogs())} text="Clear" title="Clear logs" />
          <TextButton
           onClick={() => copyToClipboard(appLogs.join('\r\n'))}
           text="Copy"

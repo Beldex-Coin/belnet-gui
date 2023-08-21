@@ -5,7 +5,7 @@ import { selectedTheme } from '../../../features/uiStatusSlice';
 import {
   isGlobalStatusError,
   useGlobalConnectingStatus
-} from '../../hooks/connectingStatus';
+} from '../../hooks/connectingStatus.tsx';
 
 export const PowerButtonContainerBorder = (props: {
   children: React.ReactNode;

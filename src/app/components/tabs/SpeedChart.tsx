@@ -9,16 +9,16 @@ import {
   VictoryAxis,
   VictoryLabel
 } from 'victory';
-import { selectedTheme } from '../../features/uiStatusSlice';
+import { selectedTheme } from '../../../features/uiStatusSlice';
 import {
   makeRate, selectStatus,
   selectDownloadRate,
   selectUploadRate
-} from '../../features/statusSlice';
-import DownloadWhiteIcon from '../../../images/download_white.svg';
-import DownloadDarkIcon from '../../../images/download_dark.svg';
-import UploadWhiteIcon from '../../../images/upload_white.svg';
-import UploadDarkIcon from '../../../images/upload_dark.svg';
+} from '../../../features/statusSlice';
+import DownloadWhiteIcon from '../../../../images/download_white.svg';
+import DownloadDarkIcon from '../../../../images/download_dark.svg';
+import UploadWhiteIcon from '../../../../images/upload_white.svg';
+import UploadDarkIcon from '../../../../images/upload_dark.svg';
 
 const UploadDownloadIcon = styled.img`
 height: 11px;

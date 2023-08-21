@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useGlobalConnectingStatus } from '../../hooks/connectingStatus';
+import { useGlobalConnectingStatus } from '../../hooks/connectingStatus.tsx';
 import { PowerButtonIcon } from './PowerButtonIcon';
 
 const StyledSpinner = styled.svg`

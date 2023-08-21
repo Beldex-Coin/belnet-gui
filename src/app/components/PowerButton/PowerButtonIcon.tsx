@@ -7,7 +7,7 @@ import {
   selectExitNodeFromUser
 } from '../../../features/exitStatusSlice';
 import { turnExitOn, turnExitOff } from './PowerButtonActions';
-import { useGlobalConnectingStatus } from '../../hooks/connectingStatus';
+import { useGlobalConnectingStatus } from '../../hooks/connectingStatus.tsx';
 import PowerOnDarkSvg from './PowerOnDarkSvg';
 import PowerOffDarkSvg from './PowerOffDarkSvg';
 import PowerOnWhiteSvg from './PowerOnWhiteSvg';

@@ -2,15 +2,15 @@ import React, {useState} from 'react';
 import { useSelector } from 'react-redux';
 import { Flex } from '@chakra-ui/react'
 import styled from 'styled-components';
-import { selectStatus } from '../../features/statusSlice';
-import { selectedTheme } from '../../features/uiStatusSlice';
-import { ExitPanel } from './ExitPanel';
-import { RoutersStats } from './RouterStats';
-import { SpeedStats } from './SpeedStats';
-import AboutIconDark from '../../../images/about_dark.svg';
-import AboutIconWhite from '../../../images/about_white.svg';
-import AboutCloseIconDark from '../../../images/about_close_dark.svg';
-import AboutCloseIconWhite from '../../../images/about_close_white.svg';
+import { selectStatus } from '../../../features/statusSlice';
+import { selectedTheme } from '../../../features/uiStatusSlice';
+import { ExitPanel } from '../ExitPanel';
+import { RoutersStats } from '../RouterStats';
+import { SpeedStats } from '../SpeedStats';
+import AboutIconDark from '../../../../images/about_dark.svg';
+import AboutIconWhite from '../../../../images/about_white.svg';
+import AboutCloseIconDark from '../../../../images/about_close_dark.svg';
+import AboutCloseIconWhite from '../../../../images/about_close_white.svg';
 const { shell } = require('electron')
 
 const AboutText = styled.div`

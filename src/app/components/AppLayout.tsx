@@ -3,14 +3,14 @@ import React from 'react';
 import styled from 'styled-components';
 import { ConnectedStatus } from './ConnectedStatus';
 import { GeneralInfos } from './GeneralInfos';
-import { GuiTabs } from './GuiTabs';
+import { GuiTabs } from './tabs/GuiTabs';
 import { PowerButton } from './PowerButton/PowerButton';
 import { TitleBar } from './TitleBar';
 import { UploadInfo } from './UploadInfo';
 import { DownloadInfo } from './DownloadInfo';
 import {
   useGlobalConnectingStatus
-} from '../hooks/connectingStatus';
+} from '../hooks/connectingStatus.tsx';
 import AnimationDots from "../../../images/Animation_dots.svg";
 import BelnetLogo from '../../../images/Belnet.svg';
 

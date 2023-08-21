@@ -3,9 +3,13 @@ import { StatusErrorType } from '../../sharedIpc';
 import {
   MAX_NUMBER_POINT_HISTORY,
   SpeedHistoryDataType
-} from '../app/components/SpeedChart';
+} from '../app/components/tabs/SpeedChart';
 import { RootState } from '../app/store';
 import { defaultDaemonSummaryStatus } from '../ipc/ipcRenderer';
+import {
+  selectDaemonIsLoading,
+  selectHasExitNodeChangeLoading
+} from './exitStatusSlice';
 
 export interface SummaryStatusState {
   isRunning: boolean;
@@ -126,11 +130,27 @@ export const statusSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const { updateFromDaemonStatus, markAsStopped, setGlobalError } =
   statusSlice.actions;
-export const selectStatus = (state: RootState): SummaryStatusState =>
-  state.status;
+
+export function selectStatus(state: RootState): SummaryStatusState {
+  return state.status;
+}
 export const selectBelnetRunning = createSelector(
   selectStatus,
   (status) => status.isRunning
+);
+
+export const selectGlobalError = createSelector(
+  selectStatus,
+  (status): StatusErrorType => status.globalError || undefined
+);
+
+export const selectDaemonOrExitIsLoading = createSelector(
+  selectDaemonIsLoading,
+  selectHasExitNodeChangeLoading,
+  selectGlobalError,
+  (daemonIsLoading, exitLoading, globalError) => {
+    return !globalError && (daemonIsLoading || exitLoading);
+  }
 );
 
 export const selectVersion = createSelector(
@@ -146,11 +166,6 @@ export const selectUptime = createSelector(
 export const selectBelnetAddress = createSelector(
   selectStatus,
   (status) => status.beldexAddress || ''
-);
-
-export const selectGlobalError = createSelector(
-  selectStatus,
-  (status): StatusErrorType => status.globalError || undefined
 );
 
 export const selectUploadRate = createSelector(selectStatus, (status) =>

@@ -1,5 +1,5 @@
 import React from "react";
-import { useGlobalConnectingStatus } from '../../hooks/connectingStatus';
+import { useGlobalConnectingStatus } from '../../hooks/connectingStatus.tsx';
 
 const PowerOffDarkSvg = () => {
   const connectingStatus = useGlobalConnectingStatus();

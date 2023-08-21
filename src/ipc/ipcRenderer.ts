@@ -2,7 +2,7 @@
 
 import Electron from 'electron';
 const { ipcRenderer } = Electron;
-import _ from 'lodash';
+import _, { clone } from 'lodash';
 import crypto from 'crypto';
 import {
   DEBUG_IPC_CALLS,
@@ -26,6 +26,7 @@ const channelsFromRendererToMainToMake = {
   deleteExit,
   setConfig,
   // belnet process manager calls
+  doStartBelnetProcess,
   doStopBelnetProcess,
   // utility calls
   markRendererReady,
@@ -51,7 +52,7 @@ export async function addExit(
   console.info(
     `Triggering exit node set with node ${exitAddress}.`
   );
-  return channels.addExit(exitAddress, exitToken);
+  return channels.addExit(clone(exitAddress), clone(exitToken));
 }
 
 export async function deleteExit(): Promise<string> {
@@ -62,6 +63,10 @@ export async function doStopBelnetProcess(
   duringAppExit?: boolean
 ): Promise<string | null> {
   return channels.doStopBelnetProcess(duringAppExit);
+}
+
+export async function doStartBelnetProcess(): Promise<string | null> {
+  return channels.doStartBelnetProcess();
 }
 
 export async function markRendererReady(): Promise<void> {
@@ -102,7 +107,7 @@ export async function initializeIpcRendererSide(): Promise<void> {
 
   ipcRenderer.on(
     `${IPC_CHANNEL_KEY}-done`,
-    (event, jobId, errorForDisplay, result: string | null) => {
+    (_event, jobId, errorForDisplay, result: string | null) => {
       const job = _getJob(jobId);
       if (!job) {
         console.info(
@@ -124,8 +129,10 @@ export async function initializeIpcRendererSide(): Promise<void> {
     }
   );
 
-  const jobId = `markRendererReady-${Date.now()}`;
-  channels.markRendererReady(jobId);
+  channels.markRendererReady();
+  const jobId = `doStartBelnetProcess-${Date.now()}`;
+
+  channels.doStartBelnetProcess(jobId);
 }
 
 async function _shutdown() {

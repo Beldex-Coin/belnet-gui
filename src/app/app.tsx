@@ -12,6 +12,7 @@ import {
 } from '../ipc/ipcRenderer';
 import {
   markAsStopped,
+  selectGlobalError,
   setGlobalError,
   updateFromDaemonStatus
 } from '../features/statusSlice';
@@ -20,7 +21,7 @@ import { store } from './store';
 import { useAppDispatch } from './hooks';
 import {
   markExitNodesFromDaemon,
-  markInitialLoadingFinished
+  markDaemonIsLoading
 } from '../features/exitStatusSlice';
 import { AppLayout } from './components/AppLayout';
 import { appendToApplogs } from '../features/appLogsSlice';
@@ -29,7 +30,6 @@ import { ThemeProvider } from 'styled-components';
 import { darkTheme, lightTheme } from './theme';
 import { selectedTheme } from '../features/uiStatusSlice';
 import { StatusErrorType } from '../../sharedIpc';
-import { useGlobalConnectingStatus } from './hooks/connectingStatus';
 
 void initializeIpcRendererSide();
 
@@ -46,10 +46,9 @@ export function markAsStoppedOutsideRedux(): void {
 }
 
 const useSummaryStatusPolling = () => {
-  // dispatch is used to make updates to the redux store
   const dispatch = useAppDispatch();
 
-  const globalStatus = useGlobalConnectingStatus();
+  const globalError = useSelector(selectGlobalError);
 
   // register an interval for fetching the status of the daemon
   useInterval(async () => {
@@ -97,15 +96,15 @@ const useSummaryStatusPolling = () => {
         if (
           hasExitNodeChange &&
           parsedStatus.exitNode &&
-          globalStatus === 'error-add-exit'
+          globalError === 'error-add-exit'
         ) {
           dispatch(setGlobalError(undefined));
         }
       }
-      dispatch(markInitialLoadingFinished());
+      dispatch(markDaemonIsLoading(false));
     } catch (e) {
       dispatch(markAsStopped());
-      dispatch(markInitialLoadingFinished());
+      dispatch(markDaemonIsLoading(false));
 
       dispatch(
         markExitNodesFromDaemon({

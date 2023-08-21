@@ -98,25 +98,19 @@ const getBelnetProcessManager = async () => {
 export const doStartBelnetProcess = async (jobId: string): Promise<void> => {
   let result: string | undefined;
 
-  if (!process.env.DISABLE_AUTO_START_STOP) {
-    try {
-      logLineToAppSide('About to start Belnet process');
+  try {
+    logLineToAppSide('About to start Belnet process');
 
-      const manager = await getBelnetProcessManager();
-      const startStopResult = await manager.doStartBelnetProcess();
+    const manager = await getBelnetProcessManager();
+    const startStopResult = await manager.doStartBelnetProcess();
 
-      if (startStopResult) {
-        sendGlobalErrorToAppSide('error-start-stop');
-      }
-    } catch (e: any) {
-      logLineToAppSide(`Belnet process start failed with ${e.message}`);
-      console.info('doStartBelnetProcess failed with', e);
+    if (startStopResult) {
       sendGlobalErrorToAppSide('error-start-stop');
     }
-  } else {
-    logLineToAppSide(
-      'ENV "DISABLE_AUTO_START_STOP" is set, not auto starting belnet daemon'
-    );
+  }catch (e: any) {
+    logLineToAppSide(`Belnet process start failed with ${e.message}`);
+    console.info('doStartBelnetProcess failed with', e);
+    sendGlobalErrorToAppSide('error-start-stop');
   }
   const event = getEventByJobId(jobId);
   event.sender.send(`${IPC_CHANNEL_KEY}-done`, jobId, null, result);

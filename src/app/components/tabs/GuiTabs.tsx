@@ -5,7 +5,7 @@ import { useTheme } from 'styled-components';
 import {
   selectSelectedTab,
   setTabSelected,
-} from '../../features/uiStatusSlice';
+} from '../../../features/uiStatusSlice';
 import { AppLogs } from './AppLogs';
 import { MainTab } from './MainTab';
 import { SpeedChart } from './SpeedChart';

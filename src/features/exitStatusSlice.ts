@@ -1,11 +1,12 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../app/store';
+import { selectDaemonRunning, selectStatus } from './statusSlice';
 
 export interface ExitStatusState {
   // set to true when the user clicked. We must block other call while this is true
   exitLoading: boolean;
   // false until the first get_status gets resolved/fails
-  initialLoadingFinished: boolean;
+  daemonIsLoading: boolean;
 
   // Those are user entered values
   // When clicking on enable exit, those are the values used to setup the daemon
@@ -21,7 +22,7 @@ export interface ExitStatusState {
 const initialStatusState: ExitStatusState = {
   // default to true to let the user know we are fetching data on app load
   exitLoading: true,
-  initialLoadingFinished: false,
+  daemonIsLoading: true,
   exitNodeFromUser: undefined,
   exitAuthCodeFromUser: undefined,
   exitNodeFromDaemon: undefined,
@@ -49,10 +50,10 @@ export const exitStatusSlice = createSlice({
       state.exitAuthCodeFromDaemon = undefined;
       return state;
     },
-    markInitialLoadingFinished(state) {
-      if (!state.initialLoadingFinished) {
+    markDaemonIsLoading(state, action: PayloadAction<boolean>) {
+      if (state.daemonIsLoading) {
         state.exitLoading = false;
-        state.initialLoadingFinished = true;
+        state.daemonIsLoading = action.payload;
       }
       return state;
     },
@@ -87,19 +88,24 @@ export const {
   markExitNodesFromDaemon,
   onUserExitNodeSet,
   onUserAuthCodeSet,
-  markInitialLoadingFinished
+  markDaemonIsLoading
 } = exitStatusSlice.actions;
 export const selectExitStatus = (state: RootState): ExitStatusState =>
   state.exitStatus;
 
 export const selectHasExitNodeEnabled = createSelector(
   selectExitStatus,
-  (status) => Boolean(status.exitNodeFromDaemon)
+  selectStatus,
+  (status, daemonStatus) =>
+    daemonStatus.isRunning &&
+    Boolean(status.exitNodeFromDaemon) &&
+    !status.exitLoading
 );
 
 export const selectHasExitNodeChangeLoading = createSelector(
   selectExitStatus,
-  (status) => status.exitLoading
+  selectStatus,
+  (status, daemonStatus) => daemonStatus.isRunning && status.exitLoading
 );
 
 export const selectExitNodeFromUser = createSelector(
@@ -110,4 +116,9 @@ export const selectExitNodeFromUser = createSelector(
 export const selectAuthCodeFromUser = createSelector(
   selectExitStatus,
   (status) => status.exitAuthCodeFromUser
+);
+
+export const selectDaemonIsLoading = createSelector(
+  selectExitStatus,
+  (status) => status.daemonIsLoading
 );
