@@ -17,7 +17,7 @@ import {
   setErrorOutsideRedux
 } from '../app/app';
 
-const IPC_UPDATE_TIMEOUT = 10000; // 10 secs
+const IPC_UPDATE_TIMEOUT = 1000;
 
 const channelsFromRendererToMainToMake = {
   // rpc calls (zeromq calls)
@@ -62,19 +62,19 @@ export async function deleteExit(): Promise<string> {
 export async function doStopBelnetProcess(
   duringAppExit?: boolean
 ): Promise<string | null> {
-  return channels.doStopBelnetProcess(duringAppExit);
+  return channels.doStopBelnetProcess('doStopBelnetProcess', duringAppExit);
 }
 
 export async function doStartBelnetProcess(): Promise<string | null> {
-  return channels.doStartBelnetProcess();
+  return channels.doStartBelnetProcess('doStartBelnetProcess');
 }
 
 export async function markRendererReady(): Promise<void> {
-  channels.markRendererReady();
+  channels.markRendererReady('markRendererReady');
 }
 
 export async function minimizeToTray(type: string): Promise<void> {
-  channels.minimizeToTray(type);
+  channels.minimizeToTray('minimizeToTray');
 }
 export async function setConfig(
   section: string,
@@ -129,10 +129,8 @@ export async function initializeIpcRendererSide(): Promise<void> {
     }
   );
 
-  channels.markRendererReady();
-  const jobId = `doStartBelnetProcess-${Date.now()}`;
-
-  channels.doStartBelnetProcess(jobId);
+  channels.markRendererReady('markRendererReady');
+  channels.doStartBelnetProcess('doStartBelnetProcess');
 }
 
 async function _shutdown() {
@@ -235,10 +233,10 @@ function makeChannel(fnName: string) {
       });
 
       _jobs[jobId].timer = setTimeout(() => {
-        const logline = `IPC channel job ${jobId}: ${fnName} timed out at ${Date.now()}`;
+        const logline = `IPC channel job ${jobId}: ${fnName} timed out after ${IPC_UPDATE_TIMEOUT}ms`;
         appendToAppLogsOutsideRedux(logline);
         // except if that was our stop call, consider that this means the belnet daemon is not running
-        if (fnName !== 'doStopBelnetProcess') {
+        if (fnName !== 'addExit') {
           markAsStoppedOutsideRedux();
         }
 

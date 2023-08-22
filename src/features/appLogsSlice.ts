@@ -25,7 +25,7 @@ export const appLogsSlice = createSlice({
   reducers: {
     appendToApplogs: (state, action: PayloadAction<string>) => {
       const lastLine = state.appLogs[state.appLogs.length - 1];
-      const summaryStatusTimedOut = 'getSummaryStatus timed out at';
+      const summaryStatusTimedOut = 'getSummaryStatus timed out after';
       if (
         lastLine?.includes(summaryStatusTimedOut) &&
         action.payload?.includes(summaryStatusTimedOut)

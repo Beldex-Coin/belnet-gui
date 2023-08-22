@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import util from 'util';
 import {
-  getEventByJobId,
   logLineToAppSide,
-  sendGlobalErrorToAppSide
+  sendGlobalErrorToAppSide,
+  sendIpcReplyAndDeleteJob
 } from './ipcNode';
 import { BelnetLinuxProcessManager } from './belnetProcessManagerLinux';
 import {
@@ -13,7 +13,6 @@ import {
 
 import { BelnetWindowsProcessManager } from './belnetProcessManagerWindows';
 
-import { IPC_CHANNEL_KEY } from './sharedIpc';
 import { exec } from 'child_process';
 import { BelnetMacOSProcessManager } from './belnetProcessManagerMacOS';
 
@@ -104,6 +103,8 @@ export const doStartBelnetProcess = async (jobId: string): Promise<void> => {
     const manager = await getBelnetProcessManager();
     const startStopResult = await manager.doStartBelnetProcess();
 
+    sendIpcReplyAndDeleteJob(jobId, null, '');
+
     if (startStopResult) {
       sendGlobalErrorToAppSide('error-start-stop');
     }
@@ -111,9 +112,8 @@ export const doStartBelnetProcess = async (jobId: string): Promise<void> => {
     logLineToAppSide(`Belnet process start failed with ${e.message}`);
     console.info('doStartBelnetProcess failed with', e);
     sendGlobalErrorToAppSide('error-start-stop');
+    sendIpcReplyAndDeleteJob(jobId, null, result);
   }
-  const event = getEventByJobId(jobId);
-  event.sender.send(`${IPC_CHANNEL_KEY}-done`, jobId, null, result);
 };
 
 /**
@@ -121,20 +121,20 @@ export const doStartBelnetProcess = async (jobId: string): Promise<void> => {
  * for the event return and so no jobId argument required
  */
 export const doStopBelnetProcess = async (
+  jobId: string,
   duringAppExit = false
 ): Promise<void> => {
   try {
     logLineToAppSide('About to stop Belnet process');
 
     const manager = await getBelnetProcessManager();
+    sendIpcReplyAndDeleteJob(jobId, null, '');
     await manager.doStopBelnetProcess(duringAppExit);
   } catch (e: any) {
     logLineToAppSide(`Belnet process stop failed with ${e.message}`);
+    sendIpcReplyAndDeleteJob(jobId, e.message, '');
 
     console.info('doStopBelnetProcess failed with', e);
   }
 };
 
-export const doGetProcessPid = (): number => {
-  return 0;
-};

@@ -36,12 +36,12 @@ export class BelnetSystemDProcessManager implements IBelnetProcessManager {
   async checkForActiveBelnetService(): Promise<boolean> {
     let result;
     try {
-      logLineToAppSide('SystemD: checking if belnet is already running');
+      logLineToAppSide('SystemD: checking if belnet is running');
       const cmdWithArgs = `systemctl is-active ${belnetService}`;
 
       result = await execPromisified(cmdWithArgs);
       if (result?.stdout?.trim() === 'active') {
-        logLineToAppSide('SystemD: belnet is already running');
+        logLineToAppSide('SystemD: belnet is running');
         return true;
       }
     } catch (e: any) {
