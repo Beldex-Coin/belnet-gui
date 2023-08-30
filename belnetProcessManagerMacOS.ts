@@ -16,7 +16,7 @@ export class BelnetMacOSProcessManager implements IBelnetProcessManager {
     return invoke(getBelnetControlLocation(), ['--start']);
   }
 
-  doStopBelnetProcess(_duringAppExit = false): Promise<string | null> {
+  doStopBelnetProcess(): Promise<string | null> {
     return invoke(getBelnetControlLocation(), ['--stop']);
   }
 

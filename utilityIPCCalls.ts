@@ -22,9 +22,7 @@ export function minimizeToTray(jobId: string, type: string): void {
     }
   }
 
-  if (tray) {
-    (tray as any).updateContextMenu();
-  }
+  (tray as any)?.updateContextMenu();
   sendIpcReplyAndDeleteJob(jobId, null, '');
 }
 

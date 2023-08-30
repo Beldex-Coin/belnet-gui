@@ -20,6 +20,10 @@ let mainWindow: BrowserWindow | null;
 let tray: Tray | null = null;
 let ready = false;
 
+function isMacOS() {
+  return process.platform === 'darwin';
+}
+
 export function getMainWindow(): BrowserWindow | null {
   return mainWindow;
 }
@@ -87,7 +91,9 @@ async function createWindow() {
   });
   ready = true;
 
-  tray = createTrayIcon(getMainWindow);
+  if (!isMacOS()) {
+    tray = createTrayIcon(getMainWindow);
+  }
 
   if (isDev) {
     mainWindow.loadURL(`http://localhost:4000`);
@@ -117,7 +123,9 @@ async function createWindow() {
 
     // toggle the visibility of the show/hide tray icon menu entries
 
-    (tray as any)?.updateContextMenu();
+    if (!isMacOS()) {
+      (tray as any)?.updateContextMenu();
+    }
 
     return;
   });
@@ -132,16 +140,14 @@ app.on('before-quit', () => {
   void closeRpcConnection();
   if (!process.env.DISABLE_AUTO_START_STOP) {
   console.log('belnet stop called');
-    void doStopBelnetProcess(true);
+    void doStopBelnetProcess('stop_everything', true);
   } else {
     logLineToAppSide(
       'ENV "DISABLE_AUTO_START_STOP" is set, not auto starting belnet daemon'
     );
   }
 
-  if (tray) {
-    tray.destroy();
-  }
+  tray?.destroy();
   markShouldQuit();
 });
 
