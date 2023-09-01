@@ -120,7 +120,7 @@ export function logLineToAppSide(logLine: string): void {
 
 export function sendGlobalErrorToAppSide(globalError: StatusErrorType): void {
   if (utilityIPCCalls.getRendererReady()) {
-    console.info(`sendGlobalErrorToAppSide: global error "${globalError}`);
+    console.info(`sendGlobalErrorToAppSide: global error "${globalError}"`);
     getMainWindowLocal()?.webContents.send(IPC_GLOBAL_ERROR, globalError);
   } else {
     console.info('sendGlobalErrorToAppSide : renderer is not ready');

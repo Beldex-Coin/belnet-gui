@@ -1,4 +1,5 @@
 import { sendIpcReplyAndDeleteJob } from './ipcNode';
+import { subscribeBelnetLogs } from './belnetRpcCall';
 
 import { getMainWindow, getTrayIcon } from './main';
 
@@ -9,6 +10,7 @@ export function markRendererReady(jobId: string): void {
   isRendererReady = true;
 
   sendIpcReplyAndDeleteJob(jobId, null, '');
+  subscribeBelnetLogs();
 }
 
 export function minimizeToTray(jobId: string, type: string): void {
