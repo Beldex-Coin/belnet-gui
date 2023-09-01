@@ -2,7 +2,7 @@
 
 import Electron from 'electron';
 const { ipcRenderer } = Electron;
-import _, { clone } from 'lodash';
+import { clone, forEach, isEmpty, isFunction, isString } from 'lodash';
 import crypto from 'crypto';
 import {
   DEBUG_IPC_CALLS,
@@ -89,14 +89,14 @@ export async function initializeIpcRendererSide(): Promise<void> {
   //   any warnings that might be sent to the console in that case.
   ipcRenderer.setMaxListeners(0);
 
-  _.forEach(channelsFromRendererToMainToMake, (fn) => {
-    if (_.isFunction(fn)) {
+  forEach(channelsFromRendererToMainToMake, (fn) => {
+    if (isFunction(fn)) {
       makeChannel(fn.name);
     }
   });
 
   ipcRenderer.on(IPC_LOG_LINE, (_event, logLine: string) => {
-    if (_.isString(logLine) && !_.isEmpty(logLine)) {
+    if (isString(logLine) && !isEmpty(logLine)) {
       appendToAppLogsOutsideRedux(logLine);
     }
   });
@@ -294,7 +294,7 @@ export const parseSummaryStatus = (
 ): DaemonSummaryStatus => {
   let stats = null;
 
-  if (!payload || _.isEmpty(payload)) {
+  if (!payload || isEmpty(payload)) {
     console.info('Empty payload for summary status');
     return defaultDaemonSummaryStatus;
   }
@@ -316,7 +316,7 @@ export const parseSummaryStatus = (
   const statsResult = stats.result;
   const parsedSummaryStatus: DaemonSummaryStatus = defaultDaemonSummaryStatus;
 
-  if (!statsResult || _.isEmpty(statsResult)) {
+  if (!statsResult || isEmpty(statsResult)) {
     console.info('We got an empty statsResult');
     return parsedSummaryStatus;
   }
