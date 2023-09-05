@@ -1,12 +1,17 @@
 import { IBelnetProcessManager, invoke } from './belnetProcessManager';
 import { logLineToAppSide } from './ipcNode';
 
-function getBelnetControlLocation() {
-    const belnetControlLocation =
-    '/Applications/Belnet.app/Contents/MacOS/Belnet';
+import { app } from 'electron';
+import { dirname } from 'path';
 
-  logLineToAppSide(`belnet path: "${belnetControlLocation}"`);
-  return belnetControlLocation;
+function getBelnetControlLocation() {
+  // We will be at: Belnet.app/Contents/Helpers/Belnet-GUI.app/Contents/MacOS/Belnet-GUI, we want to back to
+  // Belnet.app/Contents/MacOS/Belnet:
+  const controlLocation =
+    dirname(dirname(dirname(dirname(dirname(app.getPath('exe')))))) +
+    '/MacOS/Belnet';
+  logLineToAppSide(`Belnet bin control location: "${controlLocation}"`);
+  return controlLocation;  
 }
 
 export class BelnetMacOSProcessManager implements IBelnetProcessManager {
