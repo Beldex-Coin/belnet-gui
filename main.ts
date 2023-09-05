@@ -24,6 +24,10 @@ function isMacOS() {
   return process.platform === 'darwin';
 }
 
+function isLinux() {
+  return process.platform !== 'win32' && !isMacOS();
+}
+
 export function getMainWindow(): BrowserWindow | null {
   return mainWindow;
 }
@@ -135,12 +139,30 @@ async function createWindow() {
   });
 }
 
-app.on('before-quit', () => {
+let stopEverythingDone = false;
+app.on('before-quit', async (event) => {
   console.log('before-quit event');
   void closeRpcConnection();
   if (!process.env.DISABLE_AUTO_START_STOP) {
   console.log('belnet stop called');
+  if (isLinux()) {
+    console.info('just triggering belnet daemon stop');
     void doStopBelnetProcess('stop_everything', true);
+  } else {
+    if (stopEverythingDone) {
+      return;
+    }
+    event.preventDefault();
+    console.info('waiting for belnet daemon to stop');
+    await doStopBelnetProcess('stop_everything', true);
+    console.info('belnnet daemon stopped');
+    tray?.destroy();
+    markShouldQuit();
+    stopEverythingDone = true;
+    // we have to call quite ourself as we prevented the event default
+    app.quit();
+    return;
+  }
   } else {
     logLineToAppSide(
       'ENV "DISABLE_AUTO_START_STOP" is set, not auto starting belnet daemon'

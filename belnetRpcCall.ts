@@ -26,7 +26,7 @@ const request = async (
   if (!reply_tag) {
     throw new Error(`You must use a reply tag for cmd ${cmd}`);
   }
-  await dealer.send([cmd, reply_tag, args]);
+  await dealer?.send([cmd, reply_tag, args]);
 };
 
 // BelnetApiClient::invoke
@@ -147,7 +147,7 @@ const loopDealerReceiving = async (): Promise<void> => {
           
         }
       }
-      
+
       sendEnableLogsAgainIfNeeded();
     }
   } catch (e) {
