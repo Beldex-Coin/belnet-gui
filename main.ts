@@ -8,6 +8,7 @@ import  { autoUpdater } from "electron-updater";
 
 import { markShouldQuit, shouldQuit } from './windowState';
 import ElectronStore from 'electron-store';
+import { isMacOS, isLinux } from './sharedIpc';
 
 let updateInterval = null;
 let updateNotAvailable = false;
@@ -19,14 +20,6 @@ const configScreenIndex = 'SCREEN_INDEX';
 let mainWindow: BrowserWindow | null;
 let tray: Tray | null = null;
 let ready = false;
-
-function isMacOS() {
-  return process.platform === 'darwin';
-}
-
-function isLinux() {
-  return process.platform !== 'win32' && !isMacOS();
-}
 
 export function getMainWindow(): BrowserWindow | null {
   return mainWindow;
