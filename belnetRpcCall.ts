@@ -5,7 +5,11 @@ import * as _zmq from 'zeromq/';
 
 _zmq.context.blocky = false;
 
-import { logLineToAppSide, sendIpcReplyAndDeleteJob } from './ipcNode';
+import {
+  logLineToAppSide,
+  sendGlobalErrorToAppSide,
+  sendIpcReplyAndDeleteJob
+} from './ipcNode';
 
 const RPC_BOUND_PORT = 1190;
 const RPC_BOUND_IP = '127.0.0.1';
@@ -54,7 +58,9 @@ export const addExit = async (
       token: exitToken
     });
   } else {
-    await invoke('llarp.exit', reply_tag, { exit: exitAddress });
+    await invoke('llarp.exit', reply_tag, {
+      exit: exitAddress
+    });
   }
 };
 
@@ -75,18 +81,6 @@ export const subscribeBelnetLogs = async (): Promise<void> => {
   lastEnableLogsRequestTimestamp = Date.now();
 };
 
-export const setConfig = async (
-  reply_tag: string,
-  section: string,
-  key: string,
-  value: string
-): Promise<void> => {
-  const obj: { [k: string]: any } = {};
-  const config: { [k: string]: string } = {};
-  config[key] = value;
-  obj[section] = config;
-  await invoke('llarp.config', reply_tag, { override: obj, reload: true });
-};
 
 export const closeRpcConnection = (): void => {
   isRunning = false;
@@ -165,7 +159,11 @@ export const initialBelnetRpcDealer = async (): Promise<void> => {
     throw new Error('RPC Channel is already init.');
   }
 
-  dealer = new _zmq.Dealer({ sendTimeout: 1000 }); // 1sec
+  dealer = new _zmq.Dealer({
+    sendTimeout: 1000,
+    // receiveTimeout: 1000
+    connectTimeout: 5000
+  }); // 5sec for connecting but shorter for send/receive
   // just trigger the loop, non blocking
   void loopDealerReceiving();
 };

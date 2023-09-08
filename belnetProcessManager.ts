@@ -52,7 +52,7 @@ export const invoke = async (
 
 export interface IBelnetProcessManager {
   doStartBelnetProcess: () => Promise<string | null>;
-  doStopBelnetProcess: (duringAppExit: boolean) => Promise<string | null>;
+  doStopBelnetProcess: () => Promise<string | null>;
 }
 
 let belnetProcessManager: IBelnetProcessManager;
@@ -103,11 +103,11 @@ export const doStartBelnetProcess = async (jobId: string): Promise<void> => {
     const manager = await getBelnetProcessManager();
     const startStopResult = await manager.doStartBelnetProcess();
 
-    sendIpcReplyAndDeleteJob(jobId, null, '');
-
     if (startStopResult) {
       sendGlobalErrorToAppSide('error-start-stop');
     }
+
+    sendIpcReplyAndDeleteJob(jobId, null, '');
   }catch (e: any) {
     logLineToAppSide(`Belnet process start failed with ${e.message}`);
     console.info('doStartBelnetProcess failed with', e);
@@ -120,16 +120,14 @@ export const doStartBelnetProcess = async (jobId: string): Promise<void> => {
  * doStopBelnetProcess is only called when exiting the app so there is no point to wait
  * for the event return and so no jobId argument required
  */
-export const doStopBelnetProcess = async (
-  jobId: string,
-  duringAppExit = false
-): Promise<void> => {
+export const doStopBelnetProcess = async (jobId: string): Promise<void> => {
   try {
     logLineToAppSide('About to stop Belnet process');
 
     const manager = await getBelnetProcessManager();
+    await manager.doStopBelnetProcess();
     sendIpcReplyAndDeleteJob(jobId, null, '');
-    await manager.doStopBelnetProcess(duringAppExit);
+    
   } catch (e: any) {
     logLineToAppSide(`Belnet process stop failed with ${e.message}`);
     sendIpcReplyAndDeleteJob(jobId, e.message, '');

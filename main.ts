@@ -140,14 +140,14 @@ app.on('before-quit', async (event) => {
   console.log('belnet stop called');
   if (isLinux()) {
     console.info('just triggering belnet daemon stop');
-    void doStopBelnetProcess('stop_everything', true);
+    void doStopBelnetProcess('stop_everything');
   } else {
     if (stopEverythingDone) {
       return;
     }
     event.preventDefault();
     console.info('waiting for belnet daemon to stop');
-    await doStopBelnetProcess('stop_everything', true);
+    await doStopBelnetProcess('stop_everything');
     console.info('belnet daemon stopped');
     stopEverythingDone = true;
     tray?.destroy();
