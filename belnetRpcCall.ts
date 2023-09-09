@@ -163,7 +163,7 @@ export const initialBelnetRpcDealer = async (): Promise<void> => {
     sendTimeout: 1000,
     // receiveTimeout: 1000
     connectTimeout: 5000
-  }); // 5sec for connecting but shorter for send/receive
-  // just trigger the loop, non blocking
+  });
+  // just trigger the non blocking loop
   void loopDealerReceiving();
 };
