@@ -74,7 +74,7 @@ export async function markRendererReady(): Promise<void> {
 }
 
 export async function minimizeToTray(type: string): Promise<void> {
-  channels.minimizeToTray('minimizeToTray');
+  channels.minimizeToTray(type);
 }
 export async function setConfig(
   section: string,
