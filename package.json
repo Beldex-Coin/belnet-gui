@@ -2,7 +2,7 @@
   "name": "belnet-gui",
   "productName": "Belnet-GUI",
   "description": "A Control panel for Belnet",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "GPL-3.0",
   "author": {
     "name": "Beldex International",
@@ -26,10 +26,16 @@
     "deb": "rimraf -f dist release && yarn compile && electron-builder --linux deb --publish=never",
     "appImage": "rimraf -f dist release && yarn compile && electron-builder --linux appImage --publish=never",
     "appImageFromPack": "electron-builder  --prepackaged ./release/linux-unpacked --linux appImage --publish=never",
+    "publish": "electron-builder build --linux --win --publish always",
     "dist:image": "yarn appImage && yarn win32 && yarn deb"
   },
   "build": {
     "appId": "com.electron.belnet.gui",
+    "publish": [{
+      "provider": "github",
+      "owner": "Beldex",
+      "repo": "belnet-gui"
+  }],
     "directories": {
       "output": "release/"
     },
@@ -51,7 +57,7 @@
     },
     "linux": {
       "target": [
-        "deb"
+        "deb", "AppImage"
       ]
     },
     "deb": {
