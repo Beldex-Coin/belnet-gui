@@ -1,21 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { ipcMain } from 'electron';
 import * as _zmq from 'zeromq/';
-import * as zmq from 'zeromq/v5-compat';
 
 _zmq.context.blocky = false;
 
-import { eventsByJobId } from './ipcNode';
+import { takeEventByJobId } from './ipcNode';
 import { IPC_CHANNEL_KEY } from './sharedIpc';
 
 const RPC_BOUND_PORT = 1190;
 const RPC_BOUND_IP = '127.0.0.1';
 const RPC_ZMQ_ADDRESS = `tcp://${RPC_BOUND_IP}:${RPC_BOUND_PORT}`;
 
+const RECONNECT_BACKOFF_START_MS = 1000;
+const RECONNECT_BACKOFF_MAX_MS = 30000;
+
 let dealer: any; // ZeroMqDealer
 
 let isRunning = false;
+let reconnectTimer: NodeJS.Timeout | null = null;
+let reconnectBackoffMs = RECONNECT_BACKOFF_START_MS;
 
 const request = async (
   cmd: string,
@@ -27,6 +29,9 @@ const request = async (
   }
   if (!reply_tag) {
     throw new Error(`You must use a reply tag for cmd ${cmd}`);
+  }
+  if (!dealer) {
+    throw new Error(`RPC dealer is not connected (cmd ${cmd})`);
   }
   await dealer.send([cmd, reply_tag, args]);
 };
@@ -79,6 +84,10 @@ export const setConfig = async (
 
 export const closeRpcConnection = (): void => {
   isRunning = false;
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
   console.info('stopping rpc dealer');
   if (dealer) {
     try {
@@ -90,53 +99,82 @@ export const closeRpcConnection = (): void => {
   }
 };
 
+/**
+ * Handle a single multipart reply coming from the daemon.
+ * Never throws: a malformed reply must not kill the receive loop.
+ */
+const handleReply = (reply: Array<Buffer>): void => {
+  try {
+    if (reply.length !== 3) {
+      console.warn('RPC: got an invalid reply of length', reply.length);
+      return;
+    }
+    const replyType = reply[0].toString('utf8');
+    if (replyType !== 'REPLY') {
+      console.warn(`RPC: got an unexpected reply type "${replyType}"`);
+      return;
+    }
+    const jobId = reply[1].toString('utf8');
+    const content = reply[2].toString('utf8');
+    const event = takeEventByJobId(jobId);
+
+    if (!event) {
+      // the renderer side probably timed this job out already: just drop it.
+      console.warn(`RPC: no pending event for jobId ${jobId}, dropping reply`);
+      return;
+    }
+    event.sender.send(`${IPC_CHANNEL_KEY}-done`, jobId, null, content);
+  } catch (e) {
+    console.warn('RPC: failed to handle a reply, continuing:', e);
+  }
+};
+
+const createDealer = (): void => {
+  if (dealer) {
+    try {
+      dealer.close();
+    } catch (e) {
+      console.info(e);
+    }
+  }
+  dealer = new _zmq.Dealer({ sendTimeout: 10000 });
+};
+
+const scheduleReconnect = (): void => {
+  if (!isRunning || reconnectTimer) {
+    return;
+  }
+  const delay = reconnectBackoffMs;
+  reconnectBackoffMs = Math.min(reconnectBackoffMs * 2, RECONNECT_BACKOFF_MAX_MS);
+  console.info(`RPC: scheduling reconnect in ${delay}ms`);
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null;
+    if (!isRunning) {
+      return;
+    }
+    createDealer();
+    void loopDealerReceiving();
+  }, delay);
+};
+
 const loopDealerReceiving = async (): Promise<void> => {
-  // TODO handle exception in the loop so the loop is not exited if the error is not that bad
   try {
     dealer.connect(RPC_ZMQ_ADDRESS);
     console.log(`Connected to port ${RPC_BOUND_PORT}`);
-    isRunning = true;
     while (isRunning) {
       const reply = await dealer.receive();
-      const replyLength = reply.length;
-
-      if (replyLength === 3) {
-        const replyType = reply[0].toString('utf8');
-        if (replyType === 'REPLY') {
-          const jobId = reply[1].toString('utf8');
-          const content = reply[2].toString('utf8');
-          const event = eventsByJobId[jobId];
-
-          if (!event) {
-            throw new Error(`Could not find the event for jobId ${jobId}`);
-          }
-          event.sender.send(`${IPC_CHANNEL_KEY}-done`, jobId, null, content);
-          delete eventsByJobId[jobId];
-        } else {
-          // delete eventsByJobId[jobId];
-          //FIXME TODO
-          throw new Error('To handle');
-        }
-      } else {
-        throw new Error('To handle');
-
-        console.warn('Got an invalid reply of length', replyLength);
-        if (replyLength === 2) {
-          const jobId = reply[1].toString('utf8');
-          ipcMain.emit(
-            `${IPC_CHANNEL_KEY}-done`,
-            jobId,
-            'Got an invalid reply of length'
-          );
-        }
-      }
+      // successfully receiving means the link is healthy: reset the backoff
+      reconnectBackoffMs = RECONNECT_BACKOFF_START_MS;
+      handleReply(reply);
     }
   } catch (e) {
     if (isRunning) {
       console.error(
-        `Got an exception while trying to bind to ${RPC_ZMQ_ADDRESS}:`,
+        `RPC: receive loop for ${RPC_ZMQ_ADDRESS} exited with an exception:`,
         e
       );
+      // self-heal: recreate the socket and try again with backoff
+      scheduleReconnect();
     }
   }
 };
@@ -145,8 +183,8 @@ export const initialBelnetRpcDealer = async (): Promise<void> => {
   if (dealer) {
     throw new Error('RPC Channel is already init.');
   }
-
-  dealer = new _zmq.Dealer({ sendTimeout: 10000 });
+  isRunning = true;
+  createDealer();
   // just trigger the loop, non blocking
   void loopDealerReceiving();
 };

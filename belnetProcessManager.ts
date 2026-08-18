@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import util from 'util';
 import {
-  getEventByJobId,
+  takeEventByJobId,
   logLineToAppSide,
   sendGlobalErrorToAppSide
 } from './ipcNode';
@@ -121,8 +121,8 @@ export const doStartBelnetProcess = async (jobId: string): Promise<void> => {
       'ENV "DISABLE_AUTO_START_STOP" is set, not auto starting belnet daemon'
     );
   }
-  const event = getEventByJobId(jobId);
-  event.sender.send(`${IPC_CHANNEL_KEY}-done`, jobId, null, result);
+  const event = takeEventByJobId(jobId);
+  event?.sender.send(`${IPC_CHANNEL_KEY}-done`, jobId, null, result);
 };
 
 /**

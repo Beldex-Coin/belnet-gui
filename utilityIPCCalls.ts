@@ -1,4 +1,4 @@
-import { getEventByJobId } from './ipcNode';
+import { takeEventByJobId } from './ipcNode';
 import * as belnetProcessManager from './belnetProcessManager';
 import { getMainWindow, getTrayIcon } from './main';
 import { IPC_CHANNEL_KEY } from './sharedIpc';
@@ -25,8 +25,8 @@ export function minimizeToTray(jobId: string, type: string): void {
   if (tray) {
     (tray as any).updateContextMenu();
   }
-  const event = getEventByJobId(jobId);
-  event.sender.send(`${IPC_CHANNEL_KEY}-done`, jobId, null, '');
+  const event = takeEventByJobId(jobId);
+  event?.sender.send(`${IPC_CHANNEL_KEY}-done`, jobId, null, '');
 }
 
 export const getRendererReady = (): boolean => isRendererReady;
