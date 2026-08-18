@@ -13,7 +13,12 @@ import {
 } from '../../sharedIpc';
 import { appendToAppLogsOutsideRedux, setErrorOutsideRedux } from '../app/app';
 
-const IPC_UPDATE_TIMEOUT = 10000; // 5 secs
+const IPC_UPDATE_TIMEOUT = 10000;
+// getSummaryStatus is polled: a hung status call should fail fast so the next
+// poll can try again, instead of blocking the UI state for 10s.
+const IPC_TIMEOUT_BY_FN: Record<string, number> = {
+  getSummaryStatus: 5000
+};
 
 const channelsFromRendererToMainToMake = {
   // rpc calls (zeromq calls)
@@ -30,7 +35,7 @@ const channelsFromRendererToMainToMake = {
 const channels = {} as any;
 const _jobs = Object.create(null);
 
-export const POLLING_STATUS_INTERVAL_MS = 500;
+export const POLLING_STATUS_INTERVAL_MS = 2000;
 
 // shutting down clean handling
 let _shuttingDown = false;
@@ -224,7 +229,7 @@ function makeChannel(fnName: string) {
         const logline = `IPC channel job ${jobId}: ${fnName} timed out at ${Date.now()}`;
         appendToAppLogsOutsideRedux(logline);
         reject(new Error(logline));
-      }, IPC_UPDATE_TIMEOUT);
+      }, IPC_TIMEOUT_BY_FN[fnName] || IPC_UPDATE_TIMEOUT);
     });
   };
 }
@@ -255,7 +260,7 @@ export interface DaemonSummaryStatus {
   exitAuthCode?: string;
 }
 
-export const defaultDaemonSummaryStatus: DaemonSummaryStatus = {
+export const defaultDaemonSummaryStatus: Readonly<DaemonSummaryStatus> = Object.freeze({
   isRunning: false,
   globalError: undefined,
   uptime: undefined,
@@ -269,7 +274,7 @@ export const defaultDaemonSummaryStatus: DaemonSummaryStatus = {
   ratio: '',
   exitNode: undefined,
   exitAuthCode: undefined
-};
+});
 
 export const parseSummaryStatus = (
   payload: string,
@@ -279,7 +284,7 @@ export const parseSummaryStatus = (
 
   if (!payload || _.isEmpty(payload)) {
     console.info('Empty payload for summary status');
-    return defaultDaemonSummaryStatus;
+    return { ...defaultDaemonSummaryStatus };
   }
 
   // We can either have an error of communication, or an error on the returned JSON
@@ -292,12 +297,15 @@ export const parseSummaryStatus = (
   }
   // if we got an error, just return isRunning false.
   // the redux store will reset all values to their default.
-  if (error || stats.error) {
-    console.info('We got an error for Status: ', error || stats.error);
-    return defaultDaemonSummaryStatus;
+  if (error || !stats || stats.error) {
+    console.info('We got an error for Status: ', error || stats?.error);
+    return { ...defaultDaemonSummaryStatus };
   }
   const statsResult = stats.result;
-  const parsedSummaryStatus: DaemonSummaryStatus = defaultDaemonSummaryStatus;
+  // never reuse the shared default object: it must stay pristine
+  const parsedSummaryStatus: DaemonSummaryStatus = {
+    ...defaultDaemonSummaryStatus
+  };
 
   if (!statsResult || _.isEmpty(statsResult)) {
     console.info('We got an empty statsResult');
@@ -305,14 +313,10 @@ export const parseSummaryStatus = (
   }
 
   parsedSummaryStatus.numPeersConnected = statsResult.numPeersConnected;
-  // we're polling every 500ms, so our per-second rate is half of the
-  // rate we tallied up in this sample
-  const txRate = statsResult.txRate || 0;
-  const rxRate = statsResult.rxRate || 0;
-  parsedSummaryStatus.uploadUsage =
-    (txRate * POLLING_STATUS_INTERVAL_MS) / 1000;
-  parsedSummaryStatus.downloadUsage =
-    (rxRate * POLLING_STATUS_INTERVAL_MS) / 1000;
+  // txRate/rxRate are per-second rates reported by the daemon.
+  // We keep them as bytes/second: the speed history stores one point per poll.
+  parsedSummaryStatus.uploadUsage = statsResult.txRate || 0;
+  parsedSummaryStatus.downloadUsage = statsResult.rxRate || 0;
 
   parsedSummaryStatus.isRunning = statsResult.running || false;
   parsedSummaryStatus.numRoutersKnown = statsResult.numRoutersKnown || 0;

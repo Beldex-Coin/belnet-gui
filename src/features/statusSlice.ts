@@ -24,9 +24,7 @@ export interface SummaryStatusState {
 const getDefaultSpeedHistory = (): SpeedHistoryDataType => {
   return {
     upload: new Array<number>(MAX_NUMBER_POINT_HISTORY).fill(0),
-    download: new Array<number>(MAX_NUMBER_POINT_HISTORY).fill(0),
-    lastUploadUsage: null,
-    lastDownloadUsage: null
+    download: new Array<number>(MAX_NUMBER_POINT_HISTORY).fill(0)
   };
 };
 
@@ -85,28 +83,10 @@ export const statusSlice = createSlice({
       state.version = action.payload.daemonStatus?.version;
       state.uptime = action.payload.daemonStatus?.uptime;
 
-      // As we pull status every 500 ms, we have to merge two rates for one second for the graph.
-      // This code effectively save one call temporary until we get the second call 500ms later.
-      // Then, we merge the two usage in a single entry added to the data used by the graph
-      if (
-        state.speedHistory.lastUploadUsage === null ||
-        state.speedHistory.lastDownloadUsage === null
-      ) {
-        state.speedHistory.lastUploadUsage = state.uploadUsage;
-        state.speedHistory.lastDownloadUsage = state.downloadUsage;
-      } else {
-        // update graph speeds data
-        const newDownload =
-          state.speedHistory.lastDownloadUsage + state.downloadUsage;
-        const newUpload =
-          state.speedHistory.lastUploadUsage + state.uploadUsage;
-
-        // reset the memoized last usage for the next call
-        state.speedHistory.lastDownloadUsage = null;
-        state.speedHistory.lastUploadUsage = null;
-        state.speedHistory.download.push(newDownload);
-        state.speedHistory.upload.push(newUpload);
-      }
+      // upload/download usage are already bytes/second rates:
+      // store one point per poll tick.
+      state.speedHistory.download.push(state.downloadUsage);
+      state.speedHistory.upload.push(state.uploadUsage);
 
       // Remove the first item is the size is too long
       state.speedHistory = removeFirstElementIfNeeded(state.speedHistory);

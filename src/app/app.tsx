@@ -41,17 +41,30 @@ export function setErrorOutsideRedux(errorStatus: StatusErrorType): void {
   store.dispatch(setGlobalError(errorStatus));
 }
 
+// number of consecutive failed polls before we consider the daemon stopped.
+// A single slow/timed-out reply must not flip the UI to "disconnected".
+const MAX_CONSECUTIVE_POLL_FAILURES = 3;
+
 const useSummaryStatusPolling = () => {
   // dispatch is used to make updates to the redux store
   const dispatch = useAppDispatch();
 
   const globalStatus = useGlobalConnectingStatus();
+  const isPollInFlight = React.useRef(false);
+  const consecutiveFailures = React.useRef(0);
 
   // register an interval for fetching the status of the daemon
   useInterval(async () => {
     // getSummaryStatus sends an IPC call to our node environment
     // once on the node environment, it will trigger and wait for the RPC call to finish
     // or timeout before returning.
+
+    // skip this tick if the previous poll is still awaiting its reply,
+    // otherwise slow replies pile up concurrent jobs.
+    if (isPollInFlight.current) {
+      return;
+    }
+    isPollInFlight.current = true;
     try {
       const statusAsString = await getSummaryStatus();
       // The status we get is a plain string. Extract the details we care from it and build
@@ -99,16 +112,29 @@ const useSummaryStatusPolling = () => {
         }
       }
       dispatch(markInitialLoadingFinished());
+      consecutiveFailures.current = 0;
     } catch (e) {
-      dispatch(markAsStopped());
-      dispatch(markInitialLoadingFinished());
+      consecutiveFailures.current += 1;
 
-      dispatch(
-        markExitNodesFromDaemon({
-          exitNodeFromDaemon: undefined,
-          exitAuthCodeFromDaemon: undefined
-        })
-      );
+      if (consecutiveFailures.current === 1) {
+        // keep the last-known state on transient failures, just log it
+        dispatch(
+          appendToApplogs('status poll failed once, retrying before marking stopped')
+        );
+      }
+
+      if (consecutiveFailures.current >= MAX_CONSECUTIVE_POLL_FAILURES) {
+        dispatch(markAsStopped());
+        dispatch(
+          markExitNodesFromDaemon({
+            exitNodeFromDaemon: undefined,
+            exitAuthCodeFromDaemon: undefined
+          })
+        );
+      }
+      dispatch(markInitialLoadingFinished());
+    } finally {
+      isPollInFlight.current = false;
     }
   }, POLLING_STATUS_INTERVAL_MS);
 };
