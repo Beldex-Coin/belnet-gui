@@ -144,8 +144,6 @@ const App = () => {
   return <AppLayout />;
 };
 
-ReactDom.render(<div id="root" />, document.body);
-
 const BelnetThemeProvider = (props: { children: React.ReactNode }) => {
   const currentTheme = useSelector(selectedTheme);
   return (
