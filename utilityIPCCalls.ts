@@ -1,9 +1,97 @@
+import net from 'net';
+import dns from 'dns';
 import { takeEventByJobId } from './ipcNode';
 import * as belnetProcessManager from './belnetProcessManager';
 import { getMainWindow, getTrayIcon } from './main';
 import { IPC_CHANNEL_KEY } from './sharedIpc';
 
 let isRendererReady = false;
+
+const PROBE_TIMEOUT_MS = 2000;
+const PROBE_CONCURRENCY = 5;
+const PROBE_PORTS = [443, 80];
+// reply must beat the renderer IPC timeout (10s) and the main-process job TTL
+// sweep (15s), so cap the whole probe run and return partial results.
+const PROBE_GLOBAL_DEADLINE_MS = 8000;
+
+/**
+ * Measures the TCP connect time (ms) to a single host.
+ * Resolves to null when the host cannot be resolved or reached within the
+ * timeout: exit nodes addressed inside the belnet network are not directly
+ * reachable from the host machine, and must simply be reported as unmeasured.
+ */
+const probeOneHost = async (host: string): Promise<number | null> => {
+  // fail fast for in-network / unresolvable names
+  const resolved = await new Promise<boolean>((resolve) => {
+    dns.lookup(host, (err) => resolve(!err));
+  });
+  if (!resolved) {
+    return null;
+  }
+
+  for (const port of PROBE_PORTS) {
+    const latency = await new Promise<number | null>((resolve) => {
+      const started = Date.now();
+      const socket = new net.Socket();
+      const finish = (value: number | null) => {
+        socket.removeAllListeners();
+        socket.destroy();
+        resolve(value);
+      };
+      socket.setTimeout(PROBE_TIMEOUT_MS);
+      socket.once('connect', () => finish(Date.now() - started));
+      socket.once('timeout', () => finish(null));
+      socket.once('error', () => finish(null));
+      socket.connect(port, host);
+    });
+    if (latency !== null) {
+      return latency;
+    }
+  }
+  return null;
+};
+
+/**
+ * IPC: probes a list of exit node hostnames with limited concurrency and
+ * replies with a JSON object mapping hostname -> latency ms (or null).
+ */
+export async function probeExitNodeLatencies(
+  jobId: string,
+  hostsJson: string
+): Promise<void> {
+  const results: Record<string, number | null> = {};
+  try {
+    const hosts: Array<string> = JSON.parse(hostsJson);
+    const queue = [...hosts];
+
+    const worker = async () => {
+      while (queue.length > 0) {
+        const host = queue.shift();
+        if (!host) {
+          return;
+        }
+        results[host] = await probeOneHost(host);
+      }
+    };
+    await Promise.race([
+      Promise.all(
+        new Array(Math.min(PROBE_CONCURRENCY, hosts.length))
+          .fill(null)
+          .map(worker)
+      ),
+      new Promise((resolve) => setTimeout(resolve, PROBE_GLOBAL_DEADLINE_MS))
+    ]);
+  } catch (e) {
+    console.info('probeExitNodeLatencies failed with', e);
+  }
+  const event = takeEventByJobId(jobId);
+  event?.sender.send(
+    `${IPC_CHANNEL_KEY}-done`,
+    jobId,
+    null,
+    JSON.stringify(results)
+  );
+}
 
 export function markRendererReady(jobId: string): void {
   isRendererReady = true;

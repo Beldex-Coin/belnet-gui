@@ -30,7 +30,8 @@ const channelsFromRendererToMainToMake = {
   doStopBelnetProcess,
   // utility calls
   markRendererReady,
-  minimizeToTray
+  minimizeToTray,
+  probeExitNodeLatencies
 };
 const channels = {} as any;
 const _jobs = Object.create(null);
@@ -69,6 +70,24 @@ export async function markRendererReady(): Promise<void> {
 
 export async function minimizeToTray(type: string): Promise<void> {
   channels.minimizeToTray(type);
+}
+
+/**
+ * Asks the main process to measure TCP connect latency to the given hosts.
+ * Returns a map of host -> latency in ms, or null when unreachable/unresolvable.
+ */
+export async function probeExitNodeLatencies(
+  hosts: Array<string>
+): Promise<Record<string, number | null>> {
+  const resultJson = await channels.probeExitNodeLatencies(
+    JSON.stringify(hosts)
+  );
+  try {
+    return JSON.parse(resultJson) || {};
+  } catch (e) {
+    console.info('probeExitNodeLatencies: could not parse reply', e);
+    return {};
+  }
 }
 export async function setConfig(
   section: string,

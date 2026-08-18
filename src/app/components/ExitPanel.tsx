@@ -12,6 +12,7 @@ import AsyncCreatableSelect from 'react-select/async-creatable';
 import { selectedTheme, setTheme } from '../../features/uiStatusSlice';
 import Select, { components, DropdownIndicatorProps, IndicatorSeparatorProps } from 'react-select';
 import { useAppDispatch } from '../hooks';
+import { probeExitNodeLatencies } from '../../ipc/ipcRenderer';
 import CountryFlags from './CountryImageSrc';
 import DropDownWhite from '../../../images/drop_down_white.svg';
 import DropDownDark from '../../../images/drop_down_dark.svg';
@@ -175,20 +176,104 @@ color: ${(props) => props.theme.appLogContentColor};
 `;
 
 
-const promiseOptions = () =>
-  new Promise<[]>((resolve) => {
-    fetch("https://deb.beldex.io/Beldex-projects/Belnet/exitnodelist.json")
-      .then(response => response.json())
-      .then(data => {
-        // const exitNodeArr = data.map((item: any) => {
-        //   return {
-        //     value: item.name,
-        //     label: item.name
-        //   }
-        // })
-        resolve(data)
-      })
+const EXIT_NODE_LIST_URL =
+  'https://deb.beldex.io/Beldex-projects/Belnet/exitnodelist.json';
+const EXIT_LIST_FETCH_TIMEOUT_MS = 5000;
+const EXIT_LIST_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
+// module-level cache so switching tabs / re-mounting does not refetch & reprobe
+let cachedMenuList: Array<any> | null = null;
+let cachedLatencies: Record<string, number | null> = {};
+let cacheTimestamp = 0;
+
+const isCacheFresh = () =>
+  Boolean(cachedMenuList) && Date.now() - cacheTimestamp < EXIT_LIST_CACHE_TTL_MS;
+
+const fetchWithTimeout = async (url: string, timeoutMs: number) => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return await response.json();
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
+/**
+ * Fetches the exit node list with a timeout and a single retry.
+ * Unlike the previous implementation, this always settles: the caller
+ * can show an error state instead of a panel stuck loading forever.
+ */
+const fetchExitNodeList = async (): Promise<Array<any>> => {
+  try {
+    return await fetchWithTimeout(EXIT_NODE_LIST_URL, EXIT_LIST_FETCH_TIMEOUT_MS);
+  } catch (e) {
+    console.info('exit node list fetch failed, retrying once', e);
+    return await fetchWithTimeout(EXIT_NODE_LIST_URL, EXIT_LIST_FETCH_TIMEOUT_MS);
+  }
+};
+
+const flattenNodes = (list: Array<any>): Array<any> => {
+  const allNodes: Array<any> = [];
+  list?.forEach((item: any) => {
+    if (Array.isArray(item?.node)) {
+      allNodes.push(...item.node);
+    }
   });
+  return allNodes;
+};
+
+const latencyColor = (ms: number): string => {
+  if (ms < 100) {
+    return '#2ecc71';
+  }
+  if (ms < 250) {
+    return '#f1c40f';
+  }
+  return '#e74c3c';
+};
+
+const NodeLatency = styled.span<{ ms: number }>`
+  font-size: 9px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  color: ${(props) => latencyColor(props.ms)};
+  min-width: 42px;
+  text-align: right;
+`;
+
+const FetchErrorNote = styled.div`
+  font-size: 11px;
+  font-family: 'Poppins', sans-serif;
+  color: #e74c3c;
+  padding: 4px 0;
+  cursor: pointer;
+  user-select: none;
+`;
+
+const sortNodesByLatency = (
+  nodes: Array<any>,
+  latencies: Record<string, number | null>
+): Array<any> => {
+  return [...nodes].sort((a: any, b: any) => {
+    const la = latencies[a?.name];
+    const lb = latencies[b?.name];
+    if (la == null && lb == null) {
+      return 0;
+    }
+    if (la == null) {
+      return 1;
+    }
+    if (lb == null) {
+      return -1;
+    }
+    return la - lb;
+  });
+};
 
 const ArrowStyle = {
   transform: 'rotate(-180deg)',
@@ -198,8 +283,14 @@ const ArrowStyle = {
 
 export const ExitPanel = (): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [menuList, setMenuList] = useState([]);
+  const [menuList, setMenuList] = useState<Array<any>>([]);
+  const [latencyByName, setLatencyByName] = useState<
+    Record<string, number | null>
+  >({});
+  const [listError, setListError] = useState(false);
   const [selectedNode, setNode] = useState<any>({});
+  // when the user picks a node manually, latency results must not override it
+  const userChoseNodeRef = React.useRef(false);
 
   const exitStatus = useSelector(selectExitStatus);
   const dispatch = useAppDispatch();
@@ -236,11 +327,67 @@ export const ExitPanel = (): JSX.Element => {
   // const exitDaemon = exitStatus.exitNodeFromDaemon;
   // defaultExitUse = exitToUse;
 
-  useEffect(() => {
-    promiseOptions().then((list: any) => {
+  const applyLatencies = (
+    list: Array<any>,
+    latencies: Record<string, number | null>
+  ) => {
+    setLatencyByName(latencies);
+    if (userChoseNodeRef.current) {
+      return;
+    }
+    const measured = flattenNodes(list).filter(
+      (n: any) => n?.name && latencies[n.name] != null
+    );
+    if (measured.length > 0) {
+      const fastest = measured.reduce((a: any, b: any) =>
+        (latencies[a.name] as number) <= (latencies[b.name] as number) ? a : b
+      );
+      setNode(fastest);
+      dispatch(onUserExitNodeSet(fastest.name));
+    }
+  };
+
+  const loadExitNodes = async () => {
+    setListError(false);
+
+    if (isCacheFresh() && cachedMenuList) {
+      setMenuList(cachedMenuList);
+      const hasMeasurement = Object.values(cachedLatencies).some(
+        (v) => v != null
+      );
+      if (hasMeasurement) {
+        applyLatencies(cachedMenuList, cachedLatencies);
+      } else {
+        getRandomExitNode(cachedMenuList);
+      }
+      return;
+    }
+
+    try {
+      const list = await fetchExitNodeList();
+      cachedMenuList = list;
+      cacheTimestamp = Date.now();
       setMenuList(list);
+      // select something right away so the panel is usable while probing
       getRandomExitNode(list);
-    });
+
+      const hosts = flattenNodes(list)
+        .map((n: any) => n?.name)
+        .filter(Boolean);
+      if (hosts.length > 0) {
+        const latencies = await probeExitNodeLatencies(hosts);
+        cachedLatencies = latencies;
+        applyLatencies(list, latencies);
+      }
+    } catch (e) {
+      console.info('could not load the exit node list', e);
+      setListError(true);
+    }
+  };
+
+  useEffect(() => {
+    void loadExitNodes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -255,7 +402,7 @@ export const ExitPanel = (): JSX.Element => {
 
   const onInputBlur = (e: any) => {
     const html = e.target.value;
-    console.log('-html--', html)
+    userChoseNodeRef.current = true;
     const nodeList = {
       country: "",
       icon: "",
@@ -287,6 +434,7 @@ export const ExitPanel = (): JSX.Element => {
 
   const handleChange = (nodeList: any) => {
     if (nodeList && nodeList.name) {
+      userChoseNodeRef.current = true;
       setNode(nodeList)
       openNodeList();
       dispatch(onUserExitNodeSet(nodeList.name))
@@ -294,6 +442,7 @@ export const ExitPanel = (): JSX.Element => {
   }
 
   const clearNodeValue = (e: any) => {
+    userChoseNodeRef.current = true;
     dispatch(onUserExitNodeSet(''))
     setNode({})
     setNewValue('');
@@ -323,6 +472,11 @@ export const ExitPanel = (): JSX.Element => {
       <Stack direction="row" alignSelf="center" width="100%" height="100%">
         <Flex flexDirection="column" flexGrow={1}>
           <InputLabel>Exit Node</InputLabel>
+          {listError && (
+            <FetchErrorNote onClick={() => void loadExitNodes()}>
+              Could not load the exit node list. Tap to retry.
+            </FetchErrorNote>
+          )}
           {/* <InputGroup>
             <InputLeftElement
               pointerEvents='none'
@@ -391,13 +545,18 @@ export const ExitPanel = (): JSX.Element => {
                     <NodeAccordionIcon className={`nodeIcon-${index}`} />
                   </NodeAccordionButton>
                   <NodeAccordionPanel >
-                    {nodeArr.node.map((nodeList: any) =>
+                    {sortNodesByLatency(nodeArr.node, latencyByName).map((nodeList: any) =>
                       <NodeDetail key={nodeList.name} onClick={() => handleChange(nodeList)} style={selectedNode?.name === nodeList.name ? { background: '#1994FC', borderRadius: '8px' } : {}}>
                         <CountryFlags style={{}} keyItem={nodeList.name} countryName={nodeList.country.toLowerCase()} />
                         <div>
                           <NodeName>{nodeList.name}</NodeName>
                           <NodeCountry>{nodeList.country}</NodeCountry>
                         </div>
+                        {latencyByName[nodeList.name] != null && (
+                          <NodeLatency ms={latencyByName[nodeList.name] as number}>
+                            {`${latencyByName[nodeList.name]}ms`}
+                          </NodeLatency>
+                        )}
                         <NodeCircle />
                       </NodeDetail>
                     )}
