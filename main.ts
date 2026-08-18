@@ -9,10 +9,9 @@ import  { autoUpdater } from "electron-updater";
 import { markShouldQuit, shouldQuit } from './windowState';
 import ElectronStore from 'electron-store';
 
-let updateInterval = null;
-let updateNotAvailable = false;
-let updateCheck = false;
-let updateFound = false;
+const UPDATE_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
+let updateInterval: NodeJS.Timeout | null = null;
+let updateDialogShown = false;
 let store: ElectronStore | undefined;
 const configScreenIndex = 'SCREEN_INDEX';
 
@@ -178,51 +177,62 @@ app.on('web-contents-created', (createEvent, contents) => {
   });
 });
 
+const checkForUpdatesSilently = () => {
+  autoUpdater.checkForUpdates().catch((e) => {
+    // a failed update check must never bother the user
+    console.info('checkForUpdates failed:', e);
+  });
+};
+
+const stopUpdateChecks = () => {
+  if (updateInterval) {
+    clearInterval(updateInterval);
+    updateInterval = null;
+  }
+};
+
 app.on('ready', () => {
   createWindow();
-  updateInterval = setInterval(() => autoUpdater.checkForUpdates(), 600000);
+  // silent check on startup and then periodically; users are only
+  // notified when an update actually exists.
+  checkForUpdatesSilently();
+  updateInterval = setInterval(checkForUpdatesSilently, UPDATE_CHECK_INTERVAL_MS);
+});
 
-} );
+autoUpdater.on('update-available', () => {
+  if (updateDialogShown) {
+    return;
+  }
+  updateDialogShown = true;
+  stopUpdateChecks();
+  void dialog.showMessageBox({
+    type: 'info',
+    buttons: ['Ok'],
+    title: 'Update Available',
+    message: 'A new Belnet GUI version is available.',
+    detail: 'The update download has started in the background.'
+  });
+});
 
-autoUpdater.on("update-available", (_event: any, releaseNotes: any, releaseName: any) => {
-  const dialogOpts = {
+autoUpdater.on('update-downloaded', () => {
+  stopUpdateChecks();
+  // ask instead of force-restarting the app under the user
+  void dialog
+    .showMessageBox({
       type: 'info',
-      buttons: ['Ok'],
-      title: `${autoUpdater.channel} Update Available`,
-      message: process.platform === 'win32' ? releaseNotes : releaseName,
-      detail: `A new ${autoUpdater.channel} version download started.`
-  };
-
-  if (!updateCheck) {
-      updateInterval = null;
-      dialog.showMessageBox(dialogOpts);
-      updateCheck = true;
-  }
+      buttons: ['Restart now', 'Later'],
+      defaultId: 0,
+      cancelId: 1,
+      title: 'Update Ready',
+      message: 'The update has been downloaded.',
+      detail: 'Restart Belnet GUI to apply it.'
+    })
+    .then(({ response }) => {
+      if (response === 0) {
+        autoUpdater.quitAndInstall();
+      }
+    });
 });
 
-autoUpdater.on("update-downloaded", (_event) => {
-  if (!updateFound) {
-      updateInterval = null;
-      updateFound = true;
-
-      setTimeout(() => {
-          autoUpdater.quitAndInstall();
-      }, 3500);
-  }
-});
-
-autoUpdater.on("update-not-available", (_event) => {
-  const dialogOpts = {
-      type: 'info',
-      buttons: ['Ok'],
-      title: `Update Not available for ${autoUpdater.channel}`,
-      message: "A message!",
-      detail: `Update Not available for ${autoUpdater.channel}`
-  };
-
-  if (!updateNotAvailable) {
-      updateNotAvailable = true;
-      dialog.showMessageBox(dialogOpts);
-  }
-});
+// update-not-available: intentionally silent.
 app.allowRendererProcessReuse = true;
