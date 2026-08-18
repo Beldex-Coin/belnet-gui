@@ -9,9 +9,10 @@ import {
   VictoryAxis,
   VictoryLabel
 } from 'victory';
-import { selectedTheme } from '../../features/uiStatusSlice';
+import { selectedTheme, selectSelectedTab } from '../../features/uiStatusSlice';
 import {
-  makeRate, selectStatus,
+  makeRate,
+  selectSpeedHistory,
   selectDownloadRate,
   selectUploadRate
 } from '../../features/statusSlice';
@@ -66,34 +67,42 @@ export type NumberQueue = Array<number>;
 export type SpeedHistoryDataType = {
   upload: NumberQueue;
   download: NumberQueue;
-  lastUploadUsage: number | null;
-  lastDownloadUsage: number | null;
 };
 
-export const MAX_NUMBER_POINT_HISTORY = 60; // 1 minute as there is 2 points per sec currently
+export const MAX_NUMBER_POINT_HISTORY = 60; // 2 minutes: one point per 2s poll
 
-export const SpeedChart = (): JSX.Element => {
-  const daemonStatus = useSelector(selectStatus);
+export const SpeedChart = React.memo((): JSX.Element | null => {
+  // subscribe only to what this component actually renders
+  const speedHistory = useSelector(selectSpeedHistory);
+  const selectedTab = useSelector(selectSelectedTab);
   const theme = useTheme();
   const themeType = useSelector(selectedTheme);
   const upSpeed : any= useSelector(selectUploadRate);
   const downSpeed : any= useSelector(selectDownloadRate);
 
-  const uploadCoordinates = daemonStatus.speedHistory.upload.map((y, index) => {
-    return {
-      x: index,
-      y
-    };
-  });
-
-  const downloadCoordinates = daemonStatus.speedHistory.download.map(
-    (y, index) => {
-      return {
+  const uploadCoordinates = React.useMemo(
+    () =>
+      speedHistory.upload.map((y, index) => ({
         x: index,
         y
-      };
-    }
+      })),
+    [speedHistory.upload]
   );
+
+  const downloadCoordinates = React.useMemo(
+    () =>
+      speedHistory.download.map((y, index) => ({
+        x: index,
+        y
+      })),
+    [speedHistory.download]
+  );
+
+  // Victory charts are expensive: skip rendering entirely while the
+  // chart tab (index 1) is not the visible one.
+  if (selectedTab !== 1) {
+    return null;
+  }
 
   return (
     <Flex flexDirection="column" height="100%">
@@ -189,4 +198,6 @@ export const SpeedChart = (): JSX.Element => {
       </Flex>
     </Flex>
   );
-};
+});
+
+SpeedChart.displayName = 'SpeedChart';

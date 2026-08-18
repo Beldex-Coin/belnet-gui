@@ -3,7 +3,6 @@ import styled, { useTheme } from 'styled-components';
 import { useSelector } from 'react-redux';
 import { selectedTheme } from '../../features/uiStatusSlice';
 import {
-  makeRate, selectStatus,
   selectDownloadRate,
   selectUploadRate
 } from '../../features/statusSlice';

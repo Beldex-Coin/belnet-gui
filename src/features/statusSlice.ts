@@ -132,6 +132,28 @@ export const selectGlobalError = createSelector(
   (status): StatusErrorType => status.globalError || undefined
 );
 
+// narrow selectors: components should subscribe to the smallest slice of
+// state they need, so a 2s poll doesn't re-render the whole tree.
+export const selectSpeedHistory = createSelector(
+  selectStatus,
+  (status) => status.speedHistory
+);
+
+export const selectNumPathsBuilt = createSelector(
+  selectStatus,
+  (status) => status.numPathsBuilt
+);
+
+export const selectNumRoutersKnown = createSelector(
+  selectStatus,
+  (status) => status.numRoutersKnown
+);
+
+export const selectRatio = createSelector(
+  selectStatus,
+  (status) => status.ratio
+);
+
 export const selectUploadRate = createSelector(selectStatus, (status) =>
   makeRate(status.speedHistory.upload[MAX_NUMBER_POINT_HISTORY - 1] || 0)
 );

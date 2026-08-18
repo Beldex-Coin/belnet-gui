@@ -2,7 +2,11 @@ import React, {useState} from 'react';
 import { useSelector } from 'react-redux';
 import { Flex } from '@chakra-ui/react'
 import styled from 'styled-components';
-import { selectStatus } from '../../features/statusSlice';
+import {
+  selectNumPathsBuilt,
+  selectNumRoutersKnown,
+  selectRatio
+} from '../../features/statusSlice';
 import { selectedTheme } from '../../features/uiStatusSlice';
 import { ExitPanel } from './ExitPanel';
 import { RoutersStats } from './RouterStats';
@@ -119,8 +123,10 @@ font-family: 'Poppins', sans-serif;
 letter-spacing: .75px;
 `;
 export const MainTab = (): JSX.Element => {
-  // Select (i.e. extract the daemon status from our global redux state)
-  const daemonStatus = useSelector(selectStatus);
+  // subscribe only to the 3 fields this tab displays, not the whole status
+  const numPathsBuilt = useSelector(selectNumPathsBuilt);
+  const numRoutersKnown = useSelector(selectNumRoutersKnown);
+  const ratio = useSelector(selectRatio);
   const themeType = useSelector(selectedTheme);
   const [openModal, isOpen] = useState(false);
   const openAboutModal = () => {
@@ -141,9 +147,9 @@ export const MainTab = (): JSX.Element => {
         minWidth="300px"
       >
         <RoutersStats
-          activePaths={daemonStatus.numPathsBuilt}
-          ratio={daemonStatus.ratio}
-          numRouters={daemonStatus.numRoutersKnown}
+          activePaths={numPathsBuilt}
+          ratio={ratio}
+          numRouters={numRoutersKnown}
         />
       </Flex>
       <Flex
