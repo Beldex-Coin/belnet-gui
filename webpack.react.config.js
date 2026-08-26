@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
@@ -71,7 +72,19 @@ module.exports = (env, argv) => {
     ],
     optimization: {
       minimize: isProduction,
+      // Keep function and class names through minification. The IPC bridge and
+      // some bundled libraries identify things by runtime name; mangling those
+      // breaks them silently at runtime rather than at build time.
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            keep_fnames: true,
+            keep_classnames: true
+          }
+        })
+      ],
       moduleIds: 'deterministic'
     }
   };
 };
+

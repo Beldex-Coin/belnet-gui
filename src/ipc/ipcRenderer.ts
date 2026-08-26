@@ -102,9 +102,15 @@ export async function initializeIpcRendererSide(): Promise<void> {
   //   any warnings that might be sent to the console in that case.
   ipcRenderer.setMaxListeners(0);
 
-  _.forEach(channelsFromRendererToMainToMake, (fn) => {
+  // The channel name MUST come from the object key, never from `fn.name`.
+  // `fn.name` is a minifier-visible identifier: a production build renames
+  // these functions, which silently renames every channel and breaks the whole
+  // renderer <-> main bridge (callers still ask for `channels.getSummaryStatus`
+  // while the registry holds `channels.k`). The keys below are string literals
+  // and are never mangled, so they are the only safe source of truth.
+  _.forEach(channelsFromRendererToMainToMake, (fn, fnName) => {
     if (_.isFunction(fn)) {
-      makeChannel(fn.name);
+      makeChannel(fnName);
     }
   });
 
@@ -370,3 +376,4 @@ export const parseSummaryStatus = (
   parsedSummaryStatus.numPathsBuilt = statsResult.numPathsBuilt;
   return parsedSummaryStatus;
 };
+

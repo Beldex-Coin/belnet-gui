@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
@@ -32,6 +33,17 @@ module.exports = (env, argv) => {
     },
     optimization: {
       minimize: isProduction,
+      // Keep function and class names through minification. ipcNode dispatches
+      // by name, and the bundled native/schema libraries (zeromq, electron-store
+      // -> conf -> ajv) are name-sensitive too.
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            keep_fnames: true,
+            keep_classnames: true
+          }
+        })
+      ],
       moduleIds: 'deterministic'
     }
   };
