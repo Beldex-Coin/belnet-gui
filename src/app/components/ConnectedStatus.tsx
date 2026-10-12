@@ -71,6 +71,20 @@ export const ConnectedStatus = (): JSX.Element => {
     );
   }
 
+  if (globalStatus === 'switching') {
+    return (
+      <div>
+      <ConnectedStatusContainer>
+        <ConnectedStatusTitle>Switching node</ConnectedStatusTitle>
+        <ConnectedStatusLED ledColor="#EBD619" />
+      </ConnectedStatusContainer>
+      <TextLineImage>
+      {themeType === 'light' ? <img src={LineWhite} alt="" /> : <img src={LineDark} alt="" />}
+      </TextLineImage>
+      </div>
+    );
+  }
+
   if (globalStatus === 'connecting') {
     return (
       <div>

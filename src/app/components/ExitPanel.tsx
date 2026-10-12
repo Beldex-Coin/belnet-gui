@@ -12,7 +12,15 @@ import AsyncCreatableSelect from 'react-select/async-creatable';
 import { selectedTheme, setTheme } from '../../features/uiStatusSlice';
 import Select, { components, DropdownIndicatorProps, IndicatorSeparatorProps } from 'react-select';
 import { useAppDispatch } from '../hooks';
-import { probeExitNodeLatencies } from '../../ipc/ipcRenderer';
+import {
+  flattenNodes,
+  getCachedLatencies,
+  getCachedList,
+  isCacheFresh,
+  latencyColor,
+  loadExitNodes as loadExitNodeGroups,
+  sortNodesByLatency
+} from './exitNodeList';
 import CountryFlags from './CountryImageSrc';
 import DropDownWhite from '../../../images/drop_down_white.svg';
 import DropDownDark from '../../../images/drop_down_dark.svg';
@@ -176,67 +184,6 @@ color: ${(props) => props.theme.appLogContentColor};
 `;
 
 
-const EXIT_NODE_LIST_URL =
-  'https://deb.beldex.io/Beldex-projects/Belnet/exitnodelist.json';
-const EXIT_LIST_FETCH_TIMEOUT_MS = 5000;
-const EXIT_LIST_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
-
-// module-level cache so switching tabs / re-mounting does not refetch & reprobe
-let cachedMenuList: Array<any> | null = null;
-let cachedLatencies: Record<string, number | null> = {};
-let cacheTimestamp = 0;
-
-const isCacheFresh = () =>
-  Boolean(cachedMenuList) && Date.now() - cacheTimestamp < EXIT_LIST_CACHE_TTL_MS;
-
-const fetchWithTimeout = async (url: string, timeoutMs: number) => {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(url, { signal: controller.signal });
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    return await response.json();
-  } finally {
-    clearTimeout(timer);
-  }
-};
-
-/**
- * Fetches the exit node list with a timeout and a single retry.
- * Unlike the previous implementation, this always settles: the caller
- * can show an error state instead of a panel stuck loading forever.
- */
-const fetchExitNodeList = async (): Promise<Array<any>> => {
-  try {
-    return await fetchWithTimeout(EXIT_NODE_LIST_URL, EXIT_LIST_FETCH_TIMEOUT_MS);
-  } catch (e) {
-    console.info('exit node list fetch failed, retrying once', e);
-    return await fetchWithTimeout(EXIT_NODE_LIST_URL, EXIT_LIST_FETCH_TIMEOUT_MS);
-  }
-};
-
-const flattenNodes = (list: Array<any>): Array<any> => {
-  const allNodes: Array<any> = [];
-  list?.forEach((item: any) => {
-    if (Array.isArray(item?.node)) {
-      allNodes.push(...item.node);
-    }
-  });
-  return allNodes;
-};
-
-const latencyColor = (ms: number): string => {
-  if (ms < 100) {
-    return '#2ecc71';
-  }
-  if (ms < 250) {
-    return '#f1c40f';
-  }
-  return '#e74c3c';
-};
-
 const NodeLatency = styled.span<{ ms: number }>`
   font-size: 9px;
   font-weight: 600;
@@ -254,26 +201,6 @@ const FetchErrorNote = styled.div`
   cursor: pointer;
   user-select: none;
 `;
-
-const sortNodesByLatency = (
-  nodes: Array<any>,
-  latencies: Record<string, number | null>
-): Array<any> => {
-  return [...nodes].sort((a: any, b: any) => {
-    const la = latencies[a?.name];
-    const lb = latencies[b?.name];
-    if (la == null && lb == null) {
-      return 0;
-    }
-    if (la == null) {
-      return 1;
-    }
-    if (lb == null) {
-      return -1;
-    }
-    return la - lb;
-  });
-};
 
 const ArrowStyle = {
   transform: 'rotate(-180deg)',
@@ -350,34 +277,33 @@ export const ExitPanel = (): JSX.Element => {
   const loadExitNodes = async () => {
     setListError(false);
 
-    if (isCacheFresh() && cachedMenuList) {
-      setMenuList(cachedMenuList);
-      const hasMeasurement = Object.values(cachedLatencies).some(
-        (v) => v != null
-      );
-      if (hasMeasurement) {
-        applyLatencies(cachedMenuList, cachedLatencies);
-      } else {
-        getRandomExitNode(cachedMenuList);
+    // Served from the shared module cache when fresh, so the Main tab panel
+    // and the Change Node screen never fetch or probe twice.
+    if (isCacheFresh()) {
+      const cachedList = getCachedList();
+      const cached = getCachedLatencies();
+      if (cachedList) {
+        setMenuList(cachedList);
+        const hasMeasurement = Object.values(cached).some((v) => v != null);
+        if (hasMeasurement) {
+          applyLatencies(cachedList, cached);
+        } else {
+          getRandomExitNode(cachedList);
+        }
+        return;
       }
-      return;
     }
 
     try {
-      const list = await fetchExitNodeList();
-      cachedMenuList = list;
-      cacheTimestamp = Date.now();
+      const { list, latencies } = await loadExitNodeGroups();
       setMenuList(list);
-      // select something right away so the panel is usable while probing
-      getRandomExitNode(list);
-
-      const hosts = flattenNodes(list)
-        .map((n: any) => n?.name)
-        .filter(Boolean);
-      if (hosts.length > 0) {
-        const latencies = await probeExitNodeLatencies(hosts);
-        cachedLatencies = latencies;
+      const hasMeasurement = Object.values(latencies).some((v) => v != null);
+      if (hasMeasurement) {
         applyLatencies(list, latencies);
+      } else {
+        // nothing measurable (in-network addresses): keep the previous
+        // behaviour and pick one so the panel is immediately usable
+        getRandomExitNode(list);
       }
     } catch (e) {
       console.info('could not load the exit node list', e);

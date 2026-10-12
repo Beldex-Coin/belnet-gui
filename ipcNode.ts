@@ -16,9 +16,10 @@ import * as utilityIPCCalls from './utilityIPCCalls';
 type JobEntry = { event: any; createdAt: number };
 
 // how long we keep a pending job around before considering its reply lost.
-// Must be larger than the renderer-side IPC timeout so we never drop a job
-// the renderer is still waiting on.
-const JOB_TTL_MS = 15000;
+// Must be larger than the longest renderer-side IPC timeout (addExit, 20s)
+// so we never sweep a job the renderer is still waiting on -- sweeping early
+// makes handleReply drop the reply when it finally arrives.
+const JOB_TTL_MS = 30000;
 const JOB_SWEEP_INTERVAL_MS = 5000;
 
 export const eventsByJobId: Record<string, JobEntry> = Object.create(null);

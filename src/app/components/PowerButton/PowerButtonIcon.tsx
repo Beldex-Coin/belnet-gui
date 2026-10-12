@@ -17,16 +17,23 @@ export const PowerButtonIcon = (): JSX.Element => {
   const theme = useTheme();
   const themeType = useSelector(selectedTheme);
   const connectingStatus = useGlobalConnectingStatus();
-  const [power_on, setPowerOn] = useState(connectingStatus === "connected");
+  // the tunnel stays up across a node switch, so the icon stays "on"
+  const isPoweredOn = (status: string) =>
+    status === 'connected' || status === 'switching';
+  const [power_on, setPowerOn] = useState(isPoweredOn(connectingStatus));
   const dispatch = useDispatch();
   useEffect(() => {
-    setPowerOn(connectingStatus === "connected")
+    setPowerOn(isPoweredOn(connectingStatus))
   }, [connectingStatus])
   const authCodeFromUser = useSelector(selectAuthCodeFromUser);
   const exitNodeFromUser = useSelector(selectExitNodeFromUser);
   const setPowerStatus = () => {
-    if (connectingStatus === 'connecting' || connectingStatus === 'error-start-stop') {
-      // setPowerOn(!power_on);
+    if (
+      connectingStatus === 'connecting' ||
+      connectingStatus === 'switching' ||
+      connectingStatus === 'error-start-stop'
+    ) {
+      // a node switch owns the exit mapping until it settles
       return;
     } else if (connectingStatus === 'error-add-exit' && exitNodeFromUser) {
       turnExitOn(dispatch, exitNodeFromUser, authCodeFromUser);

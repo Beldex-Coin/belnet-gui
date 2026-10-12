@@ -17,7 +17,14 @@ const IPC_UPDATE_TIMEOUT = 10000;
 // getSummaryStatus is polled: a hung status call should fail fast so the next
 // poll can try again, instead of blocking the UI state for 10s.
 const IPC_TIMEOUT_BY_FN: Record<string, number> = {
-  getSummaryStatus: 5000
+  getSummaryStatus: 5000,
+  // addExit only answers once the daemon has finished the whole sequence:
+  // for a BNS name that is LookupNameAsync over the network, then
+  // EnsurePathToService (5s), then auth. Observed BNS swaps regularly
+  // exceeded 12s, producing false timeouts on swaps that had succeeded.
+  // Must stay below the main-process JOB_TTL_MS or the reply gets swept
+  // before it lands.
+  addExit: 20000
 };
 
 const channelsFromRendererToMainToMake = {

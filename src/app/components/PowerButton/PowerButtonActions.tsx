@@ -3,7 +3,8 @@ import { appendToApplogs } from '../../../features/appLogsSlice';
 import {
   markExitIsTurningOff,
   markExitFailedToLoad,
-  markExitIsTurningOn
+  markExitIsTurningOn,
+  setActiveExitAlias
 } from '../../../features/exitStatusSlice';
 import { setGlobalError } from '../../../features/statusSlice';
 import { setTabSelected } from '../../../features/uiStatusSlice';
@@ -31,6 +32,7 @@ const dispatchExitFailedToTurnOff = (dispatch: Dispatch<any>) => {
 export const turnExitOff = async (dispatch: AppDispatch): Promise<void> => {
   dispatch(appendToApplogs('TurnExitOFF =>'));
   dispatch(markExitIsTurningOff());
+  dispatch(setActiveExitAlias(undefined));
   // trigger the IPC+RPC call
   const deleteExitResult = await deleteExit();
 
@@ -92,8 +94,17 @@ export const turnExitOn = async (
         dispatch(appendToApplogs(`TurnExitON <= ${parsed}`));
       } else {
         dispatch(appendToApplogs(`TurnExitON <= ${parsed.result}`));
-        // Do nothing. At this point we are waiting for the next getSummaryStatus call
-        // to send us the exit node set from the daemon.
+        // A BNS name is resolved by the daemon, so exitMap will hold an
+        // address that does not match what the user typed. Remember the name
+        // so the node list can still mark the row they picked as connected.
+        const resolved = /OK: connected to\s+(\S+)/.exec(String(parsed.result));
+        dispatch(
+          setActiveExitAlias(
+            resolved && resolved[1] !== exitNode ? exitNode : undefined
+          )
+        );
+        // Otherwise do nothing: we are waiting for the next getSummaryStatus
+        // call to send us the exit node set from the daemon.
       }
     } catch (e) {
       dispatchExitFailedToTurnOn(dispatch);

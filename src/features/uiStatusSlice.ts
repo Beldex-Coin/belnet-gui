@@ -8,10 +8,13 @@ export type ThemeType = 'light' | 'dark';
 export type GeneralInfosState = {
   tabSelected: 0 | 1 | 2;
   theme: ThemeType;
+  // full-screen Change Node overlay
+  changeNodeScreenOpen: boolean;
 };
 const initialGeneralInfosState: GeneralInfosState = {
   tabSelected: 0,
-  theme: 'dark'
+  theme: 'dark',
+  changeNodeScreenOpen: false
 };
 export const uiSlice = createSlice({
   name: 'ui',
@@ -30,13 +33,27 @@ export const uiSlice = createSlice({
         ...state,
         theme: action.payload
       };
+    },
+    openChangeNodeScreen(state) {
+      return { ...state, changeNodeScreenOpen: true };
+    },
+    closeChangeNodeScreen(state) {
+      return { ...state, changeNodeScreenOpen: false };
     }
   }
 });
 
-export const { setTabSelected, setTheme } = uiSlice.actions;
+export const {
+  setTabSelected,
+  setTheme,
+  openChangeNodeScreen,
+  closeChangeNodeScreen
+} = uiSlice.actions;
 export const selectUiState = (state: RootState): GeneralInfosState =>
   state.uiStatus;
+
+export const selectChangeNodeScreenOpen = (state: RootState): boolean =>
+  state.uiStatus.changeNodeScreenOpen;
 
 export const selectSelectedTab = (state: RootState): TabIndex =>
   state.uiStatus.tabSelected;

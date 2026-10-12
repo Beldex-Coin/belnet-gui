@@ -27,7 +27,7 @@ export const PowerButton = (): JSX.Element => {
   return (
     <div className='powerBtnContainer'>
       <PowerButtonIcon />
-      {connectingStatus === 'connecting' &&
+      {(connectingStatus === 'connecting' || connectingStatus === 'switching') &&
         <StyledSpinner xmlns="http://www.w3.org/2000/svg" width="216" height="216" viewBox="13 13 216 216">
           <defs>
             <linearGradient id="linear-gradient1" x1="0.21" y1="0.101" x2="0.87" y2="0.817" gradientUnits="objectBoundingBox">
