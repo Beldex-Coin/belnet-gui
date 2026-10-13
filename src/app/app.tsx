@@ -20,8 +20,14 @@ import { store } from './store';
 import { useAppDispatch } from './hooks';
 import {
   markExitNodesFromDaemon,
-  markInitialLoadingFinished
+  markInitialLoadingFinished,
+  setActiveExitAlias
 } from '../features/exitStatusSlice';
+import {
+  isBnsName,
+  lookupExitAlias,
+  rememberExitAlias
+} from '../features/exitAliases';
 import { AppLayout } from './components/AppLayout';
 import { appendToApplogs } from '../features/appLogsSlice';
 import { GlobalStyle } from './globalStyles';
@@ -44,6 +50,40 @@ export function setErrorOutsideRedux(errorStatus: StatusErrorType): void {
 // number of consecutive failed polls before we consider the daemon stopped.
 // A single slow/timed-out reply must not flip the UI to "disconnected".
 const MAX_CONSECUTIVE_POLL_FAILURES = 3;
+
+/**
+ * The daemon only reports the resolved address of a BNS exit. When a new exit
+ * shows up, work out which BNS name it came from so the UI can show the name:
+ *  - the name the user is connecting with right now (covers an addExit reply
+ *    that timed out but the mapping still went through), or
+ *  - the name we saw resolve to this address before (GUI restarted while the
+ *    daemon kept the exit mapped).
+ */
+const restoreExitAlias = (exitAddress: string) => {
+  const exitState = store.getState().exitStatus;
+  if (exitState.swapping) {
+    // the swap flow records its own alias when it settles
+    return;
+  }
+  if (
+    exitState.activeExitAlias &&
+    exitState.activeExitAliasAddress === exitAddress
+  ) {
+    return;
+  }
+  const userIsConnecting =
+    exitState.initialLoadingFinished && exitState.exitLoading;
+  const requested = exitState.exitNodeFromUser;
+  const alias =
+    userIsConnecting && isBnsName(requested) && requested !== exitAddress
+      ? requested
+      : lookupExitAlias(exitAddress);
+
+  if (alias) {
+    store.dispatch(setActiveExitAlias({ alias, address: exitAddress }));
+    rememberExitAlias(exitAddress, alias);
+  }
+};
 
 const useSummaryStatusPolling = () => {
   // dispatch is used to make updates to the redux store
@@ -92,6 +132,10 @@ const useSummaryStatusPolling = () => {
             `authCode set by daemon: ${parsedStatus.exitAuthCode || ''}`
           )
         );
+      }
+
+      if (hasExitNodeChange && parsedStatus.exitNode) {
+        restoreExitAlias(parsedStatus.exitNode);
       }
 
       if (hasExitNodeChange || hasExitAuthChange) {

@@ -7,6 +7,7 @@ import {
   setActiveExitAlias
 } from '../../../features/exitStatusSlice';
 import { setGlobalError } from '../../../features/statusSlice';
+import { rememberExitAlias } from '../../../features/exitAliases';
 import { setTabSelected } from '../../../features/uiStatusSlice';
 import { addExit, deleteExit } from '../../../ipc/ipcRenderer';
 import { AppDispatch, store } from '../../store';
@@ -98,11 +99,13 @@ export const turnExitOn = async (
         // address that does not match what the user typed. Remember the name
         // so the node list can still mark the row they picked as connected.
         const resolved = /OK: connected to\s+(\S+)/.exec(String(parsed.result));
-        dispatch(
-          setActiveExitAlias(
-            resolved && resolved[1] !== exitNode ? exitNode : undefined
-          )
-        );
+        const address = resolved ? resolved[1] : undefined;
+        if (address && address !== exitNode) {
+          dispatch(setActiveExitAlias({ alias: exitNode, address }));
+          rememberExitAlias(address, exitNode);
+        } else {
+          dispatch(setActiveExitAlias(undefined));
+        }
         // Otherwise do nothing: we are waiting for the next getSummaryStatus
         // call to send us the exit node set from the daemon.
       }

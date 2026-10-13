@@ -377,7 +377,7 @@ export const ChangeNodeScreen = (): JSX.Element => {
           {`Could not switch: ${swapError}`}
           <BannerNote>
             {swapRolledBack
-              ? `Kept you on ${activeNode}. Pick another node to try again.`
+              ? `Kept you on ${activeAlias || activeNode}. Pick another node to try again.`
               : 'Not connected to an exit node. Pick a node to try again.'}
           </BannerNote>
         </Banner>

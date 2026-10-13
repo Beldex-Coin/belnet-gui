@@ -37,6 +37,12 @@ export interface ExitStatusState {
    * the user actually chose as connected.
    */
   activeExitAlias?: string;
+  /**
+   * The resolved address `activeExitAlias` belongs to. The alias is only shown
+   * while the daemon is still exiting through this exact address, so a stale
+   * name can never be displayed for a different exit.
+   */
+  activeExitAliasAddress?: string;
 }
 
 const initialStatusState: ExitStatusState = {
@@ -52,7 +58,8 @@ const initialStatusState: ExitStatusState = {
   swapTargetNode: undefined,
   swapError: undefined,
   swapRolledBack: false,
-  activeExitAlias: undefined
+  activeExitAlias: undefined,
+  activeExitAliasAddress: undefined
 };
 
 export const exitStatusSlice = createSlice({
@@ -136,6 +143,9 @@ export const exitStatusSlice = createSlice({
       // later comparison against daemon state fail.
       state.exitNodeFromDaemon = action.payload.exitNode;
       state.activeExitAlias = action.payload.alias;
+      state.activeExitAliasAddress = action.payload.alias
+        ? action.payload.exitNode
+        : undefined;
       return state;
     },
     markSwapFailed: (
@@ -158,11 +168,15 @@ export const exitStatusSlice = createSlice({
     },
     /**
      * Records the BNS name that produced the currently mapped exit address,
-     * so the node list can mark the row the user picked. Cleared by passing
-     * undefined.
+     * so the node list can mark the row the user picked and the Main tab can
+     * show the name instead of the address. Cleared by passing undefined.
      */
-    setActiveExitAlias: (state, action: PayloadAction<string | undefined>) => {
-      state.activeExitAlias = action.payload;
+    setActiveExitAlias: (
+      state,
+      action: PayloadAction<{ alias: string; address: string } | undefined>
+    ) => {
+      state.activeExitAlias = action.payload?.alias;
+      state.activeExitAliasAddress = action.payload?.address;
       return state;
     }
   }
@@ -244,5 +258,20 @@ export const selectActiveExitNode = createSelector(
  */
 export const selectActiveExitAlias = createSelector(
   selectExitStatus,
-  (status) => (status.swapping ? undefined : status.activeExitAlias)
+  (status) =>
+    !status.swapping &&
+    status.activeExitAlias &&
+    status.activeExitAliasAddress === status.exitNodeFromDaemon
+      ? status.activeExitAlias
+      : undefined
+);
+
+/**
+ * What to show as the connected exit node: the BNS name the user picked when
+ * there is one, otherwise the address the daemon reports.
+ */
+export const selectExitNodeDisplayName = createSelector(
+  selectExitStatus,
+  selectActiveExitAlias,
+  (status, alias) => alias || status.exitNodeFromDaemon
 );

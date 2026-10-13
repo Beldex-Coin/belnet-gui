@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import {
   onUserAuthCodeSet,
   onUserExitNodeSet,
+  selectExitNodeDisplayName,
   selectExitStatus
 } from '../../features/exitStatusSlice';
 import AsyncCreatableSelect from 'react-select/async-creatable';
@@ -227,8 +228,11 @@ export const ExitPanel = (): JSX.Element => {
   const themeSelected = useSelector(selectedTheme);
   const disableInputEdits =
     exitStatus.exitLoading || Boolean(exitStatus.exitNodeFromDaemon);
+  // For a BNS exit the daemon only reports the resolved address: show the BNS
+  // name the user connected with instead (falls back to the address).
+  const exitNodeDisplayName = useSelector(selectExitNodeDisplayName);
   const exitToUse = disableInputEdits
-    ? exitStatus.exitNodeFromDaemon
+    ? exitNodeDisplayName
     : exitStatus.exitNodeFromUser;
   const [newValue, setNewValue] = React.useState<string>("");
 
@@ -389,6 +393,12 @@ export const ExitPanel = (): JSX.Element => {
     return randomExitNode
   }
 
+  // the connected node's list entry (for its flag), which can differ from the
+  // locally selected one after a switch from the Change Node screen
+  const connectedNode =
+    flattenNodes(menuList).find((n: any) => n?.name && n.name === exitToUse) ||
+    selectedNode;
+
   const arrowMenuStyle = isMenuOpen ? { ...ArrowStyle, padding: '0 5px' } : { padding: '0 5px' };
   return (
     <Flex
@@ -424,7 +434,7 @@ export const ExitPanel = (): JSX.Element => {
             <ExitInputLeftElement
               pointerEvents='none'
               children={
-                (!exitStatus.exitLoading) && <CountryFlags style={{ marginTop: '3px' }} keyItem={selectedNode?.name} countryName={selectedNode?.country?.toLowerCase()} />
+                (!exitStatus.exitLoading) && <CountryFlags style={{ marginTop: '3px' }} keyItem={connectedNode?.name} countryName={connectedNode?.country?.toLowerCase()} />
               }
             />
             <ExitInput

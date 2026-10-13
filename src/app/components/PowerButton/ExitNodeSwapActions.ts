@@ -57,6 +57,7 @@ import {
   onUserExitNodeSet
 } from '../../../features/exitStatusSlice';
 import { setGlobalError } from '../../../features/statusSlice';
+import { rememberExitAlias } from '../../../features/exitAliases';
 import {
   addExit,
   deleteExit,
@@ -239,6 +240,9 @@ export const swapExitNode = async (
     const alias = exitNode === targetNode ? undefined : targetNode;
     dispatch(onUserExitNodeSet(targetNode));
     dispatch(markSwapSucceeded({ exitNode, alias }));
+    if (alias) {
+      rememberExitAlias(exitNode, alias);
+    }
     dispatch(
       appendToApplogs(
         `ChangeNode <= connected to ${targetNode}${
