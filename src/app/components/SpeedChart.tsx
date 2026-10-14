@@ -20,6 +20,7 @@ import DownloadWhiteIcon from '../../../images/download_white.svg';
 import DownloadDarkIcon from '../../../images/download_dark.svg';
 import UploadWhiteIcon from '../../../images/upload_white.svg';
 import UploadDarkIcon from '../../../images/upload_dark.svg';
+import { IpAddressInfo } from './IpAddressInfo';
 
 const UploadDownloadIcon = styled.img`
 height: 11px;
@@ -127,7 +128,8 @@ export const SpeedChart = React.memo((): JSX.Element | null => {
           }}
           minDomain={{ x: 1, y: 1 }}
           width={510}
-          height={240}
+          // shorter than before to make room for the IP address panel
+          height={150}
           padding={{ left: 65, top: 0, right: 0, bottom: 25 }}
         >
           <VictoryAxis
@@ -174,7 +176,7 @@ export const SpeedChart = React.memo((): JSX.Element | null => {
           width="100%"
           alignSelf="center"
           justifyContent="space-between"
-          margin="22px 0 0"
+          margin="12px 0 0"
         >
           <div>
             <svg height="16" width="5">
@@ -195,6 +197,7 @@ export const SpeedChart = React.memo((): JSX.Element | null => {
             <UploadSpeedUnit>{`${upSpeed.split(' ')[1]}ps`}</UploadSpeedUnit>
           </div>
         </Flex>
+        <IpAddressInfo />
       </Flex>
     </Flex>
   );

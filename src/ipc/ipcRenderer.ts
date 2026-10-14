@@ -24,7 +24,9 @@ const IPC_TIMEOUT_BY_FN: Record<string, number> = {
   // exceeded 12s, producing false timeouts on swaps that had succeeded.
   // Must stay below the main-process JOB_TTL_MS or the reply gets swept
   // before it lands.
-  addExit: 20000
+  addExit: 20000,
+  // two providers tried in turn, 5s each in the main process
+  fetchIpAddress: 12000
 };
 
 const channelsFromRendererToMainToMake = {
@@ -38,7 +40,8 @@ const channelsFromRendererToMainToMake = {
   // utility calls
   markRendererReady,
   minimizeToTray,
-  probeExitNodeLatencies
+  probeExitNodeLatencies,
+  fetchIpAddress
 };
 const channels = {} as any;
 const _jobs = Object.create(null);
@@ -96,6 +99,25 @@ export async function probeExitNodeLatencies(
     return {};
   }
 }
+/**
+ * Asks the main process which IP address this machine currently appears from
+ * on the internet (the public IP before connecting, the exit node's IP after).
+ * Resolves to the address, or throws if no provider answered.
+ */
+export async function fetchIpAddress(): Promise<string> {
+  const replyJson = await channels.fetchIpAddress();
+  let reply: { ip?: string; error?: string } = {};
+  try {
+    reply = JSON.parse(replyJson) || {};
+  } catch (e) {
+    throw new Error('fetchIpAddress: could not parse reply');
+  }
+  if (!reply.ip) {
+    throw new Error(reply.error || 'fetchIpAddress: no ip in reply');
+  }
+  return reply.ip;
+}
+
 export async function setConfig(
   section: string,
   key: string,
