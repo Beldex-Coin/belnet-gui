@@ -483,7 +483,7 @@ export const ExitPanel = (): JSX.Element => {
                   <NodeAccordionPanel >
                     {sortNodesByLatency(nodeArr.node, latencyByName).map((nodeList: any) =>
                       <NodeDetail key={nodeList.name} onClick={() => handleChange(nodeList)} style={selectedNode?.name === nodeList.name ? { background: '#1994FC', borderRadius: '8px' } : {}}>
-                        <CountryFlags style={{}} keyItem={nodeList.name} countryName={nodeList.country.toLowerCase()} />
+                        <CountryFlags style={{}} keyItem={nodeList.name} countryName={nodeList.country?.toLowerCase()} />
                         <div>
                           <NodeName>{nodeList.name}</NodeName>
                           <NodeCountry>{nodeList.country}</NodeCountry>
