@@ -4,11 +4,15 @@ import styled, { useTheme } from 'styled-components';
 import { useAppDispatch } from '../hooks';
 import { openChangeNodeScreen } from '../../features/uiStatusSlice';
 import { selectIsSwappingExitNode } from '../../features/exitStatusSlice';
+import { useGlobalConnectingStatus } from '../hooks/connectingStatus';
 
-const ButtonRow = styled.div`
+const ButtonRow = styled.div<{ $hidden?: boolean }>`
   display: flex;
   justify-content: center;
   margin: 10px 0 2px;
+  /* hidden but still taking its space, so the status line and tabs below
+     don't jump up and down when connecting / disconnecting */
+  visibility: ${(props) => (props.$hidden ? 'hidden' : 'visible')};
 `;
 
 const StyledChangeNodeButton = styled.button<{ disabled?: boolean }>`
@@ -76,21 +80,26 @@ const SwapIcon = ({ color }: { color: string }): JSX.Element => (
 
 /**
  * Sits directly under the power button and opens the Change Node screen.
- * Disabled while a switch is already in flight.
+ * Shown only while connected; disabled while a switch is in flight.
  */
 export const ChangeNodeButton = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const isSwapping = useSelector(selectIsSwappingExitNode);
+  const status = useGlobalConnectingStatus();
+  // Only offered while connected. Kept during a switch so the "Switching…"
+  // spinner stays visible; hidden while disconnected or connecting.
+  const isVisible = status === 'connected' || status === 'switching';
 
   return (
-    <ButtonRow>
+    <ButtonRow $hidden={!isVisible} aria-hidden={!isVisible}>
       <StyledChangeNodeButton
         type="button"
-        disabled={isSwapping}
+        tabIndex={isVisible ? 0 : -1}
+        disabled={isSwapping || !isVisible}
         aria-label={isSwapping ? 'Switching exit node' : 'Change exit node'}
         onClick={() => {
-          if (!isSwapping) {
+          if (isVisible && !isSwapping) {
             dispatch(openChangeNodeScreen());
           }
         }}
