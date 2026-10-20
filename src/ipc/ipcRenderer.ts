@@ -99,14 +99,24 @@ export async function probeExitNodeLatencies(
     return {};
   }
 }
+export type IpInfo = {
+  ip: string;
+  /** Country name as reported by the lookup provider, e.g. "Netherlands". */
+  country?: string;
+  /** ISO 3166-1 alpha-2 code, e.g. "NL". */
+  countryCode?: string;
+};
+
 /**
  * Asks the main process which IP address this machine currently appears from
- * on the internet (the public IP before connecting, the exit node's IP after).
- * Resolves to the address, or throws if no provider answered.
+ * on the internet (the public IP before connecting, the exit node's IP after),
+ * along with the country that address is located in.
+ * Throws if no provider answered.
  */
-export async function fetchIpAddress(): Promise<string> {
+export async function fetchIpInfo(): Promise<IpInfo> {
   const replyJson = await channels.fetchIpAddress();
-  let reply: { ip?: string; error?: string } = {};
+  let reply: { ip?: string; country?: string; countryCode?: string; error?: string } =
+    {};
   try {
     reply = JSON.parse(replyJson) || {};
   } catch (e) {
@@ -115,7 +125,16 @@ export async function fetchIpAddress(): Promise<string> {
   if (!reply.ip) {
     throw new Error(reply.error || 'fetchIpAddress: no ip in reply');
   }
-  return reply.ip;
+  return {
+    ip: reply.ip,
+    country: reply.country || undefined,
+    countryCode: reply.countryCode || undefined
+  };
+}
+
+/** Same as fetchIpInfo, address only. */
+export async function fetchIpAddress(): Promise<string> {
+  return (await fetchIpInfo()).ip;
 }
 
 export async function setConfig(

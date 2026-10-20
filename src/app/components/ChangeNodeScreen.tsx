@@ -186,7 +186,7 @@ const NodeCountry = styled.div`
   font-family: 'Poppins', sans-serif;
   font-size: 9px;
   color: ${(props) => props.theme.streamLabelColor};
-  margin-top: 2px;
+  margin-bottom: 2px;
 `;
 
 const NodeLatency = styled.span<{ ms: number }>`
@@ -458,8 +458,8 @@ export const ChangeNodeScreen = (): JSX.Element => {
                       countryName={node.country?.toLowerCase()}
                     />
                     <NodeText>
-                      <NodeName>{node.name}</NodeName>
                       <NodeCountry>{node.country}</NodeCountry>
+                      <NodeName>{node.name}</NodeName>
                     </NodeText>
                     {ms != null && <NodeLatency ms={ms}>{`${ms}ms`}</NodeLatency>}
                     {isTarget && <RowSpinner />}

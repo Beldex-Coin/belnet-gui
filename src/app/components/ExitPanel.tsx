@@ -22,9 +22,8 @@ import {
   loadExitNodes as loadExitNodeGroups,
   sortNodesByLatency
 } from './exitNodeList';
-import CountryFlags from './CountryImageSrc';
-import DropDownWhite from '../../../images/drop_down_white.svg';
-import DropDownDark from '../../../images/drop_down_dark.svg';
+import CountryFlags, { getCountryFlag } from './CountryImageSrc';
+import { selectIpAddress } from '../../features/ipAddressSlice';
 import ClearWhite from "../../../images/ExitNodeClear_white.svg";
 import ClearDark from "../../../images/ExitNodeClear_dark.svg";
 // let defaultExitUse;
@@ -80,7 +79,7 @@ const NodeName = styled.p`
   font-weight: 400;
   font-family: 'Poppins', sans-serif;
   color: ${(props) => props.theme.appLogContentColor};
-  padding-bottom: 3px;
+  padding-top: 3px;
 `;
 
 const NodeCountry = styled.p`
@@ -119,58 +118,141 @@ text-align: center;
     color: ${(props) => props.theme.activePathColor};
 `;
 
-const ExitNodeValue = styled.div`
-display: flex;
-background-color: ${(props) => props.theme.inputBackground};
-color: ${(props) => props.theme.activePathColor};
-outline-color: transparent;
-font-family: 'Poppins', sans-serif;
-height: 33px;
-width: 370px;
-font-weight: 400;
-border-radius: 6px;
-border: none;
-font-size: 12px;
-padding: 9px 12px;
-outline: none;
-`;
+// --- exit node card: flag badge, country above name/address, chevron ---
 
-const ExitInputGroup = styled(InputGroup)`
-  height: 33px;
-`;
-
-const ExitInputLeftElement = styled(InputLeftElement)`
-  height: 33px;
-  padding-left: 10px;
-`;
-
-const EnterExitNodeInput = styled(Input)`
-background-color: ${(props) => props.theme.inputBackground};
-color: ${(props) => props.theme.activePathColor};
-font-family: Poppins, sans-serif;
-width: 370px;
-font-weight: 400;
-border-radius: 6px;
-border: none;
-font-size: 12px;
-outline: none;
-`;
-
-const ExitInput = styled(Input)`
+const ExitNodeCard = styled.div`
+  display: flex;
+  align-items: center;
+  width: 370px;
+  min-height: 50px;
+  padding: 6px 10px;
+  border-radius: 10px;
   background-color: ${(props) => props.theme.inputBackground};
-  color: ${(props) => props.theme.activePathColor};
-  outline-color: transparent;
   font-family: 'Poppins', sans-serif;
-  height: 33px;
-  font-weight: 400;
-  border-radius: 6px;
-  border: none;
-  font-size: 12px;
-  padding: 10px 12px 10px 35px;
-  outline: none;
-  width: 100%;
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'auto')};
 `;
+
+const FlagBadge = styled.div<{ isDark: boolean }>`
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  margin-right: 12px;
+  background-color: ${(props) =>
+    props.isDark ? 'rgba(0, 0, 0, 0.28)' : 'rgba(0, 0, 0, 0.05)'};
+  & img {
+    margin-top: 0 !important;
+  }
+`;
+
+const CardText = styled.div`
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: ${(props) => (props.onClick ? 'pointer' : 'default')};
+`;
+
+const CardCountry = styled.div`
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 15px;
+  color: ${(props) => props.theme.streamLabelColor};
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  user-select: none;
+`;
+
+const CardName = styled.div`
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 17px;
+  color: ${(props) => props.theme.appLogContentColor};
+  /* long belnet addresses wrap onto a second line, then ellipsis */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-all;
+`;
+
+const CardInput = styled.input`
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: ${(props) => props.theme.appLogContentColor};
+  &::placeholder {
+    color: ${(props) => props.theme.labelValueColor};
+    font-weight: 400;
+  }
+`;
+
+const ClearButton = styled.button`
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+`;
+
+const ChevronButton = styled.button<{ isDark: boolean }>`
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-left: 6px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background-color: ${(props) =>
+    props.isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'};
+`;
+
+const ChevronIcon = ({ color, open }: { color: string; open: boolean }) => (
+  <svg
+    width='12'
+    height='12'
+    viewBox='0 0 12 12'
+    aria-hidden='true'
+    className='exitNode'
+    style={{
+      transform: open ? 'rotate(-90deg)' : 'none',
+      transition: 'transform 0.15s',
+      pointerEvents: 'none'
+    }}
+  >
+    <path
+      d='M4.5 2.5L8 6l-3.5 3.5'
+      fill='none'
+      stroke={color}
+      strokeWidth='1.8'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+    />
+  </svg>
+);
+
+/** Shown in the badge when the exit node's country (or its flag) is unknown. */
+const GlobeIcon = ({ color }: { color: string }) => (
+  <svg width='18' height='18' viewBox='0 0 24 24' aria-hidden='true' style={{ pointerEvents: 'none' }}>
+    <g fill='none' stroke={color} strokeWidth='1.5'>
+      <circle cx='12' cy='12' r='9' />
+      <path d='M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z' />
+    </g>
+  </svg>
+);
 
 const InputLabel = styled.div`
 color: ${(props) => props.theme.appLogContentColor};
@@ -203,11 +285,6 @@ const FetchErrorNote = styled.div`
   user-select: none;
 `;
 
-const ArrowStyle = {
-  transform: 'rotate(-180deg)',
-  position: 'relative',
-  top: '3px'
-}
 
 export const ExitPanel = (): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -231,6 +308,7 @@ export const ExitPanel = (): JSX.Element => {
   // For a BNS exit the daemon only reports the resolved address: show the BNS
   // name the user connected with instead (falls back to the address).
   const exitNodeDisplayName = useSelector(selectExitNodeDisplayName);
+  const { vpnCountry, vpnIpLoading } = useSelector(selectIpAddress);
   const exitToUse = disableInputEdits
     ? exitNodeDisplayName
     : exitStatus.exitNodeFromUser;
@@ -393,13 +471,31 @@ export const ExitPanel = (): JSX.Element => {
     return randomExitNode
   }
 
-  // the connected node's list entry (for its flag), which can differ from the
-  // locally selected one after a switch from the Change Node screen
-  const connectedNode =
-    flattenNodes(menuList).find((n: any) => n?.name && n.name === exitToUse) ||
-    selectedNode;
+  // Listed nodes carry their country in the exit node list. A custom node
+  // (typed in by the user) has none, so once connected we use the country of
+  // the VPN IP, which is the exit node's address on the internet.
+  const isConnected = disableInputEdits && !exitStatus.exitLoading;
+  const listedConnectedNode = flattenNodes(menuList).find(
+    (n: any) => n?.name && n.name === exitToUse
+  );
+  const isCustomConnectedNode = isConnected && !listedConnectedNode?.country;
 
-  const arrowMenuStyle = isMenuOpen ? { ...ArrowStyle, padding: '0 5px' } : { padding: '0 5px' };
+  // what the exit node card shows
+  const cardName: string = disableInputEdits
+    ? (!exitStatus.exitLoading && exitToUse) || ''
+    : selectedNode?.name || exitToUse || newValue || '';
+  const cardCountry: string | undefined = disableInputEdits
+    ? isConnected
+      ? listedConnectedNode?.country ||
+        (isCustomConnectedNode ? vpnCountry : undefined)
+      : undefined
+    : selectedNode?.country || undefined;
+  const cardCountryLine =
+    cardCountry ||
+    (isCustomConnectedNode && vpnIpLoading ? 'Locating exit node…' : undefined);
+  const cardFlag = Boolean(cardCountry && getCountryFlag(cardCountry));
+
+
   return (
     <Flex
       flexDirection="column"
@@ -430,45 +526,64 @@ export const ExitPanel = (): JSX.Element => {
             />
             <InputRightElement children={<div />} />
           </InputGroup> */}
-          {disableInputEdits ? <ExitInputGroup>
-            <ExitInputLeftElement
-              pointerEvents='none'
-              children={
-                (!exitStatus.exitLoading) && <CountryFlags style={{ marginTop: '3px' }} keyItem={connectedNode?.name} countryName={connectedNode?.country?.toLowerCase()} />
-              }
-            />
-            <ExitInput
-              disabled={disableInputEdits}
-              onChange={(e: any) =>
-                dispatch(onUserExitNodeSet(e?.currentTarget?.value))
-              }
-              onPaste={(e: any) =>
-                dispatch(onUserExitNodeSet(e?.currentTarget?.value))
-              }
-              size="sm"
-              variant="flushed"
-              marginBottom={2}
-              spellCheck={false}
-              noOfLines={1}
-              value={exitToUse || ''}
-            />  </ExitInputGroup>
-            :
-
-            <ExitNodeValue className='exitNode' >
-              {selectedNode?.name && <CountryFlags onClick={openNodeList} style={{ marginTop: '3px' }} keyItem={selectedNode?.name} countryName={selectedNode?.country?.toLowerCase()} />}
-              {selectedNode?.name || exitToUse || newValue ? <p className='exitNode' style={{ textOverflow: 'ellipsis', maxWidth: '324px', width: '100%', overflow: 'hidden', whiteSpace: 'nowrap' }}>{selectedNode?.name || exitToUse || newValue || ''}</p> :
-              <EnterExitNodeInput ref={exitnodeInputRef} onBlur={onInputBlur} style={{ textOverflow: 'ellipsis', maxWidth: '324px', width: '100%', overflow: 'hidden', whiteSpace: 'nowrap' }}  maxLength={56}/>}
-              <div style={{display: 'flex', marginLeft: 'auto'}}>
-                 <div className='exitNode' onClick={clearNodeValue} style={{ padding: '0 5px', zIndex: 10 }}>
-                  {themeSelected === 'light' ? <img src={ClearWhite} alt="white" /> : <img src={ClearDark} alt="dark" />}
-                </div>
-               <span style={{ margin: '0 5px', border: `solid 0.5px ${theme.exitNodeIconColor}` }}></span>
-                <div onClick={openNodeList} className='exitNode' style={arrowMenuStyle}>
-                  {themeSelected === 'light' ? <img src={DropDownWhite} alt="white" /> : <img src={DropDownDark} alt="dark" />}
-                </div>
-              </div>
-            </ExitNodeValue>
-          }
+          <ExitNodeCard className='exitNode'>
+            <FlagBadge className='exitNode' isDark={themeSelected !== 'light'}>
+              {cardFlag ? (
+                <CountryFlags
+                  style={{ paddingRight: 0, height: '14px' }}
+                  keyItem={cardName}
+                  countryName={cardCountry?.toLowerCase()}
+                />
+              ) : (
+                <GlobeIcon color={theme.streamLabelColor} />
+              )}
+            </FlagBadge>
+            <CardText className='exitNode' onClick={!disableInputEdits && cardName ? openNodeList : undefined}>
+              {cardCountryLine && (
+                <CardCountry className='exitNode' title={cardCountryLine}>
+                  {cardCountryLine}
+                </CardCountry>
+              )}
+              {cardName ? (
+                <CardName className='exitNode' title={cardName}>
+                  {cardName}
+                </CardName>
+              ) : disableInputEdits ? (
+                <CardCountry className='exitNode'>Connecting…</CardCountry>
+              ) : (
+                <CardInput
+                  ref={exitnodeInputRef}
+                  onBlur={onInputBlur}
+                  placeholder='Enter an exit node'
+                  spellCheck={false}
+                  maxLength={56}
+                />
+              )}
+            </CardText>
+            {!disableInputEdits && cardName && (
+              <ClearButton
+                type='button'
+                className='exitNode'
+                onClick={clearNodeValue}
+                aria-label='Clear exit node'
+              >
+                {themeSelected === 'light' ? <img src={ClearWhite} alt='' /> : <img src={ClearDark} alt='' />}
+              </ClearButton>
+            )}
+            {/* only while disconnected: opens the node list. Hidden once
+                connecting/connected, when the exit node can't be edited. */}
+            {!disableInputEdits && (
+              <ChevronButton
+                type='button'
+                className='exitNode'
+                isDark={themeSelected !== 'light'}
+                aria-label='Choose exit node'
+                onClick={openNodeList}
+              >
+                <ChevronIcon color={theme.appLogContentColor} open={isMenuOpen} />
+              </ChevronButton>
+            )}
+          </ExitNodeCard>
           {isMenuOpen && menuList && menuList.length > 0 &&
             <NodeAccordion className={newValue ? 'newValuePresent' : 'noNewValue'} allowToggle ref={ref}>
               {menuList.map((nodeArr: any, index: number) =>
@@ -485,8 +600,8 @@ export const ExitPanel = (): JSX.Element => {
                       <NodeDetail key={nodeList.name} onClick={() => handleChange(nodeList)} style={selectedNode?.name === nodeList.name ? { background: '#1994FC', borderRadius: '8px' } : {}}>
                         <CountryFlags style={{}} keyItem={nodeList.name} countryName={nodeList.country?.toLowerCase()} />
                         <div>
-                          <NodeName>{nodeList.name}</NodeName>
                           <NodeCountry>{nodeList.country}</NodeCountry>
+                          <NodeName>{nodeList.name}</NodeName>
                         </div>
                         {latencyByName[nodeList.name] != null && (
                           <NodeLatency ms={latencyByName[nodeList.name] as number}>

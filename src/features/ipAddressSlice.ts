@@ -31,13 +31,20 @@ export interface IpAddressState {
   publicIpLoading: boolean;
   vpnIp: string;
   vpnIpLoading: boolean;
+  /**
+   * Country the VPN IP is located in, i.e. the exit node's country. This is
+   * the only source of a location for a custom exit node that is not in the
+   * published exit node list.
+   */
+  vpnCountry?: string;
 }
 
 const initialState: IpAddressState = {
   publicIp: readLastPublicIp(),
   publicIpLoading: false,
   vpnIp: DEFAULT_VPN_IP,
-  vpnIpLoading: false
+  vpnIpLoading: false,
+  vpnCountry: undefined
 };
 
 export const ipAddressSlice = createSlice({
@@ -55,15 +62,24 @@ export const ipAddressSlice = createSlice({
     },
     markVpnIpLoading(state, action: PayloadAction<boolean>) {
       state.vpnIpLoading = action.payload;
+      if (action.payload) {
+        // a new lookup means a new exit: the old country no longer applies
+        state.vpnCountry = undefined;
+      }
       return state;
     },
-    setVpnIp(state, action: PayloadAction<string>) {
-      state.vpnIp = action.payload;
+    setVpnIp(
+      state,
+      action: PayloadAction<{ ip: string; country?: string }>
+    ) {
+      state.vpnIp = action.payload.ip;
+      state.vpnCountry = action.payload.country;
       state.vpnIpLoading = false;
       return state;
     },
     resetVpnIp(state) {
       state.vpnIp = DEFAULT_VPN_IP;
+      state.vpnCountry = undefined;
       state.vpnIpLoading = false;
       return state;
     }

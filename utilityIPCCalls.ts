@@ -102,20 +102,40 @@ export async function probeExitNodeLatencies(
 // TCP connection per lookup. A pooled keep-alive connection opened before the
 // tunnel came up would otherwise keep reporting the pre-VPN address.
 
+type IpLookup = { ip?: string; country?: string; countryCode?: string };
+
 type IpProvider = {
   url: string;
-  // returns the ip from the provider's JSON, or undefined if it reported an error
-  parse: (json: any) => string | undefined;
+  // returns the ip (and country, when the provider knows it) from the
+  // provider's JSON, or undefined if it reported an error
+  parse: (json: any) => IpLookup | undefined;
 };
+
+const asText = (value: unknown): string | undefined =>
+  typeof value === 'string' && value.trim() ? value.trim() : undefined;
 
 const IP_PROVIDERS: Array<IpProvider> = [
   {
     url: 'https://ipwho.is/',
-    parse: (json) => (json && json.success !== false ? json.ip : undefined)
+    parse: (json) =>
+      json && json.success !== false
+        ? {
+            ip: asText(json.ip),
+            country: asText(json.country),
+            countryCode: asText(json.country_code)
+          }
+        : undefined
   },
   {
     url: 'https://ipapi.co/json/',
-    parse: (json) => (json && !json.error ? json.ip : undefined)
+    parse: (json) =>
+      json && !json.error
+        ? {
+            ip: asText(json.ip),
+            country: asText(json.country_name),
+            countryCode: asText(json.country_code || json.country)
+          }
+        : undefined
   }
 ];
 
@@ -168,16 +188,26 @@ const getJson = (url: string, timeoutMs: number): Promise<any> =>
  * IPC: looks up the address this machine currently appears from on the
  * internet. Before connecting that is the public IP; once the exit is mapped
  * all traffic leaves through the exit node, so the same lookup returns the
- * VPN IP. Tries each provider in turn.
- * Replies with JSON `{ ip, provider }` or `{ error }`.
+ * VPN IP -- and the country it reports is the exit node's country, which is
+ * how a custom exit node (one not in the published list) gets a location.
+ * Tries each provider in turn.
+ * Replies with JSON `{ ip, country?, countryCode?, provider }` or `{ error }`.
  */
 export async function fetchIpAddress(jobId: string): Promise<void> {
   let reply: Record<string, string> = { error: 'no provider answered' };
   for (const provider of IP_PROVIDERS) {
     try {
-      const ip = provider.parse(await getJson(provider.url, IP_LOOKUP_TIMEOUT_MS));
-      if (typeof ip === 'string' && net.isIP(ip.trim())) {
-        reply = { ip: ip.trim(), provider: provider.url };
+      const found = provider.parse(
+        await getJson(provider.url, IP_LOOKUP_TIMEOUT_MS)
+      );
+      if (found?.ip && net.isIP(found.ip)) {
+        reply = { ip: found.ip, provider: provider.url };
+        if (found.country) {
+          reply.country = found.country;
+        }
+        if (found.countryCode) {
+          reply.countryCode = found.countryCode;
+        }
         break;
       }
       reply = { error: `${provider.url} returned no ip` };

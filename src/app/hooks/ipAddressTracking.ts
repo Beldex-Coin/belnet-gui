@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { fetchIpAddress } from '../../ipc/ipcRenderer';
+import { fetchIpAddress, fetchIpInfo } from '../../ipc/ipcRenderer';
 import { appendToApplogs } from '../../features/appLogsSlice';
 import { selectExitStatus } from '../../features/exitStatusSlice';
 import {
@@ -105,14 +105,20 @@ export const useIpAddressTracking = (): void => {
           return;
         }
         try {
-          const ip = await fetchIpAddress();
+          const { ip, country } = await fetchIpInfo();
           if (!isCurrent()) {
             return;
           }
           const publicIp = store.getState().ipAddress.publicIp;
           // still leaving through the old route: wait for the tunnel
           if (ip !== publicIp || attempt === VPN_IP_MAX_ATTEMPTS) {
-            dispatch(setVpnIp(ip));
+            // The country is the exit node's location only when the lookup
+            // really went through the tunnel. If it still reports the public
+            // IP, the country is the user's own: don't present it as the
+            // exit node's.
+            dispatch(
+              setVpnIp({ ip, country: ip !== publicIp ? country : undefined })
+            );
             if (ip === publicIp) {
               dispatch(
                 appendToApplogs(
