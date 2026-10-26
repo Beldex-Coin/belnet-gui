@@ -24,6 +24,9 @@ import {
 } from './exitNodeList';
 import CountryFlags, { getCountryFlag } from './CountryImageSrc';
 import { selectIpAddress } from '../../features/ipAddressSlice';
+import { appendToApplogs } from '../../features/appLogsSlice';
+import { store } from '../store';
+import { pickNearestExitNode } from './nearestExitNode';
 import ClearWhite from "../../../images/ExitNodeClear_white.svg";
 import ClearDark from "../../../images/ExitNodeClear_dark.svg";
 // let defaultExitUse;
@@ -308,7 +311,8 @@ export const ExitPanel = (): JSX.Element => {
   // For a BNS exit the daemon only reports the resolved address: show the BNS
   // name the user connected with instead (falls back to the address).
   const exitNodeDisplayName = useSelector(selectExitNodeDisplayName);
-  const { vpnCountry, vpnIpLoading } = useSelector(selectIpAddress);
+  const { vpnCountry, vpnIpLoading, deviceLocation } =
+    useSelector(selectIpAddress);
   const exitToUse = disableInputEdits
     ? exitNodeDisplayName
     : exitStatus.exitNodeFromUser;
@@ -336,24 +340,66 @@ export const ExitPanel = (): JSX.Element => {
   // const exitDaemon = exitStatus.exitNodeFromDaemon;
   // defaultExitUse = exitToUse;
 
-  const applyLatencies = (
+  // How the current node was picked automatically. Picking by distance wins
+  // over the fallbacks, so if the device location arrives after the list we
+  // re-pick once by distance.
+  const autoPickRef = React.useRef<'none' | 'nearest' | 'fallback'>('none');
+
+  /**
+   * Automatic exit node choice, unless the user already picked one:
+   *  1. nearest node to the device (Haversine on latitude/longitude),
+   *     random among equally near nodes
+   *  2. otherwise the lowest measured latency
+   *  3. otherwise a random node
+   */
+  const autoSelectNode = (
     list: Array<any>,
     latencies: Record<string, number | null>
   ) => {
-    setLatencyByName(latencies);
-    if (userChoseNodeRef.current) {
+    if (userChoseNodeRef.current || !Array.isArray(list) || list.length === 0) {
       return;
     }
-    const measured = flattenNodes(list).filter(
+    const allNodes = flattenNodes(list);
+    const deviceLocation = store.getState().ipAddress.deviceLocation;
+
+    if (deviceLocation) {
+      const nearest = pickNearestExitNode(allNodes, deviceLocation);
+      if (nearest) {
+        autoPickRef.current = 'nearest';
+        setNode(nearest.node);
+        dispatch(onUserExitNodeSet(nearest.node.name));
+        dispatch(
+          appendToApplogs(
+            `Nearest exit node: ${nearest.node.name} (${Math.round(
+              nearest.distanceKm
+            )} km${
+              nearest.tiedCount > 1
+                ? `, random pick among ${nearest.tiedCount} equally near`
+                : ''
+            })`
+          )
+        );
+        return;
+      }
+    }
+
+    if (autoPickRef.current === 'fallback') {
+      // already picked a fallback node; don't reshuffle it
+      return;
+    }
+    autoPickRef.current = 'fallback';
+    const measured = allNodes.filter(
       (n: any) => n?.name && latencies[n.name] != null
     );
     if (measured.length > 0) {
-      const fastest = measured.reduce((a: any, b: any) =>
-        (latencies[a.name] as number) <= (latencies[b.name] as number) ? a : b
+      const fastest = measured.reduce((x: any, y: any) =>
+        (latencies[x.name] as number) <= (latencies[y.name] as number) ? x : y
       );
       setNode(fastest);
       dispatch(onUserExitNodeSet(fastest.name));
+      return;
     }
+    getRandomExitNode(list);
   };
 
   const loadExitNodes = async () => {
@@ -363,15 +409,11 @@ export const ExitPanel = (): JSX.Element => {
     // and the Change Node screen never fetch or probe twice.
     if (isCacheFresh()) {
       const cachedList = getCachedList();
-      const cached = getCachedLatencies();
       if (cachedList) {
+        const cached = getCachedLatencies();
         setMenuList(cachedList);
-        const hasMeasurement = Object.values(cached).some((v) => v != null);
-        if (hasMeasurement) {
-          applyLatencies(cachedList, cached);
-        } else {
-          getRandomExitNode(cachedList);
-        }
+        setLatencyByName(cached);
+        autoSelectNode(cachedList, cached);
         return;
       }
     }
@@ -379,19 +421,22 @@ export const ExitPanel = (): JSX.Element => {
     try {
       const { list, latencies } = await loadExitNodeGroups();
       setMenuList(list);
-      const hasMeasurement = Object.values(latencies).some((v) => v != null);
-      if (hasMeasurement) {
-        applyLatencies(list, latencies);
-      } else {
-        // nothing measurable (in-network addresses): keep the previous
-        // behaviour and pick one so the panel is immediately usable
-        getRandomExitNode(list);
-      }
+      setLatencyByName(latencies);
+      autoSelectNode(list, latencies);
     } catch (e) {
       console.info('could not load the exit node list', e);
       setListError(true);
     }
   };
+
+  // The device location usually arrives a few seconds after the list (it is
+  // looked up once the app knows it is disconnected): pick by distance then.
+  useEffect(() => {
+    if (deviceLocation && autoPickRef.current !== 'nearest' && menuList.length) {
+      autoSelectNode(menuList, latencyByName);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deviceLocation?.latitude, deviceLocation?.longitude, menuList]);
 
   useEffect(() => {
     void loadExitNodes();

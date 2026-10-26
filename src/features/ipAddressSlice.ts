@@ -26,8 +26,43 @@ export const persistLastPublicIp = (ip: string): void => {
   }
 };
 
+const DEVICE_LOCATION_STORAGE_KEY = 'belnet-gui.lastDeviceLocation';
+
+export type DeviceLocation = { latitude: number; longitude: number };
+
+/**
+ * Approximate device location (from the public IP), used to pick the nearest
+ * exit node. Like the public IP it can only be looked up while disconnected,
+ * so the last one is kept for when the GUI starts already connected.
+ */
+const readLastDeviceLocation = (): DeviceLocation | undefined => {
+  try {
+    const raw = window.localStorage.getItem(DEVICE_LOCATION_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : undefined;
+    return parsed &&
+      typeof parsed.latitude === 'number' &&
+      typeof parsed.longitude === 'number'
+      ? { latitude: parsed.latitude, longitude: parsed.longitude }
+      : undefined;
+  } catch (e) {
+    return undefined;
+  }
+};
+
+export const persistLastDeviceLocation = (location: DeviceLocation): void => {
+  try {
+    window.localStorage.setItem(
+      DEVICE_LOCATION_STORAGE_KEY,
+      JSON.stringify(location)
+    );
+  } catch (e) {
+    // storage unavailable: only this session keeps the value
+  }
+};
+
 export interface IpAddressState {
   publicIp?: string;
+  deviceLocation?: DeviceLocation;
   publicIpLoading: boolean;
   vpnIp: string;
   vpnIpLoading: boolean;
@@ -41,6 +76,7 @@ export interface IpAddressState {
 
 const initialState: IpAddressState = {
   publicIp: readLastPublicIp(),
+  deviceLocation: readLastDeviceLocation(),
   publicIpLoading: false,
   vpnIp: DEFAULT_VPN_IP,
   vpnIpLoading: false,
@@ -58,6 +94,10 @@ export const ipAddressSlice = createSlice({
     setPublicIp(state, action: PayloadAction<string>) {
       state.publicIp = action.payload;
       state.publicIpLoading = false;
+      return state;
+    },
+    setDeviceLocation(state, action: PayloadAction<DeviceLocation>) {
+      state.deviceLocation = action.payload;
       return state;
     },
     markVpnIpLoading(state, action: PayloadAction<boolean>) {
@@ -89,6 +129,7 @@ export const ipAddressSlice = createSlice({
 export const {
   markPublicIpLoading,
   setPublicIp,
+  setDeviceLocation,
   markVpnIpLoading,
   setVpnIp,
   resetVpnIp

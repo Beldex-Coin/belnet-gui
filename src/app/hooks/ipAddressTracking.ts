@@ -1,13 +1,15 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { fetchIpAddress, fetchIpInfo } from '../../ipc/ipcRenderer';
+import { fetchIpInfo } from '../../ipc/ipcRenderer';
 import { appendToApplogs } from '../../features/appLogsSlice';
 import { selectExitStatus } from '../../features/exitStatusSlice';
 import {
   markPublicIpLoading,
   markVpnIpLoading,
+  persistLastDeviceLocation,
   persistLastPublicIp,
   resetVpnIp,
+  setDeviceLocation,
   setPublicIp,
   setVpnIp
 } from '../../features/ipAddressSlice';
@@ -73,12 +75,19 @@ export const useIpAddressTracking = (): void => {
             return;
           }
           try {
-            const ip = await fetchIpAddress();
+            const { ip, latitude, longitude } = await fetchIpInfo();
             if (!isCurrent()) {
               return;
             }
             dispatch(setPublicIp(ip));
             persistLastPublicIp(ip);
+            // the public IP's location is the device location used to pick
+            // the nearest exit node
+            if (latitude !== undefined && longitude !== undefined) {
+              const location = { latitude, longitude };
+              dispatch(setDeviceLocation(location));
+              persistLastDeviceLocation(location);
+            }
             return;
           } catch (e: any) {
             if (attempt === PUBLIC_IP_MAX_ATTEMPTS && isCurrent()) {

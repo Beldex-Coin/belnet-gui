@@ -105,6 +105,9 @@ export type IpInfo = {
   country?: string;
   /** ISO 3166-1 alpha-2 code, e.g. "NL". */
   countryCode?: string;
+  /** Approximate location of the IP, from the lookup provider. */
+  latitude?: number;
+  longitude?: number;
 };
 
 /**
@@ -115,8 +118,14 @@ export type IpInfo = {
  */
 export async function fetchIpInfo(): Promise<IpInfo> {
   const replyJson = await channels.fetchIpAddress();
-  let reply: { ip?: string; country?: string; countryCode?: string; error?: string } =
-    {};
+  let reply: {
+    ip?: string;
+    country?: string;
+    countryCode?: string;
+    latitude?: number;
+    longitude?: number;
+    error?: string;
+  } = {};
   try {
     reply = JSON.parse(replyJson) || {};
   } catch (e) {
@@ -128,7 +137,9 @@ export async function fetchIpInfo(): Promise<IpInfo> {
   return {
     ip: reply.ip,
     country: reply.country || undefined,
-    countryCode: reply.countryCode || undefined
+    countryCode: reply.countryCode || undefined,
+    latitude: typeof reply.latitude === 'number' ? reply.latitude : undefined,
+    longitude: typeof reply.longitude === 'number' ? reply.longitude : undefined
   };
 }
 

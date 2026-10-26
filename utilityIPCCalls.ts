@@ -102,7 +102,13 @@ export async function probeExitNodeLatencies(
 // TCP connection per lookup. A pooled keep-alive connection opened before the
 // tunnel came up would otherwise keep reporting the pre-VPN address.
 
-type IpLookup = { ip?: string; country?: string; countryCode?: string };
+type IpLookup = {
+  ip?: string;
+  country?: string;
+  countryCode?: string;
+  latitude?: number;
+  longitude?: number;
+};
 
 type IpProvider = {
   url: string;
@@ -114,6 +120,13 @@ type IpProvider = {
 const asText = (value: unknown): string | undefined =>
   typeof value === 'string' && value.trim() ? value.trim() : undefined;
 
+const asCoordinate = (value: unknown, max: number): number | undefined => {
+  const n = typeof value === 'string' ? Number(value) : value;
+  return typeof n === 'number' && Number.isFinite(n) && Math.abs(n) <= max
+    ? n
+    : undefined;
+};
+
 const IP_PROVIDERS: Array<IpProvider> = [
   {
     url: 'https://ipwho.is/',
@@ -122,7 +135,9 @@ const IP_PROVIDERS: Array<IpProvider> = [
         ? {
             ip: asText(json.ip),
             country: asText(json.country),
-            countryCode: asText(json.country_code)
+            countryCode: asText(json.country_code),
+            latitude: asCoordinate(json.latitude, 90),
+            longitude: asCoordinate(json.longitude, 180)
           }
         : undefined
   },
@@ -133,7 +148,9 @@ const IP_PROVIDERS: Array<IpProvider> = [
         ? {
             ip: asText(json.ip),
             country: asText(json.country_name),
-            countryCode: asText(json.country_code || json.country)
+            countryCode: asText(json.country_code || json.country),
+            latitude: asCoordinate(json.latitude, 90),
+            longitude: asCoordinate(json.longitude, 180)
           }
         : undefined
   }
@@ -191,10 +208,13 @@ const getJson = (url: string, timeoutMs: number): Promise<any> =>
  * VPN IP -- and the country it reports is the exit node's country, which is
  * how a custom exit node (one not in the published list) gets a location.
  * Tries each provider in turn.
- * Replies with JSON `{ ip, country?, countryCode?, provider }` or `{ error }`.
+ * The latitude / longitude of the public IP (looked up while disconnected) is
+ * the device location used to pick the nearest exit node.
+ * Replies with JSON `{ ip, country?, countryCode?, latitude?, longitude?,
+ * provider }` or `{ error }`.
  */
 export async function fetchIpAddress(jobId: string): Promise<void> {
-  let reply: Record<string, string> = { error: 'no provider answered' };
+  let reply: Record<string, string | number> = { error: 'no provider answered' };
   for (const provider of IP_PROVIDERS) {
     try {
       const found = provider.parse(
@@ -207,6 +227,10 @@ export async function fetchIpAddress(jobId: string): Promise<void> {
         }
         if (found.countryCode) {
           reply.countryCode = found.countryCode;
+        }
+        if (found.latitude !== undefined && found.longitude !== undefined) {
+          reply.latitude = found.latitude;
+          reply.longitude = found.longitude;
         }
         break;
       }
