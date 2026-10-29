@@ -43,6 +43,14 @@ export interface ExitStatusState {
    * name can never be displayed for a different exit.
    */
   activeExitAliasAddress?: string;
+
+  /**
+   * The exit node the app picked automatically for the user (Main tab), and
+   * how: 'nearest' = nearest fast node to the device, 'fallback' = picked
+   * without a device location (lowest latency / random fast node).
+   * Auto-connect uses this on launch.
+   */
+  autoSelection?: { node: string; basis: 'nearest' | 'fallback' };
 }
 
 const initialStatusState: ExitStatusState = {
@@ -59,7 +67,8 @@ const initialStatusState: ExitStatusState = {
   swapError: undefined,
   swapRolledBack: false,
   activeExitAlias: undefined,
-  activeExitAliasAddress: undefined
+  activeExitAliasAddress: undefined,
+  autoSelection: undefined
 };
 
 export const exitStatusSlice = createSlice({
@@ -171,6 +180,15 @@ export const exitStatusSlice = createSlice({
      * so the node list can mark the row the user picked and the Main tab can
      * show the name instead of the address. Cleared by passing undefined.
      */
+    setAutoSelection: (
+      state,
+      action: PayloadAction<
+        { node: string; basis: 'nearest' | 'fallback' } | undefined
+      >
+    ) => {
+      state.autoSelection = action.payload;
+      return state;
+    },
     setActiveExitAlias: (
       state,
       action: PayloadAction<{ alias: string; address: string } | undefined>
@@ -195,7 +213,8 @@ export const {
   markSwapSucceeded,
   markSwapFailed,
   clearSwapError,
-  setActiveExitAlias
+  setActiveExitAlias,
+  setAutoSelection
 } = exitStatusSlice.actions;
 export const selectExitStatus = (state: RootState): ExitStatusState =>
   state.exitStatus;

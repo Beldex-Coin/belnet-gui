@@ -8,13 +8,18 @@ import { GuiTabs } from './GuiTabs';
 import { PowerButton } from './PowerButton/PowerButton';
 import { ChangeNodeButton } from './ChangeNodeButton';
 import { ChangeNodeScreen } from './ChangeNodeScreen';
+import { SettingsScreen } from './SettingsScreen';
+import { AboutModal } from './AboutModal';
 import { TitleBar } from './TitleBar';
 import { UploadInfo } from './UploadInfo';
 import { DownloadInfo } from './DownloadInfo';
 import {
   useGlobalConnectingStatus
 } from '../hooks/connectingStatus';
-import { selectChangeNodeScreenOpen } from '../../features/uiStatusSlice';
+import {
+  selectChangeNodeScreenOpen,
+  selectSettingsScreenOpen
+} from '../../features/uiStatusSlice';
 import AnimationDots from "../../../images/Animation_dots.svg";
 import BelnetLogo from '../../../images/Belnet.svg';
 
@@ -36,6 +41,7 @@ const ConnectionInfo = styled.div`
 export const AppLayout = (): JSX.Element => {
   const globalStatus = useGlobalConnectingStatus();
   const changeNodeOpen = useSelector(selectChangeNodeScreenOpen);
+  const settingsOpen = useSelector(selectSettingsScreenOpen);
   // the tunnel is nominally up while a swap is in flight, so keep the
   // connected backdrop rather than flashing it off and on
   const showConnectedBackdrop =
@@ -66,6 +72,8 @@ export const AppLayout = (): JSX.Element => {
         <GuiTabs />
       </Stack>
       {changeNodeOpen && <ChangeNodeScreen />}
+      {settingsOpen && <SettingsScreen />}
+      <AboutModal />
     </Container>
   );
 };

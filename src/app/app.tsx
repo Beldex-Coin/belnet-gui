@@ -37,6 +37,7 @@ import { selectedTheme } from '../features/uiStatusSlice';
 import { StatusErrorType } from '../../sharedIpc';
 import { useGlobalConnectingStatus } from './hooks/connectingStatus';
 import { useIpAddressTracking } from './hooks/ipAddressTracking';
+import { useAutoConnect } from './hooks/autoConnect';
 
 void initializeIpcRendererSide();
 
@@ -187,6 +188,7 @@ const useSummaryStatusPolling = () => {
 const App = () => {
   useSummaryStatusPolling();
   useIpAddressTracking();
+  useAutoConnect();
   return <AppLayout />;
 };
 

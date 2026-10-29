@@ -6,11 +6,16 @@ import { useSelector } from 'react-redux';
 import {
   onUserAuthCodeSet,
   onUserExitNodeSet,
+  setAutoSelection,
   selectExitNodeDisplayName,
   selectExitStatus
 } from '../../features/exitStatusSlice';
 import AsyncCreatableSelect from 'react-select/async-creatable';
-import { selectedTheme, setTheme } from '../../features/uiStatusSlice';
+import {
+  selectAutoConnect,
+  selectedTheme,
+  setTheme
+} from '../../features/uiStatusSlice';
 import Select, { components, DropdownIndicatorProps, IndicatorSeparatorProps } from 'react-select';
 import { useAppDispatch } from '../hooks';
 import {
@@ -26,7 +31,13 @@ import CountryFlags, { getCountryFlag } from './CountryImageSrc';
 import { selectIpAddress } from '../../features/ipAddressSlice';
 import { appendToApplogs } from '../../features/appLogsSlice';
 import { store } from '../store';
-import { pickNearestExitNode } from './nearestExitNode';
+import {
+  isFastExitNode,
+  pickNearestExitNode,
+  pickNearestFastExitNode,
+  pickRandomExitNode,
+  pickRandomFastExitNode
+} from './nearestExitNode';
 import ClearWhite from "../../../images/ExitNodeClear_white.svg";
 import ClearDark from "../../../images/ExitNodeClear_dark.svg";
 // let defaultExitUse;
@@ -321,8 +332,15 @@ export const ExitPanel = (): JSX.Element => {
   useOutsideClick({
     ref: ref,
     handler: (e) => {
-      if (e && e?.target && e?.target?.className) {
-        const DOMClassList = e?.target?.className?.split(' ')
+      // className is an SVGAnimatedString (not a string) on SVG elements,
+      // so read the attribute instead
+      const target: any = e?.target;
+      const classAttr =
+        typeof target?.getAttribute === 'function'
+          ? target.getAttribute('class')
+          : undefined;
+      if (classAttr) {
+        const DOMClassList = classAttr.split(' ')
         const isExitNode = DOMClassList && DOMClassList?.find((item: any) => item === 'exitNode');
         if (isExitNode && isExitNode === 'exitNode') {
           return
@@ -346,11 +364,15 @@ export const ExitPanel = (): JSX.Element => {
   const autoPickRef = React.useRef<'none' | 'nearest' | 'fallback'>('none');
 
   /**
-   * Automatic exit node choice, unless the user already picked one:
-   *  1. nearest node to the device (Haversine on latitude/longitude),
-   *     random among equally near nodes
-   *  2. otherwise the lowest measured latency
-   *  3. otherwise a random node
+   * Automatic exit node choice, unless the user already picked one. Which
+   * node depends on the Auto-connect setting:
+   *  - off: the nearest node of any speed
+   *  - on:  the nearest FAST node (speedScore > 0), else the nearest node
+   * "Nearest" uses the Haversine distance between the device and the node.
+   * Nodes at the same location or in the same country as the nearest one
+   * count as equally near, and one of them is picked at random.
+   * Without a device location: lowest latency, else random (fast nodes
+   * first when Auto-connect is on).
    */
   const autoSelectNode = (
     list: Array<any>,
@@ -360,21 +382,33 @@ export const ExitPanel = (): JSX.Element => {
       return;
     }
     const allNodes = flattenNodes(list);
-    const deviceLocation = store.getState().ipAddress.deviceLocation;
+    const state = store.getState();
+    const deviceLocation = state.ipAddress.deviceLocation;
+    const preferFast = state.uiStatus.autoConnect;
 
     if (deviceLocation) {
-      const nearest = pickNearestExitNode(allNodes, deviceLocation);
+      const nearest = preferFast
+        ? pickNearestFastExitNode(allNodes, deviceLocation)
+        : pickNearestExitNode(allNodes, deviceLocation);
       if (nearest) {
         autoPickRef.current = 'nearest';
         setNode(nearest.node);
         dispatch(onUserExitNodeSet(nearest.node.name));
         dispatch(
+          setAutoSelection({ node: nearest.node.name, basis: 'nearest' })
+        );
+        const speedNote = !preferFast
+          ? ''
+          : (nearest as any).fast
+          ? ', fast'
+          : ', no fast node available';
+        dispatch(
           appendToApplogs(
-            `Nearest exit node: ${nearest.node.name} (${Math.round(
-              nearest.distanceKm
-            )} km${
+            `Nearest ${preferFast ? 'fast ' : ''}exit node: ${
+              nearest.node.name
+            } (${Math.round(nearest.distanceKm)} km${speedNote}${
               nearest.tiedCount > 1
-                ? `, random pick among ${nearest.tiedCount} equally near`
+                ? `, random pick among ${nearest.tiedCount} in the same location/country`
                 : ''
             })`
           )
@@ -388,18 +422,28 @@ export const ExitPanel = (): JSX.Element => {
       return;
     }
     autoPickRef.current = 'fallback';
-    const measured = allNodes.filter(
+    // no device location: lowest latency, otherwise random -- among fast
+    // nodes first when Auto-connect is on
+    const fastNodes = preferFast ? allNodes.filter(isFastExitNode) : [];
+    const pool = fastNodes.length ? fastNodes : allNodes;
+    const measured = pool.filter(
       (n: any) => n?.name && latencies[n.name] != null
     );
-    if (measured.length > 0) {
-      const fastest = measured.reduce((x: any, y: any) =>
-        (latencies[x.name] as number) <= (latencies[y.name] as number) ? x : y
-      );
-      setNode(fastest);
-      dispatch(onUserExitNodeSet(fastest.name));
-      return;
+    const fallback =
+      measured.length > 0
+        ? measured.reduce((x: any, y: any) =>
+            (latencies[x.name] as number) <= (latencies[y.name] as number)
+              ? x
+              : y
+          )
+        : preferFast
+        ? pickRandomFastExitNode(allNodes)
+        : pickRandomExitNode(allNodes);
+    if (fallback?.name) {
+      setNode(fallback);
+      dispatch(onUserExitNodeSet(fallback.name));
+      dispatch(setAutoSelection({ node: fallback.name, basis: 'fallback' }));
     }
-    getRandomExitNode(list);
   };
 
   const loadExitNodes = async () => {
@@ -428,6 +472,22 @@ export const ExitPanel = (): JSX.Element => {
       setListError(true);
     }
   };
+
+  // Auto-connect switched on/off in Settings: re-pick with the other rule
+  // (nearest vs nearest fast), unless the user chose a node or is connected.
+  const autoConnectSetting = useSelector(selectAutoConnect);
+  const firstAutoConnectRender = React.useRef(true);
+  useEffect(() => {
+    if (firstAutoConnectRender.current) {
+      firstAutoConnectRender.current = false;
+      return;
+    }
+    if (!disableInputEdits && menuList.length) {
+      autoPickRef.current = 'none';
+      autoSelectNode(menuList, latencyByName);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoConnectSetting]);
 
   // The device location usually arrives a few seconds after the list (it is
   // looked up once the app knows it is disconnected): pick by distance then.
@@ -501,20 +561,6 @@ export const ExitPanel = (): JSX.Element => {
     setNewValue('');
   }
 
-  const getRandomExitNode = (list: any) => {
-    const allNodes: any = [];
-    list.forEach((item: any) => {
-      const node = item?.node;
-      allNodes.push(...node);
-    });
-    const maxMenuLenIndex = allNodes.length - 1;
-    const min = 0;
-    const randomExitNodeIndex = Math.floor(Math.random() * (maxMenuLenIndex - min + 1) + min);
-    const randomExitNode: any = allNodes[randomExitNodeIndex]
-    dispatch(onUserExitNodeSet(randomExitNode?.name))
-    setNode(randomExitNode)
-    return randomExitNode
-  }
 
   // Listed nodes carry their country in the exit node list. A custom node
   // (typed in by the user) has none, so once connected we use the country of
