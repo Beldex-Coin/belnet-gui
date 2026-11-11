@@ -14,6 +14,10 @@ module.exports = (env, argv) => {
     devtool: isProduction ? false : 'source-map',
     entry: './main.ts',
     target: 'electron-main',
+      externals: {
+    zeromq: 'commonjs zeromq',
+    'zeromq/v5-compat': 'commonjs zeromq/v5-compat'
+  },
     module: {
       rules: [
         {

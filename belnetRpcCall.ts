@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as _zmq from 'zeromq/';
-
+// import * as _zmq from 'zeromq/';
+import * as _zmq from 'zeromq';
 _zmq.context.blocky = false;
 
 import { takeEventByJobId } from './ipcNode';

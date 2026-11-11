@@ -73,11 +73,18 @@ async function createWindow() {
     minWidth: width,
     resizable: true,
     //icon: appIcon,
-    webPreferences: {
-      nodeIntegration: true,
-      devTools: false,
-      webSecurity: true,
-    },
+    // webPreferences: {
+    //   nodeIntegration: true,
+    //   devTools: false,
+    //   webSecurity: true,
+    // },
+       webPreferences: {
+     nodeIntegration: true,
+     contextIsolation: false,
+     sandbox: false,
+     devTools: false,
+     webSecurity: true,
+   },
     backgroundColor: '#fff',
     autoHideMenuBar: true,
     frame: false,
@@ -172,9 +179,10 @@ app.on('web-contents-created', (createEvent, contents) => {
   contents.on('will-attach-webview', (attachEvent) => {
     attachEvent.preventDefault();
   });
-  contents.on('new-window', (newEvent) => {
-    newEvent.preventDefault();
-  });
+  // contents.on('new-window', (newEvent) => {
+  //   newEvent.preventDefault();
+  // });
+     contents.setWindowOpenHandler(() => ({ action: 'deny' }));
 });
 
 const checkForUpdatesSilently = () => {
@@ -235,4 +243,4 @@ autoUpdater.on('update-downloaded', () => {
 });
 
 // update-not-available: intentionally silent.
-app.allowRendererProcessReuse = true;
+//app.allowRendererProcessReuse = true;
